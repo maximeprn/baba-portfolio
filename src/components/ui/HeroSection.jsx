@@ -147,12 +147,19 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
       });
     };
 
+    // Throttle sync corrections to avoid audio stuttering
+    let lastSyncTime = 0;
     const handleTimeUpdate = (video) => {
-      // Keep audio in sync with video (within 0.3 second tolerance)
+      // Keep audio in sync with video (within 0.5 second tolerance)
+      // Only check every 2 seconds to avoid stuttering
       if (audio && !audio.paused) {
+        const now = Date.now();
+        if (now - lastSyncTime < 2000) return; // Throttle to every 2 seconds
+
         const diff = Math.abs(audio.currentTime - video.currentTime);
-        if (diff > 0.3) {
+        if (diff > 0.5) {
           audio.currentTime = video.currentTime;
+          lastSyncTime = now;
         }
       }
     };

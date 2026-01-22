@@ -61,9 +61,23 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
     isScrolling: false,
   });
 
+  // Check if we should use smooth scroll (desktop only, >= 1024px)
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth >= 1024 : true
+  );
+
   // Scroll position state that triggers re-renders for subscribers
   const [scrollY, setScrollY] = useState(0);
   const scrollListenersRef = useRef(new Set());
+
+  // Listen for resize to toggle smooth scroll
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
 
   // Update scroll on each animation frame
@@ -211,6 +225,15 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
 
   // Method to programmatically scroll to a position
   const scrollTo = useCallback((position, instant = false) => {
+    // On mobile/tablet, use native scroll
+    if (!isDesktop) {
+      window.scrollTo({
+        top: position,
+        behavior: instant ? 'instant' : 'smooth'
+      });
+      return;
+    }
+
     const content = contentRef.current;
     if (!content) return;
 
@@ -229,15 +252,26 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
         data.rafId = requestAnimationFrame(updateScroll);
       }
     }
-  }, [updateScroll]);
+  }, [isDesktop, updateScroll]);
 
 
   // Method to scroll to an element
   const scrollToElement = useCallback((element, options = {}) => {
     const { offset = 0, block = 'start', instant = false } = options;
-    const content = contentRef.current;
 
-    if (!content || !element) return;
+    if (!element) return;
+
+    // On mobile/tablet, use native scroll
+    if (!isDesktop) {
+      element.scrollIntoView({
+        behavior: instant ? 'instant' : 'smooth',
+        block: block
+      });
+      return;
+    }
+
+    const content = contentRef.current;
+    if (!content) return;
 
     const contentRect = content.getBoundingClientRect();
     const elementRect = element.getBoundingClientRect();
@@ -258,13 +292,16 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
     }
 
     scrollTo(targetScroll, instant);
-  }, [scrollTo]);
+  }, [isDesktop, scrollTo]);
 
 
   // Get current scroll position
   const getScrollPosition = useCallback(() => {
+    if (!isDesktop) {
+      return window.scrollY;
+    }
     return scrollDataRef.current.current;
-  }, []);
+  }, [isDesktop]);
 
 
   // Subscribe to scroll position changes (for components that need real-time updates)
@@ -275,11 +312,36 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
   }, []);
 
 
-  // Set up scroll container and event listeners
+  // Set up scroll container and event listeners (desktop only)
   useEffect(() => {
     const content = contentRef.current;
     if (!content) return;
 
+    // On mobile/tablet, use native scroll
+    if (!isDesktop) {
+      // Reset any smooth scroll styles
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      content.style.position = '';
+      content.style.top = '';
+      content.style.left = '';
+      content.style.width = '';
+      content.style.willChange = '';
+      content.style.transform = '';
+
+      // Track native scroll for scrollY state
+      const handleNativeScroll = () => {
+        setScrollY(window.scrollY);
+        scrollListenersRef.current.forEach(listener => listener(window.scrollY));
+      };
+      window.addEventListener('scroll', handleNativeScroll, { passive: true });
+
+      return () => {
+        window.removeEventListener('scroll', handleNativeScroll);
+      };
+    }
+
+    // Desktop: use custom smooth scroll
     // Set up body styles
     document.body.style.overflow = 'hidden';
     document.body.style.height = '100vh';
@@ -291,11 +353,9 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
     content.style.width = '100%';
     content.style.willChange = 'transform';
 
-    // Add event listeners
+    // Add event listeners (wheel only on desktop, no touch events needed)
     window.addEventListener('wheel', handleWheel, { passive: false });
     window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
 
     // Handle resize
     const handleResize = () => {
@@ -323,8 +383,6 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
 
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('resize', handleResize);
 
       const data = scrollDataRef.current;
@@ -332,7 +390,7 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
         cancelAnimationFrame(data.rafId);
       }
     };
-  }, [handleWheel, handleKeyDown, handleTouchStart, handleTouchMove]);
+  }, [isDesktop, handleWheel, handleKeyDown]);
 
 
   const contextValue = {

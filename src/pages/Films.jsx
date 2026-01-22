@@ -127,7 +127,7 @@ function Films() {
       {createPortal(
         <button
           onClick={toggleMusic}
-          className="
+          className={`
             fixed
             top-20
             md:top-6
@@ -142,10 +142,16 @@ function Films() {
             items-center
             justify-center
             hover:opacity-70
-            transition-opacity
-            duration-200
-          "
+            transition-all
+            duration-300
+            ease-in-out
+            ${isMuteButtonVisible
+              ? 'translate-x-0 opacity-100'
+              : 'translate-x-16 opacity-0 pointer-events-none'
+            }
+          `}
           aria-label={isPlaying ? 'Mute' : 'Unmute'}
+          aria-hidden={!isMuteButtonVisible}
         >
           {isPlaying ? (
             // Unmute icon (sound on)

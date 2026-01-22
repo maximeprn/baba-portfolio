@@ -317,14 +317,11 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
       } else if (scrollProgress <= holdPhaseEnd) {
         // PHASE 2: HOLD (1000-1050px)
         scale = 1.05;
-        const extraScroll = scrollProgress - growPhaseEnd;
-        const extraCompensation = (extraScroll / window.innerHeight) * 100;
-        translateY = extraCompensation;
+        translateY = 0;
       } else {
         // PHASE 3: RELEASE (>1050px)
         scale = 1.05;
-        const holdCompensation = (holdDuration / window.innerHeight) * 100;
-        translateY = holdCompensation;
+        translateY = 0;
       }
 
       // Parallax strength calculation
@@ -546,7 +543,7 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
           className="
             sticky
             top-0
-            h-[100svh]
+            h-[100vh]
             w-full
             relative
             pointer-events-none

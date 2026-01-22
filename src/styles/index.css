@@ -1,0 +1,446 @@
+/**
+ * ============================================================================
+ * MAIN STYLESHEET - Basile Deschamps Portfolio
+ * ============================================================================
+ *
+ * This is the central CSS file where ALL design tokens are defined.
+ * To change colors, fonts, spacing, etc. - modify the CSS variables below.
+ *
+ * STRUCTURE:
+ * 1. Font Face Declarations - Load custom fonts
+ * 2. CSS Variables (Design Tokens) - Colors, fonts, spacing, sizes
+ * 3. Tailwind Directives - Import Tailwind utilities
+ * 4. Base Styles - Default element styling
+ * 5. Utility Classes - Custom reusable classes
+ *
+ * ============================================================================
+ */
+
+
+/* ============================================================================
+   1. FONT FACE DECLARATIONS
+   ============================================================================
+   Load your custom fonts here. The fonts need to be placed in:
+   /public/fonts/FontName/fontfile.woff2
+
+   @font-face tells the browser:
+   - font-family: The name you'll use to reference this font
+   - src: Where to find the font file (woff2 is the modern, compressed format)
+   - font-weight: What weight this file represents (400=normal, 700=bold)
+   - font-style: normal or italic
+   - font-display: swap = show fallback font immediately, swap when loaded
+*/
+
+/* Steps-Mono - Used for headers and navigation */
+@font-face {
+  font-family: 'Steps-Mono';
+  src: url('/fonts/StepsMono/Steps-Mono.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap; /* Prevents invisible text while font loads */
+}
+
+@font-face {
+  font-family: 'Steps-Mono';
+  src: url('/fonts/StepsMono/Steps-Mono-Thin.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Helvetica Now Display - Used for headers, navigation, and titles */
+@font-face {
+  font-family: 'Helvetica Now Display';
+  src: url('/fonts/HelveticaNow/HelveticaNowDisplay-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Now Display';
+  src: url('/fonts/HelveticaNow/HelveticaNowDisplay-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Now Display';
+  src: url('/fonts/HelveticaNow/HelveticaNowDisplay-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* American Typewriter - Used for body text */
+@font-face {
+  font-family: 'American Typewriter';
+  src: url('/fonts/AmericanTypewriter/AmericanTypewriter.ttc') format('collection');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+/* ============================================================================
+   2. CSS VARIABLES (DESIGN TOKENS)
+   ============================================================================
+   :root means these variables are available everywhere in your CSS.
+
+   To use a variable: var(--variable-name)
+   Example: color: var(--color-text);
+
+   WHY VARIABLES?
+   - Change a color once, it updates everywhere
+   - Easy for a future CMS to modify
+   - Consistent design across the site
+*/
+
+:root {
+  /* -------------------------------------------------------------------------
+     COLORS
+     -------------------------------------------------------------------------
+     The main color palette for the site.
+     Change these values to update colors site-wide.
+  */
+
+  /* Background color - the page background */
+  --color-background: #ffffff;
+
+  /* Primary text color - main body text */
+  --color-text: #000000;
+
+  /* Muted text color - for secondary/less important text */
+  --color-text-muted: #666666;
+
+  /* Accent color - for hover effects, links, highlights */
+  --color-accent: #333333;
+
+  /* Border color - for dividers and borders */
+  --color-border: #000000;
+
+
+  /* -------------------------------------------------------------------------
+     FONTS
+     -------------------------------------------------------------------------
+     Font families for different text types.
+     The fallback fonts (after the comma) are used if custom fonts fail to load.
+  */
+
+  /* Headers and navigation text */
+  --font-header: 'Helvetica Now', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+
+  /* Project titles and headings */
+  --font-title: 'Helvetica Now', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+
+  /* Body text and descriptions */
+  --font-body: 'American Typewriter', 'Courier New', 'Courier', serif;
+
+
+  /* -------------------------------------------------------------------------
+     FONT SIZES
+     -------------------------------------------------------------------------
+     A consistent scale of font sizes.
+     Using rem units (relative to root font size) for accessibility.
+     1rem = 16px by default, but scales if user changes browser font size.
+  */
+
+  --text-xs: 0.75rem;      /* 12px - Small labels */
+  --text-sm: 0.875rem;     /* 14px - Captions, credits */
+  --text-base: 1rem;       /* 16px - Body text default */
+  --text-lg: 1.125rem;     /* 18px - Slightly larger body */
+  --text-xl: 1.25rem;      /* 20px - Navigation, subheadings */
+  --text-2xl: 1.5rem;      /* 24px - Section headings */
+  --text-3xl: 1.875rem;    /* 30px - Page titles */
+  --text-4xl: 2.25rem;     /* 36px - Large headings */
+  --text-subheading: 1.25rem; /* 20px - "REINVENTING" text */
+  --text-hero: 8.75rem;    /* 140px - "BASILE DESCHAMPS" */
+
+
+  /* -------------------------------------------------------------------------
+     SPACING
+     -------------------------------------------------------------------------
+     Consistent spacing scale for margins, padding, and gaps.
+     Using these values ensures visual consistency.
+  */
+
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+  --spacing-2xl: 3rem;     /* 48px */
+  --spacing-3xl: 4rem;     /* 64px */
+  --spacing-section: 5rem; /* 80px - Between major sections */
+  --spacing-content: 2.5rem; /* 40px - Between content blocks */
+
+
+  /* -------------------------------------------------------------------------
+     LAYOUT
+     -------------------------------------------------------------------------
+     Max widths and container sizes for layout consistency.
+  */
+
+  /* Main container max width (matches your 1440px design) */
+  --max-width-container: 90rem; /* 1440px */
+
+  /* Narrower content width for text-heavy sections */
+  --max-width-content: 45.625rem; /* 730px - hero image width */
+
+  /* Navigation height */
+  --nav-height: 5rem; /* 80px */
+
+
+  /* -------------------------------------------------------------------------
+     TRANSITIONS
+     -------------------------------------------------------------------------
+     Consistent animation timing for smooth interactions.
+  */
+
+  --transition-fast: 150ms ease;
+  --transition-normal: 300ms ease;
+  --transition-slow: 500ms ease;
+
+
+  /* -------------------------------------------------------------------------
+     BORDERS
+     -------------------------------------------------------------------------
+     Border styles used throughout the site.
+  */
+
+  --border-width: 1px;
+  --border-style: solid;
+}
+
+
+/* ============================================================================
+   3. TAILWIND DIRECTIVES
+   ============================================================================
+   These special directives tell Tailwind where to inject its styles.
+
+   @tailwind base;      - Tailwind's base reset styles (normalizes browsers)
+   @tailwind components; - Component classes (if you create any with @layer)
+   @tailwind utilities;  - All utility classes (flex, p-4, text-lg, etc.)
+*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* ============================================================================
+   4. BASE STYLES
+   ============================================================================
+   @layer base tells Tailwind these are base-level styles (lowest priority).
+   These set sensible defaults for HTML elements.
+*/
+
+@layer base {
+  /* Reset and global defaults */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box; /* Include padding/border in element's total size */
+  }
+
+  /* HTML element - sets the root font size */
+  html {
+    font-size: 16px; /* Base size for rem calculations */
+    scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+    -webkit-font-smoothing: antialiased; /* Smoother fonts on Mac */
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Body element - default page styles */
+  body {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: 1.6; /* Comfortable reading line height */
+    color: var(--color-text);
+    background-color: var(--color-background);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh; /* Full viewport height minimum */
+  }
+
+  /* Headings - default to title font */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-title);
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  /* Paragraphs */
+  p {
+    margin: 0;
+  }
+
+  /* Links - default styling */
+  a {
+    color: inherit; /* Inherit text color from parent */
+    text-decoration: none; /* No underline by default */
+    transition: color var(--transition-fast);
+  }
+
+  a:hover {
+    color: var(--color-accent);
+  }
+
+  /* Images - responsive by default */
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Remove default button styles */
+  button {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    color: inherit;
+  }
+
+  /* Remove default list styles */
+  ul, ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Form elements */
+  input,
+  textarea,
+  select {
+    font-family: inherit;
+    font-size: inherit;
+  }
+}
+
+
+/* ============================================================================
+   5. COMPONENT STYLES
+   ============================================================================
+   @layer components is for reusable component patterns.
+   These have higher specificity than base but lower than utilities.
+*/
+
+@layer components {
+  /* Container - centers content with max width */
+  .container {
+    width: 100%;
+    max-width: var(--max-width-container);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--spacing-lg);
+    padding-right: var(--spacing-lg);
+  }
+
+  /* Navigation link style */
+  .nav-link {
+    font-family: var(--font-header);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: opacity var(--transition-fast);
+  }
+
+  .nav-link:hover {
+    opacity: 0.7;
+  }
+
+  /* Main navigation items (PHOTOS, FILMS) */
+  .nav-link-main {
+    font-family: var(--font-header);
+    font-size: var(--text-xl);
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+
+  /* Divider line */
+  .divider {
+    width: 100%;
+    height: var(--border-width);
+    background-color: var(--color-border);
+  }
+
+  /* Section spacing */
+  .section {
+    padding-top: var(--spacing-section);
+    padding-bottom: var(--spacing-section);
+  }
+
+  /* Credits text style (from your design) */
+  .credits-text {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    letter-spacing: 0.15em;
+    line-height: 1.7;
+  }
+
+  /* Project title style */
+  .project-title {
+    font-family: var(--font-title);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+  }
+}
+
+
+/* ============================================================================
+   6. UTILITY CLASSES
+   ============================================================================
+   @layer utilities is for single-purpose helper classes.
+   These have the highest specificity.
+*/
+
+@layer utilities {
+  /* Font family utilities */
+  .font-header {
+    font-family: var(--font-header);
+  }
+
+  .font-title {
+    font-family: var(--font-title);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
+  }
+
+  /* Aspect ratio utilities for images */
+  .aspect-film {
+    aspect-ratio: 16 / 9;
+  }
+
+  .aspect-photo {
+    aspect-ratio: 3 / 2;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Text balance for better line breaks */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Staggered text animation styles */
+  .staggered-text .word {
+    display: inline-block;
+    will-change: transform;
+  }
+}

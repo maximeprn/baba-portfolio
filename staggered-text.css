@@ -1,0 +1,65 @@
+/* ============================================
+   STAGGERED TEXT ANIMATION - CSS
+   ============================================ */
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    overflow: hidden;
+}
+
+body {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 100vh;
+}
+
+/* Smooth scroll wrapper */
+#smooth-scroll-wrapper {
+    width: 100%;
+}
+
+/* Base word styling */
+.staggered-text .word {
+    display: inline-block;
+    will-change: transform;
+}
+
+/* Word type classes with transforms
+   Note: Padding values will be calculated dynamically based on your config */
+.staggered-text .word-0 {
+    /* Slight right drift: transform X = 0.3em */
+}
+
+.staggered-text .word-1 {
+    /* Left drift: transform X = -0.9em */
+}
+
+.staggered-text .word-2 {
+    /* Right drift: transform X = 1.5em */
+}
+
+.staggered-text .word-3 {
+    /* Strong left drift: transform X = -2.4em */
+}
+
+.staggered-text .word-4 {
+    /* Slight left: transform X = -0.3em */
+}
+
+.staggered-text .word-5 {
+    /* Strong right: transform X = 1.9em */
+}
+
+.staggered-text .word-6 {
+    /* Medium left: transform X = -1.3em */
+}
+
+.staggered-text .word-7 {
+    /* Medium right: transform X = 0.6em */
+}

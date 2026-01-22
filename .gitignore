@@ -1,0 +1,58 @@
+# Dependencies
+# =============
+# The node_modules folder contains all installed packages
+# It's huge and can be recreated with 'npm install', so we don't commit it
+node_modules
+
+# Build Output
+# ============
+# The 'dist' folder is created when you run 'npm run build'
+# It contains the production-ready files that get deployed
+# We don't commit this because Vercel builds it fresh on deploy
+dist
+dist-ssr
+
+# Local Environment Files
+# =======================
+# .env files may contain sensitive data like API keys
+# Never commit these to version control!
+.env
+.env.local
+.env.*.local
+
+# Editor & OS Files
+# =================
+# These are system/editor files that aren't part of the project
+
+# macOS creates .DS_Store files in every folder
+.DS_Store
+
+# VSCode workspace settings (personal preferences)
+.vscode/*
+!.vscode/extensions.json
+
+# JetBrains IDEs (WebStorm, etc.)
+.idea
+
+# Logs
+# ====
+# Log files from npm/yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Misc
+# ====
+# TypeScript build info (not needed in repo)
+*.tsbuildinfo
+
+# Local Netlify folder (if you ever use Netlify)
+.netlify
+
+# Vercel local folder
+.vercel
+
+# Source content (large video files)
+# ==================================
+# Original video files - too large for git
+content/

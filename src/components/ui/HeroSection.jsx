@@ -558,7 +558,7 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
             style={{
               transform: transform.scale === 1 && transform.translateY === 0
                 ? 'none'
-                : `translateY(calc(${transform.translateY}vh + ${transform.parallaxY}px)) translateX(${transform.parallaxX}px) scale(${transform.scale})`,
+                : `translateY(calc(${transform.translateY}svh + ${transform.parallaxY}px)) translateX(${transform.parallaxX}px) scale(${transform.scale})`,
               transition: 'transform 0.1s ease-out',
               willChange: 'transform',
               clipPath: 'inset(0px)',

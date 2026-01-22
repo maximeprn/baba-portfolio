@@ -112,7 +112,7 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
     const initialScale = screenWidth < 1024 ? 0.48 : 0.40;
     return {
       scale: initialScale,
-      translateY: -15,
+      translateY: -5,
       parallaxX: 0,
       parallaxY: 0,
     };
@@ -311,10 +311,10 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
 
       if (scrollProgress <= growPhaseEnd) {
         // PHASE 1: GROWING (0-1000px)
-        // Video starts above center (-15vh) and animates DOWN to center (0)
+        // Video starts above center (-5vh) and animates DOWN to center (0)
         const progress = scrollProgress / growPhaseEnd;
         scale = initialScale + (progress * scaleGrowth);
-        translateY = -15 + (progress * 15);
+        translateY = -5 + (progress * 5);
       } else if (scrollProgress <= holdPhaseEnd) {
         // PHASE 2: HOLD (1000-1050px)
         scale = 1.05;

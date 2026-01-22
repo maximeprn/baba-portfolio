@@ -311,9 +311,10 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
 
       if (scrollProgress <= growPhaseEnd) {
         // PHASE 1: GROWING (0-1000px)
+        // Video moves from top:35% to top:50% (center) = +15vh movement
         const progress = scrollProgress / growPhaseEnd;
         scale = initialScale + (progress * scaleGrowth);
-        translateY = 0;
+        translateY = progress * 15;
       } else if (scrollProgress <= holdPhaseEnd) {
         // PHASE 2: HOLD (1000-1050px)
         scale = 1.05;

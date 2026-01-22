@@ -536,9 +536,11 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
         className="
           hidden
           md:block
-          relative
-          md:h-[calc(100svh+150px)]
+          absolute
+          inset-0
+          h-[100svh]
           w-full
+          z-10
         "
       >
         {/* Sticky wrapper to keep video in viewport while scrolling */}

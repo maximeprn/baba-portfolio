@@ -472,6 +472,7 @@
       position: absolute;
       width: var(--video-width);
       top: var(--video-top);
+      aspect-ratio: var(--video-aspect-ratio);
     }
 
     .film-card-video-left {

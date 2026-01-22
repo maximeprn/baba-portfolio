@@ -119,6 +119,7 @@ function FeaturedFilmCard({ film, index = 0 }) {
     '--video-width': `${variant.videoWidth}vw`,
     '--video-top': `${variant.videoOffsetY}px`,
     '--video-offset': `${variant.videoOffsetX}vw`,
+    '--video-aspect-ratio': aspectRatio,
   };
 
   const desktopTextStyles = {

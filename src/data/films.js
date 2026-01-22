@@ -36,9 +36,9 @@ export const films = [
     id: 1,
     slug: 'decathlon-cocreation',
     title: 'Decathlon "Co-Creation" Olympic Games Campaign',
-    description: 'Morem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum est a, mattis tellus. Sed dignissim, metus nec fringilla accumsan, risus sem sollicitudin lacus, ut interdum tellus elit sed risus. Maecenas eget condimentum velit, sit amet feugiat lectus.',
-    thumbnail: '/posters/quentin-malriq.jpg',
-    videoFile: '/videos/quentin-malriq.mp4',
+    description: 'A celebration of collective spirit and athletic ambition crafted for the Paris 2024 Olympic Games. This campaign captures the essence of co-creation—athletes, designers, and communities united in the pursuit of movement and excellence.',
+    thumbnail: '/posters/decathlon.jpg',
+    videoFile: '/videos/decathlon.mp4',
     videoUrl: 'https://player.vimeo.com/video/989542038',
     videoType: 'vimeo',
     year: 2024,
@@ -59,7 +59,7 @@ export const films = [
     },
     imagePosition: 'right',
     featured: true,
-    aspectRatio: 1.78, // 16:9
+    aspectRatio: 1.25, // 5:4
   },
 
   {

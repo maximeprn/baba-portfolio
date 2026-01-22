@@ -548,17 +548,18 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
             top-0
             h-[100svh]
             w-full
-            flex
-            items-center
-            justify-center
+            relative
             pointer-events-none
           "
         >
           <div
             style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
               transform: transform.scale === 1 && transform.translateY === 0
-                ? 'none'
-                : `translateY(calc(${transform.translateY}vh + ${transform.parallaxY}px)) translateX(${transform.parallaxX}px) scale(${transform.scale})`,
+                ? 'translate(-50%, -50%)'
+                : `translate(-50%, calc(-50% + ${transform.translateY}vh + ${transform.parallaxY}px)) translateX(${transform.parallaxX}px) scale(${transform.scale})`,
               transition: 'transform 0.1s ease-out',
               willChange: 'transform',
               clipPath: 'inset(0px)',

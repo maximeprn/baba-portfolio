@@ -112,7 +112,7 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
     const initialScale = screenWidth < 1024 ? 0.48 : 0.40;
     return {
       scale: initialScale,
-      translateY: 0,
+      translateY: -105,
       parallaxX: 0,
       parallaxY: 0,
     };
@@ -311,10 +311,9 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
 
       if (scrollProgress <= growPhaseEnd) {
         // PHASE 1: GROWING (0-1000px)
-        // Video moves from top:35% to top:50% (center) = +15vh movement
         const progress = scrollProgress / growPhaseEnd;
         scale = initialScale + (progress * scaleGrowth);
-        translateY = progress * 15;
+        translateY = -105 + (progress * 105);
       } else if (scrollProgress <= holdPhaseEnd) {
         // PHASE 2: HOLD (1000-1050px)
         scale = 1.05;
@@ -537,9 +536,8 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
         className="
           hidden
           md:block
-          absolute
-          inset-0
-          h-[100svh]
+          relative
+          md:h-[calc(100svh+150px)]
           w-full
         "
       >
@@ -550,17 +548,17 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
             top-0
             h-[100svh]
             w-full
+            flex
+            items-center
+            justify-center
             pointer-events-none
           "
         >
           <div
             style={{
-              position: 'absolute',
-              top: '35%',
-              left: '50%',
-              transform: transform.scale === 1 && transform.translateY === 0 && transform.parallaxX === 0 && transform.parallaxY === 0
-                ? 'translate(-50%, -50%)'
-                : `translate(-50%, calc(-50% + ${transform.translateY}vh + ${transform.parallaxY}px)) translateX(${transform.parallaxX}px) scale(${transform.scale})`,
+              transform: transform.scale === 1 && transform.translateY === 0
+                ? 'none'
+                : `translateY(calc(${transform.translateY}vh + ${transform.parallaxY}px)) translateX(${transform.parallaxX}px) scale(${transform.scale})`,
               transition: 'transform 0.1s ease-out',
               willChange: 'transform',
               clipPath: 'inset(0px)',

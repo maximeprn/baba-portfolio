@@ -540,7 +540,6 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
           inset-0
           h-[100svh]
           w-full
-          z-10
         "
       >
         {/* Sticky wrapper to keep video in viewport while scrolling */}
@@ -556,9 +555,9 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
           <div
             style={{
               position: 'absolute',
-              top: '50%',
+              top: '35%',
               left: '50%',
-              transform: transform.scale === 1 && transform.translateY === 0
+              transform: transform.scale === 1 && transform.translateY === 0 && transform.parallaxX === 0 && transform.parallaxY === 0
                 ? 'translate(-50%, -50%)'
                 : `translate(-50%, calc(-50% + ${transform.translateY}vh + ${transform.parallaxY}px)) translateX(${transform.parallaxX}px) scale(${transform.scale})`,
               transition: 'transform 0.1s ease-out',

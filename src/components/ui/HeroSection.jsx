@@ -552,7 +552,6 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
             items-center
             justify-center
             pointer-events-none
-            pb-20
           "
         >
           <div

@@ -30,7 +30,7 @@ function IntroSection() {
   });
 
   return (
-    <section className="w-full px-0 py-16">
+    <section className="w-full px-0 pt-0 pb-16">
       <p
         ref={containerRef}
         className="

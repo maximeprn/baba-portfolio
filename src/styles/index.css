@@ -443,4 +443,58 @@
     display: inline-block;
     will-change: transform;
   }
+
+  /* Film card responsive layout */
+  /* Mobile: stacked layout with reduced padding */
+  .film-card {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .film-card-video {
+    position: relative;
+    width: 100%;
+  }
+
+  .film-card-text {
+    width: 100%;
+    padding: 0;
+  }
+
+  /* Desktop (lg: 1024px+): absolute positioned layout */
+  @media (min-width: 1024px) {
+    .film-card {
+      padding-top: var(--section-padding-top);
+      padding-bottom: var(--section-padding-bottom);
+    }
+
+    .film-card-video {
+      position: absolute;
+      width: var(--video-width);
+      top: var(--video-top);
+    }
+
+    .film-card-video-left {
+      left: var(--video-offset);
+    }
+
+    .film-card-video-right {
+      right: var(--video-offset);
+    }
+
+    .film-card-text {
+      width: var(--text-width);
+      padding: 40px 0;
+    }
+
+    .film-card-text-left {
+      margin-left: auto;
+      padding-right: var(--text-offset);
+    }
+
+    .film-card-text-right {
+      margin-right: auto;
+      padding-left: var(--text-offset);
+    }
+  }
 }

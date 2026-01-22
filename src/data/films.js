@@ -26,6 +26,7 @@
  * - credits: Object containing all crew credits
  * - imagePosition: 'left' or 'right' for alternating layout on homepage
  * - featured: Boolean - if true, shown prominently
+ * - aspectRatio: Video aspect ratio (width/height) e.g., 1.78 for 16:9, 1.33 for 4:3
  *
  * ============================================================================
  */
@@ -36,7 +37,7 @@ export const films = [
     slug: 'decathlon-cocreation',
     title: 'Decathlon "Co-Creation" Olympic Games Campaign',
     description: 'Morem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu turpis molestie, dictum est a, mattis tellus. Sed dignissim, metus nec fringilla accumsan, risus sem sollicitudin lacus, ut interdum tellus elit sed risus. Maecenas eget condimentum velit, sit amet feugiat lectus.',
-    thumbnail: '/src/assets/films/decathlon.jpg',
+    thumbnail: '/posters/quentin-malriq.jpg',
     videoFile: '/videos/quentin-malriq.mp4',
     videoUrl: 'https://player.vimeo.com/video/989542038',
     videoType: 'vimeo',
@@ -58,6 +59,7 @@ export const films = [
     },
     imagePosition: 'right',
     featured: true,
+    aspectRatio: 1.78, // 16:9
   },
 
   {
@@ -65,7 +67,7 @@ export const films = [
     slug: 'badre-documentary',
     title: 'Badre - A Short Documentary',
     description: 'An intimate portrait exploring the journey of an athlete pushing beyond limits. This documentary captures raw moments of dedication, struggle, and triumph in the pursuit of excellence.',
-    thumbnail: '/src/assets/films/badre.jpg',
+    thumbnail: '/posters/badre.jpg',
     videoFile: '/videos/badre.mp4',
     videoUrl: 'https://player.vimeo.com/video/768152390',
     videoType: 'vimeo',
@@ -83,6 +85,7 @@ export const films = [
     },
     imagePosition: 'left',
     featured: true,
+    aspectRatio: 1.33, // 4:3
   },
 
   {
@@ -90,7 +93,7 @@ export const films = [
     slug: 'salomon-trail-running',
     title: 'Salomon Trail Running',
     description: 'A cinematic spec ad showcasing the raw beauty of trail running. Capturing the essence of freedom and connection with nature through dynamic visuals and immersive storytelling.',
-    thumbnail: '/src/assets/films/salomon.jpg',
+    thumbnail: '/posters/salomon.jpg',
     videoFile: '/videos/salomon.mp4',
     videoUrl: 'https://player.vimeo.com/video/551544527',
     videoType: 'vimeo',
@@ -108,6 +111,7 @@ export const films = [
     },
     imagePosition: 'right',
     featured: true,
+    aspectRatio: 1.78, // 16:9
   },
 
   {
@@ -115,7 +119,7 @@ export const films = [
     slug: 'veja-condor-3',
     title: 'Veja Condor 3',
     description: 'A visual exploration of sustainable performance footwear. Blending minimalist aesthetics with powerful athletic imagery to showcase the intersection of eco-conscious design and high performance.',
-    thumbnail: '/src/assets/films/veja.jpg',
+    thumbnail: '/posters/veja.jpg',
     videoFile: '/videos/veja.mp4',
     videoUrl: 'https://player.vimeo.com/video/1062003612',
     videoType: 'vimeo',
@@ -133,6 +137,7 @@ export const films = [
     },
     imagePosition: 'left',
     featured: true,
+    aspectRatio: 1.78, // 16:9
   },
 ];
 

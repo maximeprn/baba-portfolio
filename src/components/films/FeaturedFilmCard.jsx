@@ -90,6 +90,8 @@ function FeaturedFilmCard({ film, index = 0 }) {
     category,
     imagePosition,
     videoFile,
+    thumbnail,
+    aspectRatio = 1.78, // Default to 16:9 if not specified
   } = film;
 
   // Determine if video should be on the left side
@@ -112,34 +114,49 @@ function FeaturedFilmCard({ film, index = 0 }) {
     sessionStorage.setItem('lastClickedFilm', slug);
   };
 
+  // CSS custom properties for responsive desktop layout
+  const desktopVideoStyles = {
+    '--video-width': `${variant.videoWidth}vw`,
+    '--video-top': `${variant.videoOffsetY}px`,
+    '--video-offset': `${variant.videoOffsetX}vw`,
+  };
+
+  const desktopTextStyles = {
+    '--text-width': `${variant.textWidth}px`,
+    '--text-offset': `${variant.textOffsetX}px`,
+  };
+
   return (
     <article
       id={`film-${slug}`}
-      className="flex w-full items-start bg-white relative"
+      className="film-card flex w-full items-start bg-white relative px-4 lg:px-0"
       style={{
-        paddingTop: `${variant.sectionPaddingTop}px`,
-        paddingBottom: `${variant.sectionPaddingBottom}px`,
+        '--section-padding-top': `${variant.sectionPaddingTop}px`,
+        '--section-padding-bottom': `${variant.sectionPaddingBottom}px`,
       }}
     >
-      {/* Inner container for content and video */}
-      <div className="flex items-start relative w-full">
-        {/* VIDEO - Preserves 16:9 aspect ratio */}
+      {/* Inner container - stacked on mobile, side-by-side on desktop */}
+      <div className={`flex flex-col w-full lg:items-start lg:relative ${isVideoLeft ? '' : ''}`}>
+        {/* VIDEO - Full width on mobile, absolute positioned on desktop */}
         <Link
           to={`/films/${slug}`}
           onClick={handleCardClick}
-          className="absolute overflow-hidden cursor-pointer hover:opacity-90 transition-opacity duration-300"
+          className={`relative w-full overflow-hidden cursor-pointer hover:opacity-90 transition-opacity duration-300 film-card-video ${isVideoLeft ? 'film-card-video-left' : 'film-card-video-right'}`}
           style={{
-            width: `${variant.videoWidth}vw`,
-            aspectRatio: '16 / 9',
-            top: `${variant.videoOffsetY}px`,
-            [isVideoLeft ? 'left' : 'right']: `${variant.videoOffsetX}vw`,
+            aspectRatio: aspectRatio,
+            backgroundImage: `url(${thumbnail})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            ...desktopVideoStyles,
           }}
         >
           <video
             src={videoFile}
+            poster={thumbnail}
             autoPlay
             loop
             playsInline
+            muted
             className="w-full h-full object-cover pointer-events-none"
             aria-label={title}
           />
@@ -148,13 +165,10 @@ function FeaturedFilmCard({ film, index = 0 }) {
 
         {/* TEXT CONTENT - Title, metadata, description */}
         <div
-          className="inline-flex flex-col items-start justify-start relative z-10"
+          className={`flex flex-col items-start justify-start relative z-10 w-full pt-6 film-card-text ${isVideoLeft ? 'film-card-text-left' : 'film-card-text-right'}`}
           style={{
-            width: `${variant.textWidth}px`,
             gap: `${variant.textGap * 3}px`,
-            padding: '40px 0',
-            [isVideoLeft ? 'marginLeft' : 'marginRight']: 'auto',
-            [isVideoLeft ? 'paddingRight' : 'paddingLeft']: `${variant.textOffsetX}px`,
+            ...desktopTextStyles,
           }}
         >
           {/* TITLE */}
@@ -203,9 +217,9 @@ function FeaturedFilmCard({ film, index = 0 }) {
               ref={descriptionRef}
               className="
                 staggered-text
-                text-sm
+                text-xs md:text-sm
                 tracking-wider
-                leading-7
+                leading-6 md:leading-7
                 text-primary
               "
               style={{ fontFamily: 'Helvetica Now Display' }}

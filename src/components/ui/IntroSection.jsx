@@ -35,7 +35,7 @@ function IntroSection() {
         ref={containerRef}
         className="
           text-right
-          text-[2.5rem]
+          text-[1.5rem] md:text-[2rem] lg:text-[2.5rem]
           leading-[1.1]
           font-medium
           text-primary

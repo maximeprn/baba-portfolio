@@ -34,6 +34,7 @@ import { useLocation } from 'react-router-dom';
 // Import the Navigation and Footer components
 import Navigation from './Navigation';
 import Footer from './Footer';
+import PersistentHeroText from '../ui/PersistentHeroText';
 import { SmoothScrollProvider, useSmoothScrollContext } from '../../context/SmoothScrollContext';
 
 
@@ -80,6 +81,9 @@ function ScrollToTop() {
  * The page component (Films, About, etc.) becomes the "children" prop
  */
 function Layout({ children }) {
+  const { pathname } = useLocation();
+  const showHeroText = pathname === '/' || pathname === '/photos';
+
   return (
     // SmoothScrollProvider wraps everything for buttery smooth scrolling
     <SmoothScrollProvider smoothness={0.08}>
@@ -90,6 +94,7 @@ function Layout({ children }) {
           This ensures the footer stays at the bottom even with little content */}
       <div
         className="
+          relative                         /* Positioning context for PersistentHeroText */
           min-h-screen                     /* At least full viewport height */
           flex                             /* Flexbox container */
           flex-col                         /* Stack children vertically */
@@ -98,6 +103,9 @@ function Layout({ children }) {
       >
         {/* NAVIGATION - Always at the top */}
         <Navigation />
+
+        {/* PERSISTENT HERO TEXT - Stays put during Films↔Photos navigation */}
+        {showHeroText && <PersistentHeroText />}
 
 
         {/* MAIN CONTENT AREA

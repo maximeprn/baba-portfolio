@@ -106,11 +106,28 @@ export default {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        // Floating animation for hero video
+        // Floating animation for hero video (mid layer)
         // Creates gentle up-and-down movement
         'float': {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-15px)' },
+        },
+        // Slow float for far-layer gallery images (8s, 8px)
+        'float-slow': {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-8px)' },
+        },
+        // Gentle asymmetric float for near-layer gallery images (5s, 12px)
+        'float-gentle': {
+          '0%': { transform: 'translate(0px, 0px)' },
+          '33%': { transform: 'translate(4px, -12px)' },
+          '66%': { transform: 'translate(-3px, -5px)' },
+          '100%': { transform: 'translate(0px, 0px)' },
+        },
+        // Horizontal marquee for Photos hero — translates duplicated track by -50%
+        'marquee': {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
         },
       },
 
@@ -120,8 +137,14 @@ export default {
       animation: {
         'fade-in': 'fade-in 0.6s ease-out forwards',
         'fade-up': 'fade-up 0.6s ease-out forwards',
-        // Floating animation - 6s duration for gentle motion
+        // Floating animation - 6s duration for gentle motion (mid layer)
         'float': 'float 6s ease-in-out infinite',
+        // Slow float for far-layer images
+        'float-slow': 'float-slow 8s ease-in-out infinite',
+        // Gentle asymmetric float for near-layer images
+        'float-gentle': 'float-gentle 5s ease-in-out infinite',
+        // Horizontal marquee drift (Photos hero)
+        'marquee': 'marquee 70s linear infinite',
       },
     },
   },

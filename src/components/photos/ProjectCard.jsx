@@ -81,6 +81,7 @@ function ProjectCard({ project }) {
         <img
           src={coverImage}
           alt={title}
+          loading="lazy"
           className="
             w-full
             h-full

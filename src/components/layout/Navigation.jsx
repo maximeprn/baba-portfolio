@@ -70,6 +70,7 @@ function Navigation() {
     <header
       className="
         relative                         /* For absolute positioning of mobile nav */
+        z-30                             /* Above hero text (z-0) and media (z-10) */
         w-[90vw] md:w-full               /* 90vw on mobile to match video width */
         max-w-container                  /* But capped at our max container width */
         mx-auto                          /* Center horizontally */

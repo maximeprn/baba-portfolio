@@ -21,6 +21,9 @@
 // Import the ProjectCard component
 import ProjectCard from '../components/photos/ProjectCard';
 
+// Import the floating gallery hero
+import FloatingGalleryHero from '../components/photos/FloatingGalleryHero';
+
 // Import photo projects data
 import { photoProjects } from '../data/photoProjects';
 
@@ -41,24 +44,21 @@ function Photos() {
         flex-col
         items-center
         w-full
-        max-w-container
-        px-6
-        py-12
       "
     >
-      {/* PAGE HEADER */}
-      <header className="w-full mb-12">
-        <h1
-          className="
-            font-header
-            text-4xl
-            md:text-5xl
-            text-center
-          "
-        >
-          PHOTOS
-        </h1>
-      </header>
+      {/* FLOATING GALLERY HERO */}
+      <FloatingGalleryHero />
+
+      {/* PROJECTS GRID CONTAINER */}
+      <div
+        className="
+          w-full
+          max-w-container
+          px-6
+          pt-8
+          pb-12
+        "
+      >
 
 
       {/* PROJECTS GRID
@@ -109,6 +109,7 @@ function Photos() {
 
       {/* BOTTOM SPACING */}
       <div className="h-20" aria-hidden="true" />
+      </div>
     </div>
   );
 }

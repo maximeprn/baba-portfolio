@@ -111,7 +111,6 @@ function Films() {
         items-center                     /* Center children horizontally */
         gap-5                            /* Gap between major sections */
         w-full                           /* Full width */
-        bg-white                         /* White background */
       "
     >
       {/* BACKGROUND MUSIC PLAYER */}

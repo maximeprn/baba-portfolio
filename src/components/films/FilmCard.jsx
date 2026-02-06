@@ -114,6 +114,7 @@ function FilmCard({ film }) {
               <img
                 src={thumbnail}
                 alt={`Project image for ${title}`}
+                loading="lazy"
                 className="
                   justify-self-start     /* Align to start of grid cell */
                   row-[1_/_2]            /* Grid row placement */
@@ -231,6 +232,7 @@ function FilmCard({ film }) {
               <img
                 src={thumbnail}
                 alt={`Project image for ${title}`}
+                loading="lazy"
                 className="
                   justify-self-end       /* Align to end of grid cell */
                   row-[1_/_2]

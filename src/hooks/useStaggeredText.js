@@ -75,6 +75,9 @@ export function useStaggeredText(options = {}) {
     const container = containerRef.current;
     if (!container || !text) return;
 
+    // Skip animation entirely if user prefers reduced motion
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     // Render text as individual word spans
     // Handle newlines by splitting on them first, then words
     const factor = maxOffset / 2.4;
@@ -136,8 +139,8 @@ export function useStaggeredText(options = {}) {
             break;
         }
 
-        // Set initial transform offset (0 for static words)
-        const initialOffset = isStatic ? 0 : (BASE_TRANSFORMS[type] || 0) * factor;
+        // Set initial transform offset (0 for static words, 0 for reduced motion)
+        const initialOffset = (isStatic || prefersReducedMotion) ? 0 : (BASE_TRANSFORMS[type] || 0) * factor;
 
         htmlParts.push(`<span class="word word-${type}" data-delay="${delay}" data-index="${wordIndex}" data-type="${type}" data-static="${isStatic}" style="${paddingStyle} transform: translateX(${initialOffset}em);">${word} </span>`);
         wordIndex++;
@@ -150,6 +153,9 @@ export function useStaggeredText(options = {}) {
     });
 
     container.innerHTML = htmlParts.join('');
+
+    // Skip animation loop if user prefers reduced motion
+    if (prefersReducedMotion) return;
 
     // Animation update function
     function updateAnimation() {

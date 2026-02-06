@@ -438,6 +438,12 @@
     text-wrap: balance;
   }
 
+  /* GPU-accelerated floating image for gallery hero */
+  .floating-image {
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
   /* Staggered text animation styles */
   .staggered-text .word {
     display: inline-block;
@@ -497,5 +503,34 @@
       margin-right: auto;
       padding-left: var(--text-offset);
     }
+  }
+}
+
+
+/* ============================================================================
+   7. REDUCED MOTION
+   ============================================================================
+   Respects the user's OS-level "reduce motion" preference.
+   Disables animations and transitions for accessibility (WCAG 2.1).
+*/
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .staggered-text .word {
+    transform: translateX(0) !important;
+    will-change: auto !important;
+  }
+
+  .floating-image {
+    transform: none !important;
+    will-change: auto !important;
   }
 }

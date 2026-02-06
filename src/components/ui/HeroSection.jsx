@@ -6,8 +6,8 @@
  * Complete Video Animation System with THREE simultaneous animations:
  *
  * 1. SCROLL-BASED SCALE & PINNING (Transform-based)
- *    - Scale: 0.40 (40%) → 1.05 (105%) over ~1000px scroll
- *    - TranslateY: -105vh → 0vh (counteracts scroll to create pin illusion)
+ *    - Scale: 0.40 (40%) → 1.05 (105%) over ~1.1× viewport height of scroll
+ *    - TranslateY: -100svh → 0svh (counteracts scroll to create pin illusion)
  *    - Video appears "pinned" while text scrolls behind
  *
  * 2. CURSOR PARALLAX (Always Active, X & Y axes)
@@ -40,6 +40,10 @@ import { siteConfig } from '../../data/siteConfig';
 // Import smooth scroll context for scroll position
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
 
+// Viewport-relative scroll phase multipliers
+const GROW_PHASE_VH_MULTIPLIER = 1.1;  // Animation takes ~1.1 viewport heights of scroll
+const HOLD_PHASE_VH_MULTIPLIER = 0.05; // Brief hold = 5% of viewport height
+
 
 /**
  * HeroSection Component
@@ -50,12 +54,15 @@ import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
  * @param {Object} props - Component props
  * @param {React.RefObject} props.audioRef - Reference to the audio element for syncing
  * @param {boolean} props.isPlaying - Whether audio is currently playing
- * @param {Function} props.setIsPlaying - Function to update playing state
  * @returns {JSX.Element} The hero section
  */
-function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
-  // Destructure artist info from config
-  const { firstName, lastName, tagline } = siteConfig.artist;
+function HeroSection({ audioRef, isPlaying }) {
+  // Check if user prefers reduced motion
+  const prefersReducedMotion = typeof window !== 'undefined'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Destructure artist info from config (used by mobile text section)
+  const { firstName, lastName } = siteConfig.artist;
 
   // Get navigation center items (Photos, Films)
   const { center: navCenter } = siteConfig.navigation;
@@ -68,9 +75,6 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
     if (path === '/') return location.pathname === '/';
     return location.pathname.startsWith(path);
   };
-
-  // Split the tagline into words for layout
-  const taglineWords = tagline.split(' ');
 
   // Get scroll position from smooth scroll context
   const { addScrollListener, scrollTo: smoothScrollTo } = useSmoothScrollContext();
@@ -109,10 +113,10 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
     if (screenWidth < 768) {
       return { scale: 1, translateY: 0, parallaxX: 0, parallaxY: 0 };
     }
-    const initialScale = screenWidth < 1024 ? 0.48 : 0.40;
+    const initialScale = screenWidth < 1024 ? 0.55 : 0.46;
     return {
       scale: initialScale,
-      translateY: -105,
+      translateY: -106,
       parallaxX: 0,
       parallaxY: 0,
     };
@@ -126,26 +130,13 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
   // Track if we've already started audio
   const audioStartedRef = useRef(false);
 
-  // Auto-start audio when video starts and keep them in sync
+  // Keep audio in sync with video (only active when user manually unmutes)
   useEffect(() => {
     const desktopVideo = desktopVideoRef.current;
     const mobileVideo = mobileVideoRef.current;
     const audio = audioRef?.current;
 
     if (!audio) return;
-
-    const tryPlayAudio = (video) => {
-      if (audioStartedRef.current) return;
-
-      // Sync audio time with video and start playing
-      audio.currentTime = video.currentTime;
-      audio.play().then(() => {
-        audioStartedRef.current = true;
-        if (setIsPlaying) setIsPlaying(true);
-      }).catch(() => {
-        // Autoplay blocked - will try on first interaction
-      });
-    };
 
     // Throttle sync corrections to avoid audio stuttering
     let lastSyncTime = 0;
@@ -154,7 +145,7 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
       // Only check every 2 seconds to avoid stuttering
       if (audio && !audio.paused) {
         const now = Date.now();
-        if (now - lastSyncTime < 2000) return; // Throttle to every 2 seconds
+        if (now - lastSyncTime < 2000) return;
 
         const diff = Math.abs(audio.currentTime - video.currentTime);
         if (diff > 0.5) {
@@ -164,68 +155,25 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
       }
     };
 
-    // Try to play audio on first user interaction (click, scroll, keypress)
-    const handleFirstInteraction = () => {
-      const video = desktopVideo || mobileVideo;
-      if (video && !audioStartedRef.current) {
-        tryPlayAudio(video);
-      }
-      // Remove listeners after first successful play
-      if (audioStartedRef.current) {
-        document.removeEventListener('click', handleFirstInteraction);
-        document.removeEventListener('scroll', handleFirstInteraction);
-        document.removeEventListener('keydown', handleFirstInteraction);
-        document.removeEventListener('touchstart', handleFirstInteraction);
-      }
-    };
-
-    // Add interaction listeners for autoplay fallback
-    document.addEventListener('click', handleFirstInteraction, { once: false });
-    document.addEventListener('scroll', handleFirstInteraction, { once: false });
-    document.addEventListener('keydown', handleFirstInteraction, { once: false });
-    document.addEventListener('touchstart', handleFirstInteraction, { once: false });
-
-    // Desktop video handlers
-    const onDesktopPlay = () => tryPlayAudio(desktopVideo);
     const onDesktopTimeUpdate = () => handleTimeUpdate(desktopVideo);
-
-    // Mobile video handlers
-    const onMobilePlay = () => tryPlayAudio(mobileVideo);
     const onMobileTimeUpdate = () => handleTimeUpdate(mobileVideo);
 
     if (desktopVideo) {
-      desktopVideo.addEventListener('play', onDesktopPlay);
       desktopVideo.addEventListener('timeupdate', onDesktopTimeUpdate);
-      // If video is already playing, try to start audio
-      if (!desktopVideo.paused) {
-        tryPlayAudio(desktopVideo);
-      }
     }
-
     if (mobileVideo) {
-      mobileVideo.addEventListener('play', onMobilePlay);
       mobileVideo.addEventListener('timeupdate', onMobileTimeUpdate);
-      // If video is already playing, try to start audio
-      if (!mobileVideo.paused) {
-        tryPlayAudio(mobileVideo);
-      }
     }
 
     return () => {
-      document.removeEventListener('click', handleFirstInteraction);
-      document.removeEventListener('scroll', handleFirstInteraction);
-      document.removeEventListener('keydown', handleFirstInteraction);
-      document.removeEventListener('touchstart', handleFirstInteraction);
       if (desktopVideo) {
-        desktopVideo.removeEventListener('play', onDesktopPlay);
         desktopVideo.removeEventListener('timeupdate', onDesktopTimeUpdate);
       }
       if (mobileVideo) {
-        mobileVideo.removeEventListener('play', onMobilePlay);
         mobileVideo.removeEventListener('timeupdate', onMobileTimeUpdate);
       }
     };
-  }, [audioRef, setIsPlaying]);
+  }, [audioRef]);
 
   // Handle manual play/pause from button
   useEffect(() => {
@@ -263,6 +211,8 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
   // =========================================================================
 
   useEffect(() => {
+    if (prefersReducedMotion) return;
+
     const handleMouseMove = (e) => {
       const centerX = window.innerWidth / 2;
       const centerY = window.innerHeight / 2;
@@ -276,7 +226,7 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  }, [prefersReducedMotion]);
 
 
   // =========================================================================
@@ -284,6 +234,12 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
   // =========================================================================
 
   useEffect(() => {
+    // Skip all scroll/parallax animation if user prefers reduced motion
+    if (prefersReducedMotion) {
+      setTransform({ scale: 1, translateY: 0, parallaxX: 0, parallaxY: 0 });
+      return;
+    }
+
     const updateTransform = () => {
       const screenWidth = window.innerWidth;
 
@@ -298,12 +254,13 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
         return;
       }
 
-      const growPhaseEnd = 1000;
-      const holdDuration = 50;
+      const vh = window.innerHeight;
+      const growPhaseEnd = vh * GROW_PHASE_VH_MULTIPLIER;
+      const holdDuration = vh * HOLD_PHASE_VH_MULTIPLIER;
       const holdPhaseEnd = growPhaseEnd + holdDuration;
 
       // Responsive initial scale for medium and large screens
-      const initialScale = screenWidth < 1024 ? 0.48 : 0.40;
+      const initialScale = screenWidth < 1024 ? 0.55 : 0.46;
       const scaleGrowth = 1.05 - initialScale;
 
       let scale;
@@ -313,7 +270,7 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
         // PHASE 1: GROWING (0-1000px)
         const progress = scrollProgress / growPhaseEnd;
         scale = initialScale + (progress * scaleGrowth);
-        translateY = -105 + (progress * 105);
+        translateY = -106 + (progress * 106);
       } else if (scrollProgress <= holdPhaseEnd) {
         // PHASE 2: HOLD (1000-1050px)
         scale = 1.05;
@@ -357,7 +314,7 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [scrollProgress, mousePosition]);
+  }, [scrollProgress, mousePosition, prefersReducedMotion]);
 
 
   // =========================================================================
@@ -370,95 +327,9 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
       className="relative w-full h-[calc(100svh-5rem)] md:h-auto flex flex-col md:block"
       aria-label="Hero section"
     >
-      {/* TEXT SECTION - 100vh with text at bottom (desktop only) */}
-      <div className="hidden md:block relative h-[100svh] w-full">
-        <section
-          className="
-            absolute
-            bottom-[10vh]
-            left-0
-            right-0
-            z-0
-            flex
-            flex-row
-            flex-nowrap
-            w-full
-            items-center
-            justify-center
-            gap-[3vw]
-            overflow-visible
-          "
-          aria-label="Artist name"
-        >
-          {/* LEFT SIDE - "REINVENTING" + "BASILE" */}
-          <div className="flex flex-col items-end">
-            <h2
-              className="
-                font-header
-                text-[1.2vw]
-                text-primary
-                whitespace-nowrap
-                text-right
-                w-full
-                pr-1
-              "
-            >
-              {taglineWords[0]?.toUpperCase()}
-            </h2>
-
-            <h1
-              className="
-                font-header
-                text-[9vw]
-                text-primary
-                whitespace-nowrap
-                leading-none
-              "
-            >
-              {firstName.toUpperCase()}
-            </h1>
-          </div>
-
-          {/* RIGHT SIDE - "THE" + "FRAME" + "DESCHAMPS" */}
-          <div className="flex flex-col items-start">
-            <div className="w-full flex items-center justify-between px-1">
-              <h2
-                className="
-                  font-header
-                  text-[1.2vw]
-                  text-primary
-                  whitespace-nowrap
-                "
-              >
-                {taglineWords[1]?.toUpperCase()}
-              </h2>
-
-              <h2
-                className="
-                  font-header
-                  text-[1.2vw]
-                  text-primary
-                  whitespace-nowrap
-                "
-              >
-                {taglineWords[2]?.toUpperCase()}
-              </h2>
-            </div>
-
-            <h1
-              className="
-                font-header
-                text-[9vw]
-                text-primary
-                whitespace-nowrap
-                leading-none
-              "
-            >
-              {lastName.toUpperCase()}
-            </h1>
-          </div>
-        </section>
-      </div>
+      {/* DESKTOP SPACER — 100svh height so the persistent text (in Layout)
+          shows through. Text has been extracted to PersistentHeroText.jsx */}
+      <div className="hidden md:block h-[100svh]" />
 
 
       {/* MOBILE CONTENT WRAPPER */}
@@ -564,9 +435,9 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
               clipPath: 'inset(0px)',
             }}
             className="
-              w-[90vw]
-              md:w-[80vw]
-              lg:w-[70vw]
+              w-[min(90vw,177.78svh)]
+              md:w-[min(80vw,177.78svh)]
+              lg:w-[min(70vw,177.78svh)]
               max-w-[1400px]
               aspect-video
               rounded-lg
@@ -577,7 +448,7 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
             "
             onClick={() => {
               // Smooth scroll to the position where video is fully enlarged
-              smoothScrollTo(1000, false);
+              smoothScrollTo(window.innerHeight * GROW_PHASE_VH_MULTIPLIER, false);
             }}
           >
           <video
@@ -587,13 +458,13 @@ function HeroSection({ audioRef, isPlaying, setIsPlaying }) {
             loop
             muted
             playsInline
-            className="
+            className={`
               w-full
               h-full
               object-cover
-              animate-float
+              ${prefersReducedMotion ? '' : 'animate-float'}
               pointer-events-none
-            "
+            `}
             aria-hidden="true"
           />
           </div>

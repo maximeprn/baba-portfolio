@@ -50,6 +50,7 @@ const ROW_JITTER = 6;                      // vertical variation within a row
 const ROW_DEPTH_SCALE = [0.55, 1.0, 1.5]; // size multiplier: far → near
 
 // ─── CSS Transition (gallery reorganization on click) ──────────────
+// Full transition: used for the PREVIOUS image (rAF doesn't drive it)
 const GALLERY_TRANSITION = `
   top 700ms cubic-bezier(0.25, 0.1, 0.25, 1),
   width 700ms cubic-bezier(0.25, 0.1, 0.25, 1),
@@ -58,11 +59,19 @@ const GALLERY_TRANSITION = `
   opacity 700ms cubic-bezier(0.25, 0.1, 0.25, 1)
 `.replace(/\n/g, '').trim();
 
-const TRANSITION_DURATION_MS = 4000;
+// Selected image: rAF drives top, left, and transform — only CSS-transition width/maxHeight/opacity
+const GALLERY_TRANSITION_SELECTED = `
+  width 700ms cubic-bezier(0.25, 0.1, 0.25, 1),
+  max-height 700ms cubic-bezier(0.25, 0.1, 0.25, 1),
+  opacity 700ms cubic-bezier(0.25, 0.1, 0.25, 1)
+`.replace(/\n/g, '').trim();
+
+const STRIP_SHIFT_MS = 700;          // rAF strip-shift duration — must match GALLERY_TRANSITION's transform timing
+const TRANSITION_DURATION_MS = 4000;  // how long CSS transition property stays declared (z-index, prevIndex gating)
 
 // ─── Selected Image Sizing ─────────────────────────────────────────
 const CENTER_WIDTH = 'min(25vw, 42svh)';
-const SCROLL_SCALE_MAX = 1.9;
+const SCROLL_SCALE_MAX = 1.5;
 
 // ─── Scatter Parallax (during scroll phase) ────────────────────────
 const SCATTER_SCROLL_SPEED = 1.2;
@@ -72,6 +81,9 @@ const DEPTH_SCALE_CENTER = 1.2;    // scale at viewport center (50vw)
 const DEPTH_SCALE_EDGE = 0.85;     // scale at viewport edges
 const DEPTH_FALLOFF_HALF = 55;     // vw distance from center to reach EDGE
 const DEPTH_EASING_POWER = 1.9;    // >1 = sharper peak at center
+
+// ─── Hero Cursor Parallax ───────────────────────────────────────────
+const HERO_PARALLAX_PX = 12;       // max pixel shift on each axis
 
 
 /**
@@ -191,7 +203,7 @@ function FloatingGalleryHero() {
 
     // Compute initial offset so the default selected image starts at center
     const initialIndex = findCenterImageIndex(DESKTOP_HERO_IMAGES);
-    let initialOffset = basePositions[initialIndex] - 50;
+    let initialOffset = basePositions[initialIndex] + scaledWidths[initialIndex] / 2 - 50;
     initialOffset = ((initialOffset % totalWidth) + totalWidth) % totalWidth;
 
     // Pre-compute initial depth scales so first render doesn't flash with scale(1)
@@ -242,6 +254,12 @@ function FloatingGalleryHero() {
   const sectionRef = useRef(null);
   const sectionTopRef = useRef(0);
 
+  // Container geometry for vw→% conversion (rAF reads this)
+  const containerRectRef = useRef({ left: 0, width: window.innerWidth });
+
+  // Inner container (for measuring vw→% offset)
+  const innerContainerRef = useRef(null);
+
   // Marquee
   const marqueeOffsetRef = useRef(0);
   const imageElsRef = useRef([]);
@@ -249,11 +267,15 @@ function FloatingGalleryHero() {
   const isTransitioningRef = useRef(false);
   const scrollProgressRef = useRef(0);
 
-  // Mouse position for interactive marquee speed
+  // Mouse position for interactive marquee speed + hero parallax
   const mouseXRef = useRef(0);
+  const mouseYRef = useRef(0);
 
   // Strip-shift animation state: { startOffset, delta, startTime, duration }
   const offsetAnimRef = useRef(null);
+
+  // heroScale mirror for rAF (avoids stale closure)
+  const heroScaleRef = useRef(1);
 
   // =========================================================================
   // MEASURE SECTION OFFSET (for simulated sticky)
@@ -270,6 +292,11 @@ function FloatingGalleryHero() {
         }
         sectionTopRef.current = top;
       }
+      // Measure inner container for vw→% conversion in rAF loop
+      if (innerContainerRef.current) {
+        const rect = innerContainerRef.current.getBoundingClientRect();
+        containerRectRef.current = { left: rect.left, width: rect.width };
+      }
     };
     requestAnimationFrame(measure);
     window.addEventListener('resize', measure);
@@ -285,6 +312,7 @@ function FloatingGalleryHero() {
 
     const handleMouseMove = (e) => {
       mouseXRef.current = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseYRef.current = (e.clientY / window.innerHeight) * 2 - 1;
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
@@ -326,6 +354,7 @@ function FloatingGalleryHero() {
     const progress = Math.min(1, Math.max(0, adjustedScroll / growPhaseEnd));
     heroScale = 1 + progress * (SCROLL_SCALE_MAX - 1);
   }
+  heroScaleRef.current = heroScale;
 
   const scatterParallaxY = prefersReducedMotion ? 0 : adjustedScroll * SCATTER_SCROLL_SPEED;
 
@@ -341,7 +370,7 @@ function FloatingGalleryHero() {
   useEffect(() => {
     if (prefersReducedMotion) return;
 
-    const { basePositions, scaledWidths, totalWidth, maxScaledWidth, initialOffset } = marqueeLayout;
+    const { basePositions, scaledWidths, totalWidth, maxScaledWidth, initialOffset, topValues } = marqueeLayout;
     const N = DESKTOP_HERO_IMAGES.length;
 
     // Initialize marquee offset so the default selected image is centered
@@ -363,6 +392,10 @@ function FloatingGalleryHero() {
       const scrollPaused = adjusted > 0;
 
       // Strip-shift animation (click-to-select): interpolate offset
+      let stripEased = null;  // null = no active strip-shift
+      let animStartDs = 1;
+      let animStartTop = 50;  // default to 50% (center)
+
       const anim = offsetAnimRef.current;
       if (anim) {
         if (anim.startTime === null) anim.startTime = timestamp;
@@ -373,6 +406,10 @@ function FloatingGalleryHero() {
 
         // Normalize within [0, totalWidth)
         marqueeOffsetRef.current = ((marqueeOffsetRef.current % totalWidth) + totalWidth) % totalWidth;
+
+        stripEased = eased;
+        animStartDs = anim.startDepthScale || 1;
+        animStartTop = anim.startTop != null ? anim.startTop : 50;
 
         if (t >= 1) {
           offsetAnimRef.current = null;
@@ -398,6 +435,10 @@ function FloatingGalleryHero() {
       // Compute scroll-based parallax for non-selected images
       const parallaxY = adjusted * SCATTER_SCROLL_SPEED;
 
+      // Container geometry for vw→% conversion (selected image uses %)
+      const cRect = containerRectRef.current;
+      const vw = window.innerWidth;
+
       for (let i = 0; i < N; i++) {
         const el = imageElsRef.current[i];
         if (!el) continue;
@@ -415,13 +456,57 @@ function FloatingGalleryHero() {
         const isSelected = (i === selIdx);
         const isTransitioning = animating && (i === prvIdx || i === selIdx);
 
-        // During strip-shift animation, rAF drives left for ALL images (cohesive slide).
-        // After transition, selected image pins at center (React's left:50% takes over).
-        if (!isSelected || animating) {
+        // LEFT: rAF drives all images.
+        // Non-selected: use vw (viewport-relative marquee positioning).
+        // Selected during animation: convert vw→% so it converges to 50% of parent.
+        // Selected settled: pin at 50% of parent.
+        if (isSelected && !animating) {
+          el.style.left = '50%';
+        } else if (isSelected && animating) {
+          // Image center in vw → convert to % of parent
+          const centerVw = x + scaledWidths[i] / 2;
+          const centerPx = centerVw * vw / 100;
+          const centerPct = (centerPx - cRect.left) / cRect.width * 100;
+          el.style.left = `${centerPct.toFixed(2)}%`;
+        } else {
           el.style.left = `${x.toFixed(2)}vw`;
         }
-        if (!isSelected && !isTransitioning) {
+
+        // TOP: rAF drives selected image's top during strip-shift
+        // to keep vertical motion in sync with horizontal (same easeOutCubic).
+        if (isSelected && stripEased !== null) {
+          const p = stripEased;
+          const topPct = animStartTop + (50 - animStartTop) * p;
+          el.style.top = `${topPct.toFixed(2)}%`;
+        } else if (isSelected && animating) {
+          el.style.top = '50%';
+        }
+
+        // TRANSFORM: rAF drives selected image's transform during strip-shift
+        // to keep it perfectly in sync with left (same easeOutCubic, same frame).
+        if (isSelected && stripEased !== null) {
+          const p = stripEased;
+          const scl = (animStartDs + (heroScaleRef.current - animStartDs) * p).toFixed(4);
+          // Full translate(-50%, -50%) from frame 1: visual center = left position,
+          // regardless of CSS width transition. Only scale interpolates.
+          el.style.transform = `translate(-50%, -50%) scale(${scl})`;
+        } else if (isSelected && animating) {
+          // Strip-shift done but still in transition window: hold final values
+          el.style.transform = `translate(-50%, -50%) scale(${heroScaleRef.current})`;
+        } else if (isSelected && !isTransitioning) {
+          // Settled: pin transform + cursor parallax on inner content
+          el.style.transform = `translate(-50%, -50%) scale(${heroScaleRef.current})`;
+          const inner = el.firstElementChild?.firstElementChild;
+          if (inner) {
+            const px = mouseXRef.current * HERO_PARALLAX_PX;
+            const py = mouseYRef.current * HERO_PARALLAX_PX;
+            inner.style.transform = `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px)`;
+          }
+        } else if (!isSelected && !isTransitioning) {
           el.style.transform = `translate(0px, ${-parallaxY}px) scale(${ds.toFixed(4)})`;
+          // Clear any leftover inner parallax from when this image was selected
+          const inner = el.firstElementChild?.firstElementChild;
+          if (inner && inner.style.transform) inner.style.transform = '';
         }
       }
 
@@ -439,18 +524,23 @@ function FloatingGalleryHero() {
   // =========================================================================
 
   const handleSelect = useCallback((index) => {
-    setSelectedIndex((current) => {
-      if (index === current) return current;
-      setPrevIndex(current);
-      return index;
-    });
+    const current = selectedIndexRef.current;
+    if (index === current) return;
+
+    // Sync refs immediately so the rAF loop picks up the change this frame
+    // (useEffect would only fire after paint — too late, causes 1-2 frame glitch)
+    selectedIndexRef.current = index;
+    prevIndexRef.current = current;
+
+    setSelectedIndex(index);
+    setPrevIndex(current);
 
     hasInteractedRef.current = true;
     isTransitioningRef.current = true;
 
     // Compute target offset: position clicked image at 50vw
     const { basePositions, totalWidth } = marqueeLayout;
-    let targetOffset = basePositions[index] - 50;
+    let targetOffset = basePositions[index] + marqueeLayout.scaledWidths[index] / 2 - 50;
     targetOffset = ((targetOffset % totalWidth) + totalWidth) % totalWidth;
 
     const delta = shortestWrappingDelta(marqueeOffsetRef.current, targetOffset, totalWidth);
@@ -458,7 +548,9 @@ function FloatingGalleryHero() {
       startOffset: marqueeOffsetRef.current,
       delta,
       startTime: null,
-      duration: TRANSITION_DURATION_MS,
+      duration: STRIP_SHIFT_MS,
+      startDepthScale: depthScalesRef.current[index] || 1,
+      startTop: marqueeLayout.topValues[index],
     };
 
     if (prevTimeoutRef.current) clearTimeout(prevTimeoutRef.current);
@@ -516,6 +608,7 @@ function FloatingGalleryHero() {
         style={{ height: 'calc(210svh + 150px)' }}
       >
         <div
+          ref={innerContainerRef}
           className="h-[100svh] w-full overflow-hidden"
           style={{
             transform: `translateY(${pinOffset}px)`,
@@ -534,7 +627,7 @@ function FloatingGalleryHero() {
                 className="absolute"
                 style={{
                   top:       isSelected ? '50%' : `${marqueeLayout.topValues[i]}%`,
-                  left:      isSelected ? '50%' : `${fallbackX.toFixed(2)}vw`,  // rAF overwrites non-selected
+                  left:      isSelected ? '50%' : `${fallbackX.toFixed(2)}vw`,  // rAF overwrites during animation
                   width:     isSelected
                     ? (prefersReducedMotion ? 'min(45vw, 70svh)' : CENTER_WIDTH)
                     : marqueeLayout.widthStrings[i],
@@ -544,7 +637,9 @@ function FloatingGalleryHero() {
                     ? `translate(-50%, -50%) scale(${prefersReducedMotion ? 1 : heroScale})`
                     : `translate(0px, ${-scatterParallaxY}px) scale(${(depthScalesRef.current[i] || 1).toFixed(4)})`,
                   zIndex:    isSelected ? 40 : isPrev ? 30 : (marqueeLayout.rows[i] + 1) * 10,
-                  transition: isClickAnimating ? GALLERY_TRANSITION : 'none',
+                  transition: isClickAnimating
+                    ? (isSelected ? GALLERY_TRANSITION_SELECTED : GALLERY_TRANSITION)
+                    : 'none',
                   opacity:   isSelected ? 1 : scatterOpacity,
                   pointerEvents: !isSelected && scatterOpacity < 0.1 ? 'none' : 'auto',
                 }}
@@ -573,12 +668,7 @@ function FloatingGalleryHero() {
                     <img
                       src={img.src}
                       alt={img.alt}
-                      className="
-                        w-full h-auto
-                        object-cover
-                        transition-transform duration-300
-                        hover:scale-105
-                      "
+                      className="w-full h-auto object-cover"
                       loading="eager"
                       draggable="false"
                     />

@@ -105,13 +105,14 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
     // Add the event listener
     window.addEventListener('keydown', handleKeyDown);
 
-    // Prevent body scroll while lightbox is open
+    // Save current overflow before overriding (SmoothScrollContext may have set 'hidden')
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
-    // Cleanup function - runs when component unmounts or isOpen changes
+    // Cleanup: restore previous value instead of blindly clearing
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
+      document.body.style.overflow = previousOverflow;
     };
   }, [isOpen, onClose, goToPrev, goToNext]);
 

@@ -9,7 +9,7 @@
  * TO ADD A NEW PROJECT:
  * 1. Copy an existing project object
  * 2. Update all fields with new information
- * 3. Add photos to /src/assets/photos/project-slug/
+ * 3. Add photos to /photos/project-slug/
  * 4. List all photo filenames in the 'photos' array
  *
  * STRUCTURE:
@@ -36,7 +36,7 @@ export const photoProjects = [
 
     // Cover image - shown on the projects listing page
     // This should be one of the best images from the project
-    coverImage: '/src/assets/photos/summer-campaign-2024/cover.jpg',
+    coverImage: '/photos/summer-campaign-2024/cover.jpg',
 
     // Year the project was completed
     year: 2024,
@@ -57,7 +57,7 @@ export const photoProjects = [
         // Unique ID within this project
         id: 1,
         // Path to the full-size image
-        src: '/src/assets/photos/summer-campaign-2024/photo-01.jpg',
+        src: '/photos/summer-campaign-2024/photo-01.jpg',
         // Alt text for accessibility (describe the image)
         alt: 'Model in yellow dress against blue wall',
         // Optional caption shown in lightbox
@@ -68,28 +68,28 @@ export const photoProjects = [
       },
       {
         id: 2,
-        src: '/src/assets/photos/summer-campaign-2024/photo-02.jpg',
+        src: '/photos/summer-campaign-2024/photo-02.jpg',
         alt: 'Close-up portrait with natural lighting',
         caption: null,
         aspectRatio: 0.67, // Portrait orientation
       },
       {
         id: 3,
-        src: '/src/assets/photos/summer-campaign-2024/photo-03.jpg',
+        src: '/photos/summer-campaign-2024/photo-03.jpg',
         alt: 'Wide shot of urban street scene',
         caption: null,
         aspectRatio: 1.5,
       },
       {
         id: 4,
-        src: '/src/assets/photos/summer-campaign-2024/photo-04.jpg',
+        src: '/photos/summer-campaign-2024/photo-04.jpg',
         alt: 'Detail shot of accessories',
         caption: null,
         aspectRatio: 1,
       },
       {
         id: 5,
-        src: '/src/assets/photos/summer-campaign-2024/photo-05.jpg',
+        src: '/photos/summer-campaign-2024/photo-05.jpg',
         alt: 'Full body shot in motion',
         caption: null,
         aspectRatio: 0.67,
@@ -106,7 +106,7 @@ export const photoProjects = [
     slug: 'portraits-series',
     title: 'Portraits Series',
     description: 'An intimate collection of portrait photography exploring identity and expression.',
-    coverImage: '/src/assets/photos/portraits-series/cover.jpg',
+    coverImage: '/photos/portraits-series/cover.jpg',
     year: 2023,
     client: null, // Personal project
     category: 'Personal',
@@ -114,21 +114,21 @@ export const photoProjects = [
     photos: [
       {
         id: 1,
-        src: '/src/assets/photos/portraits-series/photo-01.jpg',
+        src: '/photos/portraits-series/photo-01.jpg',
         alt: 'Portrait in natural light',
         caption: null,
         aspectRatio: 0.67,
       },
       {
         id: 2,
-        src: '/src/assets/photos/portraits-series/photo-02.jpg',
+        src: '/photos/portraits-series/photo-02.jpg',
         alt: 'Studio portrait with dramatic lighting',
         caption: null,
         aspectRatio: 0.67,
       },
       {
         id: 3,
-        src: '/src/assets/photos/portraits-series/photo-03.jpg',
+        src: '/photos/portraits-series/photo-03.jpg',
         alt: 'Environmental portrait',
         caption: null,
         aspectRatio: 1.5,
@@ -143,7 +143,7 @@ export const photoProjects = [
     slug: 'documentary-work',
     title: 'Documentary Work',
     description: 'Behind-the-scenes and documentary photography from various film productions.',
-    coverImage: '/src/assets/photos/documentary-work/cover.jpg',
+    coverImage: '/photos/documentary-work/cover.jpg',
     year: 2023,
     client: null,
     category: 'Documentary',
@@ -151,14 +151,14 @@ export const photoProjects = [
     photos: [
       {
         id: 1,
-        src: '/src/assets/photos/documentary-work/photo-01.jpg',
+        src: '/photos/documentary-work/photo-01.jpg',
         alt: 'Film crew on set',
         caption: null,
         aspectRatio: 1.5,
       },
       {
         id: 2,
-        src: '/src/assets/photos/documentary-work/photo-02.jpg',
+        src: '/photos/documentary-work/photo-02.jpg',
         alt: 'Director reviewing footage',
         caption: null,
         aspectRatio: 1.5,
@@ -218,27 +218,6 @@ export const getProjectsByCategory = (category) => {
 export const getAllPhotoCategories = () => {
   const categories = photoProjects.map((project) => project.category);
   return [...new Set(categories)];
-};
-
-
-/**
- * Get the next and previous projects
- *
- * @param {string} currentSlug - The slug of the current project
- * @returns {Object} Object with prev and next project objects
- */
-export const getAdjacentProjects = (currentSlug) => {
-  const currentIndex = photoProjects.findIndex(
-    (project) => project.slug === currentSlug
-  );
-
-  return {
-    prev: currentIndex > 0 ? photoProjects[currentIndex - 1] : null,
-    next:
-      currentIndex < photoProjects.length - 1
-        ? photoProjects[currentIndex + 1]
-        : null,
-  };
 };
 
 

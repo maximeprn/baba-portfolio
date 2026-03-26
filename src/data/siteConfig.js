@@ -115,7 +115,7 @@ export const siteConfig = {
     // Items displayed on the right side of the nav
     right: [
       {
-        label: 'GET IN TOUCH',
+        label: 'CONTACT',
         path: '/contact',
       },
     ],
@@ -146,28 +146,12 @@ export const siteConfig = {
 
 
   // -------------------------------------------------------------------------
-  // CONTACT FORM
+  // SHOWREEL
   // -------------------------------------------------------------------------
-  // Settings for the contact form
+  // Main showreel video for hero section
 
-  contactForm: {
-    // Formspree endpoint (create account at formspree.io)
-    // Replace with your actual Formspree form ID
-    formspreeId: 'YOUR_FORMSPREE_ID',
-
-    // Form fields placeholder text
-    placeholders: {
-      name: 'Your name',
-      email: 'Your email',
-      subject: 'Subject',
-      message: 'Your message...',
-    },
-
-    // Success message after form submission
-    successMessage: 'Thank you for your message. I will get back to you soon!',
-
-    // Error message if submission fails
-    errorMessage: 'Something went wrong. Please try again or email directly.',
+  showreel: {
+    vimeoUrl: 'https://player.vimeo.com/video/989542038',
   },
 
 

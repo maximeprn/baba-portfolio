@@ -31,23 +31,6 @@
    - font-display: swap = show fallback font immediately, swap when loaded
 */
 
-/* Steps-Mono - Used for headers and navigation */
-@font-face {
-  font-family: 'Steps-Mono';
-  src: url('/fonts/StepsMono/Steps-Mono.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap; /* Prevents invisible text while font loads */
-}
-
-@font-face {
-  font-family: 'Steps-Mono';
-  src: url('/fonts/StepsMono/Steps-Mono-Thin.otf') format('opentype');
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* Helvetica Now Display - Used for headers, navigation, and titles */
 @font-face {
   font-family: 'Helvetica Now Display';
@@ -73,11 +56,27 @@
   font-display: swap;
 }
 
-/* American Typewriter - Used for body text */
+/* Helvetica Now Text - Used for body text */
 @font-face {
-  font-family: 'American Typewriter';
-  src: url('/fonts/AmericanTypewriter/AmericanTypewriter.ttc') format('collection');
+  font-family: 'Helvetica Now Text';
+  src: url('/fonts/Helvetica Now Text/HelveticaNowText-Regular.otf') format('opentype');
   font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Now Text';
+  src: url('/fonts/Helvetica Now Text/HelveticaNowText-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Now Text';
+  src: url('/fonts/Helvetica Now Text/HelveticaNowText-Bold.otf') format('opentype');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -129,13 +128,13 @@
   */
 
   /* Headers and navigation text */
-  --font-header: 'Helvetica Now', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  --font-header: 'Helvetica Now Display', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 
   /* Project titles and headings */
-  --font-title: 'Helvetica Now', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  --font-title: 'Helvetica Now Display', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 
   /* Body text and descriptions */
-  --font-body: 'American Typewriter', 'Courier New', 'Courier', serif;
+  --font-body: 'Helvetica Now Text', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 
 
   /* -------------------------------------------------------------------------
@@ -438,18 +437,6 @@
     text-wrap: balance;
   }
 
-  /* GPU-accelerated floating image for gallery hero */
-  .floating-image {
-    will-change: transform;
-    backface-visibility: hidden;
-  }
-
-  /* Staggered text animation styles */
-  .staggered-text .word {
-    display: inline-block;
-    will-change: transform;
-  }
-
   /* Film card responsive layout */
   /* Mobile: stacked layout with reduced padding */
   .film-card {
@@ -491,7 +478,8 @@
 
     .film-card-text {
       width: var(--text-width);
-      padding: 40px 0;
+      padding-top: var(--video-top, 40px);
+      padding-bottom: 40px;
     }
 
     .film-card-text-left {
@@ -524,13 +512,4 @@
     scroll-behavior: auto !important;
   }
 
-  .staggered-text .word {
-    transform: translateX(0) !important;
-    will-change: auto !important;
-  }
-
-  .floating-image {
-    transform: none !important;
-    will-change: auto !important;
-  }
 }

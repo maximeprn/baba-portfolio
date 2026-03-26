@@ -34,11 +34,26 @@ import Layout from './components/layout/Layout';
 // Import all page components
 // Each page is a separate component in the /pages folder
 import Films from './pages/Films';
-import FilmDetail from './pages/FilmDetail';
 import Photos from './pages/Photos';
 import PhotoProject from './pages/PhotoProject';
 import About from './pages/About';
 import Contact from './pages/Contact';
+
+
+/**
+ * Simple 404 page for unknown routes.
+ */
+function NotFound() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-6">
+      <h1 className="font-header text-6xl">404</h1>
+      <p className="font-body text-muted text-lg">Page not found</p>
+      <a href="/" className="font-header text-sm uppercase tracking-wider hover:opacity-70 transition-opacity">
+        Back to home
+      </a>
+    </div>
+  );
+}
 
 
 /**
@@ -73,17 +88,6 @@ function App() {
             This is the landing page showing all film projects */}
         <Route path="/" element={<Films />} />
 
-        {/* Film Detail Page
-            path="/films/:slug" - the :slug is a URL parameter
-            It captures whatever comes after /films/ in the URL
-
-            Examples:
-            /films/decathlon-cocreation → slug = "decathlon-cocreation"
-            /films/my-project → slug = "my-project"
-
-            The FilmDetail component can access this via useParams() hook */}
-        <Route path="/films/:slug" element={<FilmDetail />} />
-
         {/* Photos listing page
             Shows all photo projects as a grid of cards */}
         <Route path="/photos" element={<Photos />} />
@@ -101,13 +105,8 @@ function App() {
             Contains contact form and contact information */}
         <Route path="/contact" element={<Contact />} />
 
-        {/*
-          TODO: Add a 404 page for unknown routes
-          <Route path="*" element={<NotFound />} />
-
-          The "*" wildcard matches any URL that hasn't matched above
-          This would show a "Page Not Found" message
-        */}
+        {/* Catch-all: any URL that doesn't match above shows 404 */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>
   );

@@ -148,21 +148,6 @@ export const films = [
 // These functions make it easier to work with film data
 
 /**
- * Get a single film by its slug
- * Used on the film detail page to find the correct film
- *
- * @param {string} slug - The URL slug of the film
- * @returns {Object|undefined} The film object or undefined if not found
- *
- * Example usage:
- * const film = getFilmBySlug('decathlon-cocreation');
- */
-export const getFilmBySlug = (slug) => {
-  return films.find((film) => film.slug === slug);
-};
-
-
-/**
  * Get all featured films
  * Used to display highlighted projects
  *
@@ -194,22 +179,6 @@ export const getFilmsByCategory = (category) => {
 export const getAllCategories = () => {
   const categories = films.map((film) => film.category);
   return [...new Set(categories)]; // Remove duplicates
-};
-
-
-/**
- * Get the next and previous films (for navigation)
- *
- * @param {string} currentSlug - The slug of the current film
- * @returns {Object} Object with prev and next film objects
- */
-export const getAdjacentFilms = (currentSlug) => {
-  const currentIndex = films.findIndex((film) => film.slug === currentSlug);
-
-  return {
-    prev: currentIndex > 0 ? films[currentIndex - 1] : null,
-    next: currentIndex < films.length - 1 ? films[currentIndex + 1] : null,
-  };
 };
 
 

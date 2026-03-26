@@ -1,16 +1,11 @@
 /**
- * ============================================================================
- * PERSISTENT HERO TEXT — Shared across Films & Photos pages
- * ============================================================================
- *
- * Renders "BASILE DESCHAMPS" + "REINVENTING THE FRAME" in the hero area.
+ * PersistentHeroText — "BASILE DESCHAMPS" + "REINVENTING THE FRAME"
  * Lives in Layout.jsx so it never unmounts during route transitions.
  *
- * Desktop only (hidden md:block). Positioned absolutely so it doesn't
- * affect layout flow. Each page's hero media (video / marquee) floats
- * above this text at z-10.
- *
- * ============================================================================
+ * Two-layer technique for split color:
+ * - Black layer (z-10): visible everywhere, extends below video
+ * - White layer (z-20): clip-path'd to video area, covers black layer on video
+ * Result: white text on video, black text on white background.
  */
 
 import { siteConfig } from '../../data/siteConfig';
@@ -19,106 +14,104 @@ function PersistentHeroText() {
   const { firstName, lastName, tagline } = siteConfig.artist;
   const taglineWords = tagline.split(' ');
 
-  return (
-    <div
-      className="
-        hidden md:block
+  const renderText = (color) => (
+    <section
+      className={`
         absolute
-        top-20
-        left-0
-        right-0
-        h-[100svh]
-        z-0
-        pointer-events-none
-      "
-      aria-hidden="true"
+        bottom-[-4.5vw]
+        left-1/2
+        -translate-x-1/2
+        flex
+        flex-row
+        flex-nowrap
+        items-center
+        justify-center
+        gap-[3vw]
+      `}
+      aria-label="Artist name"
     >
-      <section
-        className="
-          absolute
-          bottom-[10vh]
-          left-0
-          right-0
-          flex
-          flex-row
-          flex-nowrap
-          w-full
-          items-center
-          justify-center
-          gap-[3vw]
-          overflow-visible
-        "
-        aria-label="Artist name"
-      >
-        {/* LEFT SIDE — "REINVENTING" + "BASILE" */}
-        <div className="flex flex-col items-end">
-          <h2
-            className="
-              font-header
-              text-[1.2vw]
-              text-primary
-              whitespace-nowrap
-              text-right
-              w-full
-              pr-1
-            "
-          >
-            {taglineWords[0]?.toUpperCase()}
+      {/* LEFT SIDE — "REINVENTING" + "BASILE" */}
+      <div className="flex flex-col items-end">
+        <h2
+          className={`
+            font-header text-[1.2vw] ${color}
+            whitespace-nowrap text-right w-full pr-1
+          `}
+        >
+          {taglineWords[0]?.toUpperCase()}
+        </h2>
+
+        <h1
+          className={`
+            font-header text-[9vw] ${color}
+            whitespace-nowrap leading-none
+          `}
+        >
+          {firstName.toUpperCase()}
+        </h1>
+      </div>
+
+      {/* RIGHT SIDE — "THE" + "FRAME" + "DESCHAMPS" */}
+      <div className="flex flex-col items-start">
+        <div className="w-full flex items-center justify-between px-1">
+          <h2 className={`font-header text-[1.2vw] ${color} whitespace-nowrap`}>
+            {taglineWords[1]?.toUpperCase()}
           </h2>
 
-          <h1
-            className="
-              font-header
-              text-[9vw]
-              text-primary
-              whitespace-nowrap
-              leading-none
-            "
-          >
-            {firstName.toUpperCase()}
-          </h1>
+          <h2 className={`font-header text-[1.2vw] ${color} whitespace-nowrap`}>
+            {taglineWords[2]?.toUpperCase()}
+          </h2>
         </div>
 
-        {/* RIGHT SIDE — "THE" + "FRAME" + "DESCHAMPS" */}
-        <div className="flex flex-col items-start">
-          <div className="w-full flex items-center justify-between px-1">
-            <h2
-              className="
-                font-header
-                text-[1.2vw]
-                text-primary
-                whitespace-nowrap
-              "
-            >
-              {taglineWords[1]?.toUpperCase()}
-            </h2>
+        <h1
+          className={`
+            font-header text-[9vw] ${color}
+            whitespace-nowrap leading-none
+          `}
+        >
+          {lastName.toUpperCase()}
+        </h1>
+      </div>
+    </section>
+  );
 
-            <h2
-              className="
-                font-header
-                text-[1.2vw]
-                text-primary
-                whitespace-nowrap
-              "
-            >
-              {taglineWords[2]?.toUpperCase()}
-            </h2>
-          </div>
+  return (
+    <>
+      {/* Black text layer — extends below video, visible on white background */}
+      <div
+        className="
+          hidden md:block
+          absolute
+          top-0
+          left-0
+          right-0
+          h-[100svh]
+          z-10
+          pointer-events-none
+        "
+        aria-hidden="true"
+      >
+        {renderText('text-primary')}
+      </div>
 
-          <h1
-            className="
-              font-header
-              text-[9vw]
-              text-primary
-              whitespace-nowrap
-              leading-none
-            "
-          >
-            {lastName.toUpperCase()}
-          </h1>
-        </div>
-      </section>
-    </div>
+      {/* White text layer — clipped to video area (container height) */}
+      <div
+        className="
+          hidden md:block
+          absolute
+          top-0
+          left-0
+          right-0
+          h-[100svh]
+          z-20
+          pointer-events-none
+        "
+        style={{ clipPath: 'inset(0 -100vw 0 -100vw)' }}
+        aria-hidden="true"
+      >
+        {renderText('text-white')}
+      </div>
+    </>
   );
 }
 

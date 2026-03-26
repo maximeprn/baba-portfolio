@@ -43,38 +43,11 @@ function Footer() {
 
   return (
     // <footer> is the semantic HTML element for page footers
-    <footer
-      className="
-        w-full                           /* Full width */
-        max-w-container                  /* Capped at container max width */
-        mx-auto                          /* Center horizontally */
-        px-6                             /* Horizontal padding */
-        py-8                             /* Vertical padding */
-        mt-auto                          /* Push to bottom if page content is short */
-      "
-    >
+    <footer className="w-full max-w-container mx-auto px-6 py-8 mt-auto">
       {/* Inner container for footer content */}
-      <div
-        className="
-          flex                           /* Flexbox layout */
-          flex-col                       /* Stack vertically on mobile */
-          md:flex-row                    /* Side by side on medium+ screens */
-          items-center                   /* Center items */
-          justify-between                /* Space between on larger screens */
-          gap-4                          /* Gap between items */
-          pt-8                           /* Top padding */
-          border-t                       /* Top border */
-          border-border                  /* Use our border color variable */
-        "
-      >
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-border">
         {/* COPYRIGHT SECTION */}
-        <p
-          className="
-            font-body                    /* American Typewriter font */
-            text-sm                      /* Small text */
-            text-muted                   /* Muted gray color */
-          "
-        >
+        <p className="font-body text-sm text-muted">
           {/* The © symbol followed by year and copyright text */}
           © {currentYear} {copyright}
         </p>
@@ -95,14 +68,7 @@ function Footer() {
                 // - noopener: prevents the new page from accessing window.opener
                 // - noreferrer: prevents sending the referrer header
                 rel="noopener noreferrer"
-                className="
-                  font-body
-                  text-sm
-                  text-primary           /* Black text */
-                  hover:text-muted       /* Gray on hover */
-                  transition-colors      /* Smooth color transition */
-                  duration-150
-                "
+                className="font-body text-sm text-primary hover:text-muted transition-colors duration-150"
                 // Accessibility: Describe where the link goes
                 aria-label={`Visit ${siteConfig.artist.name}'s ${social.name} profile`}
               >

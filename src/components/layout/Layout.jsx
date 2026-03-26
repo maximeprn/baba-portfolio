@@ -34,7 +34,6 @@ import { useLocation } from 'react-router-dom';
 // Import the Navigation and Footer components
 import Navigation from './Navigation';
 import Footer from './Footer';
-import PersistentHeroText from '../ui/PersistentHeroText';
 import { SmoothScrollProvider, useSmoothScrollContext } from '../../context/SmoothScrollContext';
 
 
@@ -81,9 +80,6 @@ function ScrollToTop() {
  * The page component (Films, About, etc.) becomes the "children" prop
  */
 function Layout({ children }) {
-  const { pathname } = useLocation();
-  const showHeroText = pathname === '/' || pathname === '/photos';
-
   return (
     // SmoothScrollProvider wraps everything for buttery smooth scrolling
     <SmoothScrollProvider smoothness={0.08}>
@@ -92,53 +88,22 @@ function Layout({ children }) {
 
       {/* Outer container - full viewport height with flex column layout
           This ensures the footer stays at the bottom even with little content */}
-      <div
-        className="
-          relative                         /* Positioning context for PersistentHeroText */
-          min-h-screen                     /* At least full viewport height */
-          flex                             /* Flexbox container */
-          flex-col                         /* Stack children vertically */
-          bg-background                    /* Background color from CSS variable */
-        "
-      >
-        {/* NAVIGATION - Always at the top */}
-        <Navigation />
+      <div className="relative min-h-screen flex flex-col bg-background">
+        {/* NAVIGATION - Always at the top, wider padding */}
+        <div className="md:px-[180px]">
+          <Navigation />
+        </div>
 
-        {/* PERSISTENT HERO TEXT - Stays put during Films↔Photos navigation */}
-        {showHeroText && <PersistentHeroText />}
-
-
-        {/* MAIN CONTENT AREA
-            The <main> element is the semantic HTML5 element for the main content
-            It helps screen readers identify the primary content area
-
-            flex-1 (or flex-grow) makes this section expand to fill available space
-            This pushes the footer to the bottom when content is short
-        */}
-        <main
-          className="
-            flex-1                         /* Grow to fill available space */
-            flex                           /* Flexbox for centering content */
-            flex-col                       /* Stack children vertically */
-            items-center                   /* Center children horizontally */
-            w-full                         /* Full width */
-          "
-        >
-          {/*
-            children is whatever gets passed between the <Layout> tags
-            In our case, it's the page component from React Router
-
-            Example: When visiting /about
-            - React Router matches the /about route
-            - Renders <About /> as children
-            - Layout wraps it with nav and footer
-          */}
+        {/* MAIN CONTENT AREA — narrower padding than nav */}
+        <main className="flex-1 flex flex-col items-center w-full md:px-[100px]">
           {children}
         </main>
 
 
-        {/* FOOTER - Always at the bottom */}
-        <Footer />
+        {/* FOOTER - Matches content padding */}
+        <div className="md:px-[100px]">
+          <Footer />
+        </div>
       </div>
     </SmoothScrollProvider>
   );

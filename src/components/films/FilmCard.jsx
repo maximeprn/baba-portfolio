@@ -16,37 +16,21 @@ function FilmCard({ film, onFilmClick }) {
   const handleClick = () => onFilmClick(film);
 
   return (
-    <article
-      className="
-        flex w-full max-w-container aspect-[2/1] max-h-[650px]
-        items-center justify-around px-[5%]
-        bg-white border-t border-b border-border
-      "
-    >
-      <div className="flex items-center justify-between relative flex-1">
-        {/* IMAGE — Left position */}
-        {isImageLeft && (
-          <div className="grid grid-cols-1 grid-rows-1 w-[50%] h-[73%] absolute top-[9%] left-0">
-            <div onClick={handleClick} className="cursor-pointer">
-              <img
-                src={thumbnail}
-                alt={`Project image for ${title}`}
-                loading="lazy"
-                className="justify-self-start row-[1_/_2] col-[1_/_2] self-end w-[95%] h-[95%] aspect-[1.36] object-cover transition-opacity duration-300 hover:opacity-90"
-              />
-            </div>
-          </div>
-        )}
+    <article className="w-full max-w-container bg-white border-t border-b border-border px-[5%] py-8 lg:py-12">
+      <div className={`flex flex-col gap-8 items-center ${isImageLeft ? 'lg:flex-row' : 'lg:flex-row-reverse'}`}>
+        {/* IMAGE */}
+        <div className="w-full lg:w-1/2 flex-shrink-0" onClick={handleClick}>
+          <img
+            src={thumbnail}
+            alt={`Project image for ${title}`}
+            loading="lazy"
+            className="w-full aspect-[1.36] object-cover cursor-pointer transition-opacity duration-300 hover:opacity-90"
+          />
+        </div>
 
         {/* TEXT CONTENT */}
-        <div
-          className={`
-            inline-flex flex-col h-[91%] items-start justify-center
-            gap-9 px-[3%] py-6
-            ${isImageLeft ? 'ml-auto' : ''}
-          `}
-        >
-          <header className="inline-flex h-[89px] items-center justify-center">
+        <div className="flex flex-col flex-1 min-w-0 items-start gap-9 py-6">
+          <header>
             <h3
               onClick={handleClick}
               className="project-title cursor-pointer hover:opacity-70 transition-opacity duration-150"
@@ -55,10 +39,8 @@ function FilmCard({ film, onFilmClick }) {
             </h3>
           </header>
 
-          <div className="relative w-full max-w-[584px] h-[170px]">
-            <p
-              className="font-header text-sm tracking-wider leading-6 text-primary"
-            >
+          <div className="relative w-full max-w-[584px]">
+            <p className="font-header text-sm tracking-wider leading-6 text-primary">
               {description}
             </p>
           </div>
@@ -70,27 +52,13 @@ function FilmCard({ film, onFilmClick }) {
                 <p key={i}>{credit.role} : {credit.name}</p>
               ))}
             </div>
-            <div className="flex-1 h-[120px] font-header text-sm tracking-wide leading-7">
+            <div className="flex-1 font-header text-sm tracking-wide leading-7">
               {credits.right.map((credit, i) => (
                 <p key={i}>{credit.role} : {credit.name}</p>
               ))}
             </div>
           </div>
         </div>
-
-        {/* IMAGE — Right position */}
-        {!isImageLeft && (
-          <div className="grid grid-cols-1 grid-rows-1 w-[50%] h-[73%] absolute top-[9%] right-0">
-            <div onClick={handleClick} className="cursor-pointer">
-              <img
-                src={thumbnail}
-                alt={`Project image for ${title}`}
-                loading="lazy"
-                className="justify-self-end row-[1_/_2] col-[1_/_2] self-end w-[95%] h-[95%] aspect-[1.36] object-cover transition-opacity duration-300 hover:opacity-90"
-              />
-            </div>
-          </div>
-        )}
       </div>
     </article>
   );

@@ -438,58 +438,46 @@
   }
 
   /* Film card responsive layout */
-  /* Mobile: stacked layout with reduced padding */
   .film-card {
     padding-top: 40px;
     padding-bottom: 40px;
   }
 
-  .film-card-video {
-    position: relative;
-    width: 100%;
+  .film-card > div {
+    gap: 1.5rem;
   }
 
-  .film-card-text {
-    width: 100%;
-    padding: 0;
-  }
-
-  /* Desktop (lg: 1024px+): absolute positioned layout */
   @media (min-width: 1024px) {
     .film-card {
       padding-top: var(--section-padding-top);
       padding-bottom: var(--section-padding-bottom);
     }
 
-    .film-card-video {
-      position: absolute;
-      width: var(--video-width);
-      top: var(--video-top);
-      aspect-ratio: var(--video-aspect-ratio);
+    .film-card > div {
+      gap: 0.5rem;
     }
 
-    .film-card-video-left {
-      left: var(--video-offset);
+    /* Video column — explicit width on desktop only */
+    .film-card > div > div:first-child {
+      width: var(--video-width, 55%);
+      flex-shrink: 0;
     }
 
-    .film-card-video-right {
-      right: var(--video-offset);
+    /* Text column — vertical offset for visual asymmetry */
+    .film-card > div > div:last-child {
+      padding-top: var(--text-padding-top, 0);
     }
+  }
 
-    .film-card-text {
-      width: var(--text-width);
-      padding-top: var(--video-top, 40px);
-      padding-bottom: 40px;
+  @media (min-width: 1280px) {
+    .film-card > div {
+      gap: 1.5rem;
     }
+  }
 
-    .film-card-text-left {
-      margin-left: auto;
-      padding-right: var(--text-offset);
-    }
-
-    .film-card-text-right {
-      margin-right: auto;
-      padding-left: var(--text-offset);
+  @media (min-width: 1536px) {
+    .film-card > div {
+      gap: 2.5rem;
     }
   }
 }

@@ -4,10 +4,8 @@
  */
 
 const LAYOUT_VARIANTS = [
-  { videoWidth: 55, videoOffsetX: 0, videoOffsetY: 60, textWidth: 420, textOffsetX: 0, textGap: 10, sectionPaddingTop: 160, sectionPaddingBottom: 200 },
-  { videoWidth: 48, videoOffsetX: 4, videoOffsetY: 120, textWidth: 380, textOffsetX: 40, textGap: 8, sectionPaddingTop: 140, sectionPaddingBottom: 260 },
-  { videoWidth: 58, videoOffsetX: 2, videoOffsetY: 40, textWidth: 360, textOffsetX: 20, textGap: 12, sectionPaddingTop: 180, sectionPaddingBottom: 180 },
-  { videoWidth: 42, videoOffsetX: 8, videoOffsetY: 80, textWidth: 440, textOffsetX: 60, textGap: 14, sectionPaddingTop: 220, sectionPaddingBottom: 220 },
+  { videoWidth: '55%', paddingTop: '8rem', paddingBottom: '8rem', textPaddingTop: '0' },
+  { videoWidth: '55%', paddingTop: '8rem', paddingBottom: '8rem', textPaddingTop: '0' },
 ];
 
 function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
@@ -28,43 +26,35 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
 
   const handleClick = () => onFilmClick(film);
 
-  const desktopVideoStyles = {
-    '--video-width': `${variant.videoWidth}vw`,
-    '--video-top': `${variant.videoOffsetY}px`,
-    '--video-offset': `${variant.videoOffsetX}vw`,
-    '--video-aspect-ratio': aspectRatio,
-  };
-
-  const desktopTextStyles = {
-    '--text-width': `${variant.textWidth}px`,
-    '--text-offset': `${variant.textOffsetX}px`,
-  };
-
   return (
     <article
-      className="film-card flex w-full items-start bg-white relative px-4 lg:px-0"
+      className="film-card w-full bg-white px-4 lg:px-0"
       style={{
-        '--section-padding-top': `${variant.sectionPaddingTop}px`,
-        '--section-padding-bottom': `${variant.sectionPaddingBottom}px`,
-        '--video-top': `${variant.videoOffsetY}px`,
+        '--section-padding-top': variant.paddingTop,
+        '--section-padding-bottom': variant.paddingBottom,
+        '--video-width': variant.videoWidth,
+        '--text-padding-top': variant.textPaddingTop,
       }}
     >
-      <div className={`flex flex-col w-full lg:items-start lg:relative`}>
+      <div
+        className={`flex flex-col lg:items-center ${isVideoLeft ? 'lg:flex-row' : 'lg:flex-row-reverse'}`}
+      >
         {/* VIDEO */}
         <div
           onClick={handleClick}
-          className={`relative w-full overflow-hidden cursor-pointer hover:opacity-90 transition-opacity duration-300 film-card-video ${isVideoLeft ? 'film-card-video-left' : 'film-card-video-right'}`}
+          className="w-full overflow-hidden cursor-pointer hover:opacity-90 transition-opacity duration-300"
           style={{
             aspectRatio,
-            backgroundImage: `url(${thumbnail})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            ...desktopVideoStyles,
+            ...(thumbnail && {
+              backgroundImage: `url(${thumbnail})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }),
           }}
         >
           <video
             src={videoFile}
-            poster={thumbnail}
+            poster={thumbnail || undefined}
             autoPlay
             loop
             playsInline
@@ -75,13 +65,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
         </div>
 
         {/* TEXT CONTENT */}
-        <div
-          className={`flex flex-col items-start justify-start relative z-10 w-full pt-6 film-card-text ${isVideoLeft ? 'film-card-text-left' : 'film-card-text-right'}`}
-          style={{
-            gap: `${variant.textGap * 2}px`,
-            ...desktopTextStyles,
-          }}
-        >
+        <div className={`flex flex-col justify-center flex-1 min-w-0 gap-5 lg:items-start lg:px-8 xl:px-12 2xl:px-20 ${isVideoLeft ? 'items-start' : 'items-end text-right'}`}>
           {/* TITLE */}
           <header>
             <h3
@@ -93,10 +77,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
           </header>
 
           {/* METADATA */}
-          <div
-            className="font-header text-xs tracking-widest text-primary uppercase"
-            style={{ marginTop: `-${variant.textGap}px` }}
-          >
+          <div className="font-header text-xs tracking-widest text-primary uppercase -mt-2">
             {year}
             <span className="mx-3">•</span>
             {client}
@@ -105,10 +86,8 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
           </div>
 
           {/* DESCRIPTION */}
-          <div className="relative w-full overflow-hidden" style={{ marginTop: `${variant.textGap}px` }}>
-            <p
-              className="font-header text-xs md:text-sm tracking-wider leading-6 md:leading-7 text-primary"
-            >
+          <div className="relative w-full overflow-hidden">
+            <p className="font-header text-xs md:text-sm tracking-wider leading-6 md:leading-7 text-primary">
               {description}
             </p>
           </div>

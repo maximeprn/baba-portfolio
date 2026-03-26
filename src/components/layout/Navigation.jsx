@@ -67,29 +67,10 @@ function Navigation() {
   return (
     // <header> is the semantic HTML element for page headers/navigation
     // We use Tailwind classes for styling
-    <header
-      className="
-        relative                         /* For absolute positioning of mobile nav */
-        z-30                             /* Above hero text (z-0) and media (z-10) */
-        w-[90vw] md:w-full               /* 90vw on mobile to match video width */
-        max-w-container                  /* But capped at our max container width */
-        mx-auto                          /* Center horizontally */
-        h-20                             /* Fixed height (80px) */
-        px-0 md:px-6                     /* No padding on mobile, 24px on desktop */
-        flex                             /* Flexbox for layout */
-        items-center                     /* Vertically center children */
-        justify-center                   /* Center the nav element */
-      "
-    >
+    <header className="relative z-30 w-[90vw] md:w-full max-w-container mx-auto h-20 px-0 md:px-6 flex items-center justify-center">
       {/* <nav> is the semantic element for navigation links */}
       <nav
-        className="
-          w-full                         /* Full width of header */
-          flex                           /* Flexbox layout */
-          items-center                   /* Vertically center items */
-          justify-between                /* Space items across the width */
-          px-0 md:px-5                   /* No padding on mobile, 20px on desktop */
-        "
+        className="w-full flex items-center justify-between px-0 md:px-5"
         // Accessibility: Identifies this as the main navigation
         role="navigation"
         aria-label="Main navigation"
@@ -102,15 +83,7 @@ function Navigation() {
             <Link
               key={item.path}
               to={item.path}
-              className={`
-                nav-link                 /* Our custom nav link style from CSS */
-                transition-opacity       /* Smooth opacity transition */
-                duration-150             /* 150ms transition duration */
-                ${isActive(item.path)
-                  ? 'opacity-100'        /* Full opacity if active */
-                  : 'opacity-100 hover:opacity-70'  /* Fade on hover if not active */
-                }
-              `}
+              className={`nav-link transition-opacity duration-150 ${isActive(item.path) ? 'opacity-100' : 'opacity-100 hover:opacity-70'}`}
               // Accessibility: Indicate current page to screen readers
               aria-current={isActive(item.path) ? 'page' : undefined}
             >
@@ -126,17 +99,7 @@ function Navigation() {
             <Link
               key={item.path}
               to={item.path}
-              className={`
-                font-header              /* Helvetica Now Display font */
-                font-normal              /* 400 weight */
-                uppercase                /* Uppercase text */
-                transition-all           /* Smooth transitions for all properties */
-                duration-150             /* 150ms transition */
-                ${isActive(item.path)
-                  ? 'text-[1rem] opacity-100'        /* Active: 20px (1.25rem) */
-                  : 'text-[0.75rem] opacity-100 hover:opacity-70'  /* Inactive: 14px (0.875rem) */
-                }
-              `}
+              className={`font-header font-normal uppercase transition-all duration-150 ${isActive(item.path) ? 'text-[1rem] opacity-100' : 'text-[0.75rem] opacity-100 hover:opacity-70'}`}
               aria-current={isActive(item.path) ? 'page' : undefined}
             >
               {item.label}
@@ -151,15 +114,7 @@ function Navigation() {
             <Link
               key={item.path}
               to={item.path}
-              className={`
-                nav-link
-                transition-opacity
-                duration-150
-                ${isActive(item.path)
-                  ? 'opacity-100'
-                  : 'opacity-100 hover:opacity-70'
-                }
-              `}
+              className={`nav-link transition-opacity duration-150 ${isActive(item.path) ? 'opacity-100' : 'opacity-100 hover:opacity-70'}`}
               aria-current={isActive(item.path) ? 'page' : undefined}
             >
               {item.label}

@@ -1,36 +1,154 @@
+import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { siteConfig } from '../../data/siteConfig';
 
 /**
- * HeroSection — Fullscreen sticky video background.
- * Video fills the viewport and stays fixed as content scrolls over it.
- *
- * @param {Object} props
- * @param {function} props.onVideoClick - Called when user clicks the video
+ * HeroNameOverlay — White "BASILE DESCHAMPS" + "REINVENTING THE FRAME"
+ * Positioned at the bottom of the video container, clipped by overflow-hidden.
+ * Uses ResizeObserver + scale() to auto-fit text within the container.
+ */
+function HeroNameOverlay() {
+  const { firstName, lastName, tagline } = siteConfig.artist;
+  const taglineWords = tagline.split(' ');
+  const containerRef = useRef(null);
+  const contentRef = useRef(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const content = contentRef.current;
+    if (!container || !content) return;
+
+    const update = () => {
+      const cw = container.clientWidth;
+      const tw = content.scrollWidth;
+      setScale(tw > cw ? cw / tw : 1);
+    };
+
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(container);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <div ref={containerRef} className="absolute bottom-0 left-0 right-0 overflow-hidden pb-4 pointer-events-none">
+      <div
+        ref={contentRef}
+        className="flex items-end justify-center w-fit mx-auto"
+        style={{
+          gap: '3.6cqw',
+          transform: `scale(${scale})`,
+          transformOrigin: 'bottom center',
+        }}
+        aria-label="Artist name"
+      >
+        {/* LEFT — "REINVENTING" + "BASILE" */}
+        <div className="flex flex-col items-end">
+          <div className="w-full flex justify-end pr-1">
+            <span
+              className="font-header text-white whitespace-nowrap"
+              style={{ fontSize: '1cqw' }}
+            >
+              {taglineWords[0]?.toUpperCase()}
+            </span>
+          </div>
+          <span
+            className="font-header font-bold text-white whitespace-nowrap leading-none"
+            style={{ fontSize: '9cqw' }}
+          >
+            {firstName.toUpperCase()}
+          </span>
+        </div>
+
+        {/* RIGHT — "THE" + "FRAME" + "DESCHAMPS" */}
+        <div className="flex flex-col items-start">
+          <div className="w-full flex justify-between px-1">
+            <span
+              className="font-header text-white whitespace-nowrap"
+              style={{ fontSize: '1cqw' }}
+            >
+              {taglineWords[1]?.toUpperCase()}
+            </span>
+            <span
+              className="font-header text-white whitespace-nowrap"
+              style={{ fontSize: '1cqw' }}
+            >
+              {taglineWords[2]?.toUpperCase()}
+            </span>
+          </div>
+          <span
+            className="font-header font-bold text-white whitespace-nowrap leading-none"
+            style={{ fontSize: '9cqw' }}
+          >
+            {lastName.toUpperCase()}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** MobileHeroNameOverlay — Stacked tagline + "BASILE" / "DESCHAMPS" left-aligned at bottom of video */
+function MobileHeroNameOverlay() {
+  const { firstName, lastName, tagline } = siteConfig.artist;
+  const taglineWords = tagline.split(' ');
+  return (
+    <div className="absolute bottom-0 left-0 right-0 flex flex-col items-start pl-4 pb-4 pointer-events-none">
+      {/* "REINVENTING" above "BASILE" */}
+      <span className="font-header text-white" style={{ fontSize: '2cqw' }}>
+        {taglineWords[0]?.toUpperCase()}
+      </span>
+      <span className="font-header font-bold text-white leading-none" style={{ fontSize: '13cqw' }}>
+        {firstName.toUpperCase()}
+      </span>
+      {/* "THE FRAME" spread above "DESCHAMPS", both wrapped so width matches */}
+      <div className="flex flex-col">
+        <div className="flex justify-between px-1">
+          <span className="font-header text-white" style={{ fontSize: '2cqw' }}>
+            {taglineWords[1]?.toUpperCase()}
+          </span>
+          <span className="font-header text-white" style={{ fontSize: '2cqw' }}>
+            {taglineWords[2]?.toUpperCase()}
+          </span>
+        </div>
+        <span className="font-header font-bold text-white leading-none" style={{ fontSize: '13cqw' }}>
+          {lastName.toUpperCase()}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * HeroSection — Contained sticky video with 60px inset from viewport edges.
+ * Name text lives inside the video container so it never exceeds video bounds.
  */
 function HeroSection({ onVideoClick }) {
-  const { firstName, lastName } = siteConfig.artist;
   const { center: navCenter } = siteConfig.navigation;
 
   return (
-    <section className="relative w-full" aria-label="Hero section">
-      {/* DESKTOP: Sticky fullscreen video */}
-      <div className="hidden md:block relative w-full" style={{ height: 'calc(100svh + 150px)' }}>
-        <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
-          <video
-            src="/videos/hero-teaser.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-            onClick={onVideoClick}
-            className="w-full h-full object-cover cursor-pointer"
-            aria-hidden="true"
-          />
+    <section className="relative w-full md:w-[calc(100%+200px)]" aria-label="Hero section">
+      {/* DESKTOP: Sticky contained video with 60px inset */}
+      <div className="hidden md:block relative w-full" style={{ height: 'calc(100svh - 5rem + 150px)' }}>
+        <div className="sticky top-0 h-[calc(100svh-5rem)] w-full px-[60px] py-[20px]">
+          <div className="relative w-full h-full overflow-hidden" style={{ containerType: 'inline-size' }}>
+            <video
+              src="/videos/Showreel 2021.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              onClick={onVideoClick}
+              className="w-full h-full object-cover cursor-pointer"
+              aria-hidden="true"
+            />
+            <HeroNameOverlay />
+          </div>
         </div>
       </div>
 
-      {/* MOBILE: Fullscreen video + name */}
+      {/* MOBILE: Fullscreen video + overlay name */}
       <div className="md:hidden flex flex-col h-[calc(100svh-5rem)]">
         {/* Nav links */}
         <div className="flex items-center justify-center gap-4 py-4">
@@ -45,10 +163,10 @@ function HeroSection({ onVideoClick }) {
           ))}
         </div>
 
-        {/* Video */}
-        <div className="flex-1 relative" onClick={onVideoClick}>
+        {/* Video + overlaid name */}
+        <div className="flex-1 relative overflow-hidden" onClick={onVideoClick} style={{ containerType: 'inline-size' }}>
           <video
-            src="/videos/hero-teaser.mp4"
+            src="/videos/Showreel 2021.mp4"
             autoPlay
             loop
             muted
@@ -56,18 +174,7 @@ function HeroSection({ onVideoClick }) {
             className="absolute inset-0 w-full h-full object-cover"
             aria-hidden="true"
           />
-        </div>
-
-        {/* Name */}
-        <div className="w-[90vw] mx-auto pb-4">
-          <h1 className="flex flex-col items-center gap-0" aria-label="Artist name">
-            <span className="font-header text-[15vw] text-primary whitespace-nowrap leading-none">
-              {firstName.toUpperCase()}
-            </span>
-            <span className="font-header text-[15vw] text-primary whitespace-nowrap leading-none">
-              {lastName.toUpperCase()}
-            </span>
-          </h1>
+          <MobileHeroNameOverlay />
         </div>
       </div>
     </section>

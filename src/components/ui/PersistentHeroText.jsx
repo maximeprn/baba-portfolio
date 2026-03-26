@@ -18,15 +18,15 @@ function PersistentHeroText() {
     <section
       className={`
         absolute
-        bottom-[-4.5vw]
+        bottom-[60px]
         left-1/2
         -translate-x-1/2
         flex
         flex-row
         flex-nowrap
-        items-center
+        items-end
         justify-center
-        gap-[3vw]
+        gap-14
       `}
       aria-label="Artist name"
     >
@@ -106,7 +106,7 @@ function PersistentHeroText() {
           z-20
           pointer-events-none
         "
-        style={{ clipPath: 'inset(0 -100vw 0 -100vw)' }}
+        style={{ clipPath: 'inset(60px max(60px, calc((100vw - 1320px) / 2)))' }}
         aria-hidden="true"
       >
         {renderText('text-white')}

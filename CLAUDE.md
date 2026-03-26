@@ -55,6 +55,7 @@ src/
 
 ## Gotchas
 
+- Use Flexbox for all component layouts — never use `position: absolute` to place sibling elements (text, images, videos) side by side. Use `flex-row` / `flex-row-reverse` for left/right alternation and `gap` for guaranteed spacing.
 - Use `svh` units (not `vh`) for mobile viewport heights — avoids iOS address bar issues
 - Hero video (`/public/videos/hero-teaser.mp4`) is a large file; original content in `content/` is gitignored
 - Bottom-aligned elements use absolute positioning with `bottom-[10vh]` + `left-0 right-0 z-0`

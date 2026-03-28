@@ -422,6 +422,20 @@
     aspect-ratio: 3 / 2;
   }
 
+  /* Hide native video controls and play button (Safari) */
+  video::-webkit-media-controls {
+    display: none !important;
+  }
+
+  video::-webkit-media-controls-panel {
+    display: none !important;
+  }
+
+  video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+    -webkit-appearance: none;
+  }
+
   /* Hide scrollbar but keep functionality */
   .hide-scrollbar {
     -ms-overflow-style: none;

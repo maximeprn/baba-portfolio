@@ -139,6 +139,7 @@ function HeroSection({ onVideoClick }) {
               loop
               muted
               playsInline
+              webkit-playsinline=""
               onClick={onVideoClick}
               className="w-full h-full object-cover cursor-pointer"
               aria-hidden="true"
@@ -171,6 +172,7 @@ function HeroSection({ onVideoClick }) {
             loop
             muted
             playsInline
+            webkit-playsinline=""
             className="absolute inset-0 w-full h-full object-cover"
             aria-hidden="true"
           />

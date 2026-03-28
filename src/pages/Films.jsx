@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import HeroSection from '../components/ui/HeroSection';
 import FilmCard from '../components/films/FilmCard';
 import FeaturedFilmCard from '../components/films/FeaturedFilmCard';
+import CollapsedFilmCard from '../components/films/CollapsedFilmCard';
 import FilmModal from '../components/films/FilmModal';
 
 import { films } from '../data/films';
@@ -28,26 +29,39 @@ function Films() {
   const [selectedFilm, setSelectedFilm] = useState(null);
 
   return (
-    <div className="flex flex-col items-center gap-5 w-full">
+    <div className="flex flex-col items-center w-full">
       {/* HERO SECTION */}
       <HeroSection onVideoClick={() => setShowShowreel(true)} />
 
       {/* FILM CARDS */}
       {films.map((film, index) => (
-        film.featured ? (
-          <FeaturedFilmCard
-            key={film.id}
-            film={film}
-            index={index}
-            onFilmClick={setSelectedFilm}
-          />
-        ) : (
-          <FilmCard
-            key={film.id}
-            film={film}
-            onFilmClick={setSelectedFilm}
-          />
-        )
+        <React.Fragment key={film.id}>
+          {(film.featured || film.collapsed) && (
+            <hr className="border-t border-black self-stretch -mx-4 md:-mx-[100px]" />
+          )}
+          {film.collapsed ? (
+            <CollapsedFilmCard
+              film={film}
+              index={index}
+              onFilmClick={setSelectedFilm}
+            />
+          ) : film.featured ? (
+            <div className="py-5 w-full">
+              <FeaturedFilmCard
+                film={film}
+                index={index}
+                onFilmClick={setSelectedFilm}
+              />
+            </div>
+          ) : (
+            <div className="py-5 w-full">
+              <FilmCard
+                film={film}
+                onFilmClick={setSelectedFilm}
+              />
+            </div>
+          )}
+        </React.Fragment>
       ))}
 
       <div className="h-20" aria-hidden="true" />

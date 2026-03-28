@@ -112,6 +112,11 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
       setScrollY(data.target);
       scrollListenersRef.current.forEach(listener => listener(data.target));
       data.isScrolling = false;
+      // Restore default ease if it was temporarily overridden
+      if (data._restoreEase != null) {
+        data.ease = data._restoreEase;
+        data._restoreEase = null;
+      }
     }
   }, []);
 
@@ -224,7 +229,13 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
 
 
   // Method to programmatically scroll to a position
-  const scrollTo = useCallback((position, instant = false) => {
+  // Options: instant (boolean), ease (number) for custom scroll speed
+  const scrollTo = useCallback((position, instantOrOptions = false) => {
+    const options = typeof instantOrOptions === 'boolean'
+      ? { instant: instantOrOptions }
+      : instantOrOptions;
+    const { instant = false, ease } = options;
+
     // On mobile/tablet, use native scroll
     if (!isDesktop) {
       window.scrollTo({
@@ -246,18 +257,23 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
       data.target = targetPos;
       content.style.transform = `translateY(${-targetPos}px)`;
     } else {
+      // Temporarily override ease if a custom value is provided
+      if (ease) {
+        data.ease = ease;
+        data._restoreEase = smoothness;
+      }
       data.target = targetPos;
       if (!data.isScrolling) {
         data.isScrolling = true;
         data.rafId = requestAnimationFrame(updateScroll);
       }
     }
-  }, [isDesktop, updateScroll]);
+  }, [isDesktop, smoothness, updateScroll]);
 
 
   // Method to scroll to an element
   const scrollToElement = useCallback((element, options = {}) => {
-    const { offset = 0, block = 'start', instant = false } = options;
+    const { offset = 0, block = 'start', instant = false, ease } = options;
 
     if (!element) return;
 
@@ -275,10 +291,11 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
 
     const contentRect = content.getBoundingClientRect();
     const elementRect = element.getBoundingClientRect();
-    const data = scrollDataRef.current;
 
     // Calculate element's position relative to content
-    const elementTop = elementRect.top - contentRect.top + data.current;
+    // contentRect.top already accounts for the translateY(-scrollPos) transform,
+    // so no additional scroll offset is needed
+    const elementTop = elementRect.top - contentRect.top;
 
     let targetScroll;
 
@@ -291,7 +308,7 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
       targetScroll = elementTop + offset;
     }
 
-    scrollTo(targetScroll, instant);
+    scrollTo(targetScroll, { instant, ease });
   }, [isDesktop, scrollTo]);
 
 

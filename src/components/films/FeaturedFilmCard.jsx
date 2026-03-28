@@ -28,7 +28,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
 
   return (
     <article
-      className="film-card w-full bg-white px-4 lg:px-0"
+      className="film-card w-full bg-white"
       style={{
         '--section-padding-top': variant.paddingTop,
         '--section-padding-bottom': variant.paddingBottom,
@@ -37,7 +37,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
       }}
     >
       <div
-        className={`flex flex-col lg:items-center ${isVideoLeft ? 'lg:flex-row' : 'lg:flex-row-reverse'}`}
+        className={`px-4 lg:px-0 flex flex-col lg:items-center ${isVideoLeft ? 'lg:flex-row' : 'lg:flex-row-reverse'}`}
       >
         {/* VIDEO */}
         <div
@@ -65,7 +65,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
         </div>
 
         {/* TEXT CONTENT */}
-        <div className={`flex flex-col justify-center flex-1 min-w-0 gap-5 lg:items-start lg:px-8 xl:px-12 2xl:px-20 ${isVideoLeft ? 'items-start' : 'items-end text-right'}`}>
+        <div className={`flex flex-col justify-center flex-1 min-w-0 gap-5 items-start lg:px-8 xl:px-12 2xl:px-20`}>
           {/* TITLE */}
           <header>
             <h3
@@ -87,7 +87,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
 
           {/* DESCRIPTION */}
           <div className="relative w-full overflow-hidden">
-            <p className="font-header text-xs md:text-sm tracking-wider leading-6 md:leading-7 text-primary">
+            <p className="font-header text-xs md:text-sm tracking-[0.15em] leading-6 md:leading-7 text-primary">
               {description}
             </p>
           </div>

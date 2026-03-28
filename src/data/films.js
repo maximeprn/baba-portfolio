@@ -210,6 +210,7 @@ export const films = [
     },
     imagePosition: 'right',
     featured: true,
+    collapsed: true,
     aspectRatio: 1.78,
   },
 
@@ -233,6 +234,7 @@ export const films = [
     },
     imagePosition: 'left',
     featured: true,
+    collapsed: true,
     aspectRatio: 1.78,
   },
 
@@ -259,6 +261,7 @@ export const films = [
     },
     imagePosition: 'right',
     featured: true,
+    collapsed: true,
     aspectRatio: 1.78,
   },
 
@@ -285,6 +288,7 @@ export const films = [
     },
     imagePosition: 'left',
     featured: true,
+    collapsed: true,
     aspectRatio: 1.78,
   },
 
@@ -310,6 +314,7 @@ export const films = [
     },
     imagePosition: 'right',
     featured: true,
+    collapsed: true,
     aspectRatio: 1.78,
   },
 
@@ -336,6 +341,7 @@ export const films = [
     },
     imagePosition: 'left',
     featured: true,
+    collapsed: true,
     aspectRatio: 1.78,
   },
 
@@ -359,6 +365,7 @@ export const films = [
     },
     imagePosition: 'right',
     featured: true,
+    collapsed: true,
     aspectRatio: 1.78,
   },
 
@@ -384,6 +391,7 @@ export const films = [
     },
     imagePosition: 'left',
     featured: true,
+    collapsed: true,
     aspectRatio: 1.78,
   },
 ];

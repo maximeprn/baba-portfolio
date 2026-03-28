@@ -40,7 +40,7 @@ function FilmCard({ film, onFilmClick }) {
           </header>
 
           <div className="relative w-full max-w-[584px]">
-            <p className="font-header text-sm tracking-wider leading-6 text-primary">
+            <p className="font-header text-sm tracking-wide leading-6 text-primary">
               {description}
             </p>
           </div>

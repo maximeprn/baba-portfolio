@@ -124,8 +124,90 @@ function MobileHeroNameOverlay() {
  * HeroSection — Contained sticky video with 60px inset from viewport edges.
  * Name text lives inside the video container so it never exceeds video bounds.
  */
+function MuteButton({ isMuted, onClick }) {
+  return (
+    <button
+      onClick={(e) => { e.stopPropagation(); onClick(); }}
+      className="absolute bottom-6 right-6 z-20 flex items-center justify-center w-10 h-10 bg-black/40 hover:bg-black/60 backdrop-blur-sm rounded-full transition-all duration-200"
+      aria-label={isMuted ? 'Unmute video' : 'Mute video'}
+    >
+      {isMuted ? (
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+          <line x1="23" y1="9" x2="17" y2="15" />
+          <line x1="17" y1="9" x2="23" y2="15" />
+        </svg>
+      ) : (
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
 function HeroSection({ onVideoClick }) {
   const { center: navCenter } = siteConfig.navigation;
+  const desktopVideoRef = useRef(null);
+  const mobileVideoRef = useRef(null);
+  const [isMuted, setIsMuted] = useState(true);
+
+  const isSafari = typeof navigator !== 'undefined'
+    && /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+  // Mute toggle (always works — direct user gesture)
+  const toggleMute = () => {
+    const newMuted = !isMuted;
+    setIsMuted(newMuted);
+    if (desktopVideoRef.current) desktopVideoRef.current.muted = newMuted;
+    if (mobileVideoRef.current) mobileVideoRef.current.muted = newMuted;
+  };
+
+  // Single play handler — fires per-video when its data is ready.
+  // No useEffect play calls (calling .play() on hidden videos poisons Safari).
+  const handleVideoReady = async (e) => {
+    const video = e.target;
+    video.controls = false;
+    video.removeAttribute('controls');
+
+    if (isSafari) {
+      // Safari: just play muted. Nothing else.
+      video.play().catch(() => {});
+      return;
+    }
+
+    // Chrome/Firefox: try unmuted, fall back to muted
+    video.muted = false;
+    try {
+      await video.play();
+      setIsMuted(false);
+    } catch {
+      video.muted = true;
+      video.play().catch(() => {});
+      setIsMuted(true);
+    }
+  };
+
+  // Non-Safari: unmute on first user interaction
+  useEffect(() => {
+    if (isSafari) return;
+    const unlock = () => {
+      [desktopVideoRef, mobileVideoRef].forEach((ref) => {
+        if (ref.current && ref.current.muted) {
+          ref.current.muted = false;
+        }
+      });
+      setIsMuted(false);
+    };
+    document.addEventListener('click', unlock, { once: true });
+    document.addEventListener('touchend', unlock, { once: true });
+    return () => {
+      document.removeEventListener('click', unlock);
+      document.removeEventListener('touchend', unlock);
+    };
+  }, []);
 
   return (
     <section className="relative w-full md:w-[calc(100%+200px)]" aria-label="Hero section">
@@ -134,17 +216,20 @@ function HeroSection({ onVideoClick }) {
         <div className="sticky top-0 h-[calc(100svh-5rem)] w-full px-[60px] py-[20px]">
           <div className="relative w-full h-full overflow-hidden" style={{ containerType: 'inline-size' }}>
             <video
+              ref={desktopVideoRef}
               src="/videos/Showreel 2021.mp4"
               autoPlay
               loop
               muted
               playsInline
-              webkit-playsinline=""
+              preload="auto"
+              onLoadedData={handleVideoReady}
               onClick={onVideoClick}
               className="w-full h-full object-cover cursor-pointer"
               aria-hidden="true"
             />
             <HeroNameOverlay />
+            <MuteButton isMuted={isMuted} onClick={toggleMute} />
           </div>
         </div>
       </div>
@@ -167,16 +252,19 @@ function HeroSection({ onVideoClick }) {
         {/* Video + overlaid name */}
         <div className="flex-1 relative overflow-hidden" onClick={onVideoClick} style={{ containerType: 'inline-size' }}>
           <video
+            ref={mobileVideoRef}
             src="/videos/Showreel 2021.mp4"
             autoPlay
             loop
             muted
             playsInline
-            webkit-playsinline=""
+            preload="auto"
+            onLoadedData={handleVideoReady}
             className="absolute inset-0 w-full h-full object-cover"
             aria-hidden="true"
           />
           <MobileHeroNameOverlay />
+          <MuteButton isMuted={isMuted} onClick={toggleMute} />
         </div>
       </div>
     </section>

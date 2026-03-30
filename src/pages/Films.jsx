@@ -64,6 +64,9 @@ function Films() {
         </React.Fragment>
       ))}
 
+      {/* Bottom border after last collapsed card */}
+      <hr className="border-t border-black self-stretch -mx-4 md:-mx-[100px]" />
+
       <div className="h-20" aria-hidden="true" />
 
       {/* SHOWREEL OVERLAY */}

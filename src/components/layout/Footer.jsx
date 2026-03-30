@@ -45,7 +45,7 @@ function Footer() {
     // <footer> is the semantic HTML element for page footers
     <footer className="w-full max-w-container mx-auto px-6 py-8 mt-auto">
       {/* Inner container for footer content */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-border">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8">
         {/* COPYRIGHT SECTION */}
         <p className="font-body text-sm text-muted">
           {/* The © symbol followed by year and copyright text */}

@@ -25,6 +25,11 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
   const variant = LAYOUT_VARIANTS[index % LAYOUT_VARIANTS.length];
 
   const handleClick = () => onFilmClick(film);
+  const handleVideoReady = (e) => {
+    e.target.controls = false;
+    e.target.removeAttribute('controls');
+    e.target.play().catch(() => {});
+  };
 
   return (
     <article
@@ -59,6 +64,8 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
             loop
             playsInline
             muted
+            preload="auto"
+            onLoadedData={handleVideoReady}
             className="w-full h-full object-cover pointer-events-none"
             aria-label={title}
           />

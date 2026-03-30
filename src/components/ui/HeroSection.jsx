@@ -167,47 +167,42 @@ function HeroSection({ onVideoClick }) {
 
   // Single play handler — fires per-video when its data is ready.
   // No useEffect play calls (calling .play() on hidden videos poisons Safari).
-  const handleVideoReady = async (e) => {
+  const handleVideoReady = (e) => {
     const video = e.target;
     video.controls = false;
     video.removeAttribute('controls');
-
-    if (isSafari) {
-      // Safari: just play muted. Nothing else.
-      video.play().catch(() => {});
-      return;
-    }
-
-    // Chrome/Firefox: try unmuted, fall back to muted
-    video.muted = false;
-    try {
-      await video.play();
-      setIsMuted(false);
-    } catch {
-      video.muted = true;
-      video.play().catch(() => {});
-      setIsMuted(true);
-    }
+    video.play().catch(() => {});
   };
 
-  // Non-Safari: unmute on first user interaction
+  // Non-Safari: unmute after 2.5s, re-mute if browser kills playback
   useEffect(() => {
     if (isSafari) return;
-    const unlock = () => {
-      [desktopVideoRef, mobileVideoRef].forEach((ref) => {
-        if (ref.current && ref.current.muted) {
-          ref.current.muted = false;
+    const timer = setTimeout(() => {
+      const video = desktopVideoRef.current || mobileVideoRef.current;
+      if (!video || video.paused) return;
+      video.muted = false;
+      setTimeout(() => {
+        if (video.paused) {
+          video.muted = true;
+          video.play().catch(() => {});
+          setIsMuted(true);
+        } else {
+          if (desktopVideoRef.current) desktopVideoRef.current.muted = false;
+          if (mobileVideoRef.current) mobileVideoRef.current.muted = false;
+          setIsMuted(false);
         }
-      });
-      setIsMuted(false);
-    };
-    document.addEventListener('click', unlock, { once: true });
-    document.addEventListener('touchend', unlock, { once: true });
-    return () => {
-      document.removeEventListener('click', unlock);
-      document.removeEventListener('touchend', unlock);
-    };
+      }, 100);
+    }, 2500);
+    return () => clearTimeout(timer);
   }, []);
+
+  // Mute hero when user opens a video (showreel or film modal)
+  const handleHeroVideoClick = () => {
+    if (desktopVideoRef.current) desktopVideoRef.current.muted = true;
+    if (mobileVideoRef.current) mobileVideoRef.current.muted = true;
+    setIsMuted(true);
+    onVideoClick();
+  };
 
   return (
     <section className="relative w-full md:w-[calc(100%+200px)]" aria-label="Hero section">
@@ -217,6 +212,7 @@ function HeroSection({ onVideoClick }) {
           <div className="relative w-full h-full overflow-hidden" style={{ containerType: 'inline-size' }}>
             <video
               ref={desktopVideoRef}
+              data-hero-video
               src="/videos/Showreel 2021.mp4"
               autoPlay
               loop
@@ -224,7 +220,7 @@ function HeroSection({ onVideoClick }) {
               playsInline
               preload="auto"
               onLoadedData={handleVideoReady}
-              onClick={onVideoClick}
+              onClick={handleHeroVideoClick}
               className="w-full h-full object-cover cursor-pointer"
               aria-hidden="true"
             />
@@ -253,6 +249,7 @@ function HeroSection({ onVideoClick }) {
         <div className="flex-1 relative overflow-hidden" onClick={onVideoClick} style={{ containerType: 'inline-size' }}>
           <video
             ref={mobileVideoRef}
+            data-hero-video
             src="/videos/Showreel 2021.mp4"
             autoPlay
             loop

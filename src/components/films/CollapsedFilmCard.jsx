@@ -25,8 +25,9 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
 
     const targetHeight = content.scrollHeight;
 
-    // Lock starting height
-    container.style.height = '36px';
+    // Lock starting height (read actual collapsed height for mobile)
+    const collapsedHeight = container.offsetHeight;
+    container.style.height = `${collapsedHeight}px`;
     container.getBoundingClientRect(); // force reflow
 
     setPhase('animating');
@@ -47,8 +48,8 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
         scrollTo(targetScroll, { ease: 0.05 });
       }
 
-      // 3. Snap back to 36px, then animate to target (no paint between — single rAF)
-      container.style.height = '36px';
+      // 3. Snap back to collapsed, then animate to target (no paint between — single rAF)
+      container.style.height = `${collapsedHeight}px`;
       container.getBoundingClientRect(); // force reflow
       container.style.transition = 'height 1200ms cubic-bezier(0.4, 0, 0.2, 1)';
       container.style.height = `${targetHeight}px`;
@@ -73,7 +74,6 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
       onTransitionEnd={handleTransitionEnd}
       className={`w-full bg-white relative ${phase === 'collapsed' ? 'cursor-pointer hover:opacity-70 transition-opacity duration-150' : ''}`}
       style={{
-        height: phase === 'collapsed' ? '36px' : undefined,
         overflow: phase !== 'expanded' ? 'hidden' : undefined,
       }}
     >
@@ -82,13 +82,12 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
         <div
           className="absolute top-0 left-0 right-0 bg-white z-10"
           style={{
-            height: '36px',
             transition: 'transform 500ms ease-out, opacity 500ms ease-out',
             transform: phase === 'animating' ? 'translateY(-100%)' : 'translateY(0)',
             opacity: phase === 'animating' ? 0 : 1,
           }}
         >
-          <div className="flex items-center gap-6 px-4 lg:px-0 h-9">
+          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 px-4 lg:px-0 py-2 md:py-0 md:h-9">
             <p className="flex-1 font-header text-xs font-medium tracking-[1.8px] uppercase leading-[1.3]">
               {title}, {year}
             </p>

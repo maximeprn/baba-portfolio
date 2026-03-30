@@ -28,6 +28,16 @@ function Films() {
   const [showShowreel, setShowShowreel] = useState(false);
   const [selectedFilm, setSelectedFilm] = useState(null);
 
+  // Mute hero video when opening any film modal
+  const muteHero = () => {
+    document.querySelectorAll('video[data-hero-video]').forEach(v => { v.muted = true; });
+  };
+
+  const handleFilmClick = (film) => {
+    muteHero();
+    setSelectedFilm(film);
+  };
+
   return (
     <div className="flex flex-col items-center w-full">
       {/* HERO SECTION */}
@@ -43,21 +53,21 @@ function Films() {
             <CollapsedFilmCard
               film={film}
               index={index}
-              onFilmClick={setSelectedFilm}
+              onFilmClick={handleFilmClick}
             />
           ) : film.featured ? (
             <div className="py-5 w-full">
               <FeaturedFilmCard
                 film={film}
                 index={index}
-                onFilmClick={setSelectedFilm}
+                onFilmClick={handleFilmClick}
               />
             </div>
           ) : (
             <div className="py-5 w-full">
               <FilmCard
                 film={film}
-                onFilmClick={setSelectedFilm}
+                onFilmClick={handleFilmClick}
               />
             </div>
           )}

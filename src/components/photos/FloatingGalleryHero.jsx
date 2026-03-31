@@ -336,12 +336,22 @@ function FloatingGalleryHero() {
         </div>
       </div>
 
-      {/* Mobile: Fullscreen photo */}
-      <div className="md:hidden relative h-[80svh] w-full overflow-hidden flex items-center justify-center bg-white">
+      {/* Mobile: Fullscreen photo with name overlay */}
+      <div
+        className="md:hidden relative h-[80svh] w-full overflow-hidden bg-white"
+        style={{ containerType: 'inline-size' }}
+      >
         <img
           src={currentPhoto.src}
           alt="Photography portfolio"
-          className="max-w-full max-h-full object-contain"
+          className="w-full h-full object-cover"
+        />
+        <NameOverlay
+          color={currentPhoto.isLight ? 'black' : 'white'}
+          containerRef={null}
+          contentRef={null}
+          scale={scale}
+          style={{ zIndex: 30 }}
         />
       </div>
 

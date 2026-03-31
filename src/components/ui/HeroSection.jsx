@@ -147,10 +147,11 @@ function MuteButton({ isMuted, onClick }) {
   );
 }
 
-function HeroSection({ onVideoClick }) {
+function HeroSection({ onVideoClick, onReady }) {
   const desktopVideoRef = useRef(null);
   const mobileVideoRef = useRef(null);
   const [isMuted, setIsMuted] = useState(true);
+  const readyFired = useRef(false);
 
   const isSafari = typeof navigator !== 'undefined'
     && /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -170,6 +171,10 @@ function HeroSection({ onVideoClick }) {
     video.controls = false;
     video.removeAttribute('controls');
     video.play().catch(() => {});
+    if (!readyFired.current) {
+      readyFired.current = true;
+      onReady?.();
+    }
   };
 
   // Non-Safari: unmute after 2.5s, re-mute if browser kills playback

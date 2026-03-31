@@ -8,7 +8,7 @@ const LAYOUT_VARIANTS = [
   { videoWidth: '44%', textWidth: '45%', paddingTop: '8rem', paddingBottom: '8rem', textPaddingTop: '0' },
 ];
 
-function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
+function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onVideoReady }) {
   const {
     title,
     description,
@@ -29,6 +29,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
     e.target.controls = false;
     e.target.removeAttribute('controls');
     e.target.play().catch((err) => console.warn(`Video autoplay blocked for "${title}":`, err.message));
+    onVideoReady?.();
   };
 
   return (
@@ -69,13 +70,13 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
           }}
         >
           <video
-            src={videoFile}
+            src={shouldLoad ? videoFile : undefined}
             poster={thumbnail || undefined}
             autoPlay
             loop
             playsInline
             muted
-            preload="auto"
+            preload={shouldLoad ? 'auto' : 'none'}
             onLoadedData={handleVideoReady}
             className="w-full h-full object-cover pointer-events-none"
             aria-label={title}

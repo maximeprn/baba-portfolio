@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 import HeroSection from '../components/ui/HeroSection';
@@ -30,6 +30,39 @@ function Films() {
   const [showShowreel, setShowShowreel] = useState(false);
   const [selectedFilm, setSelectedFilm] = useState(null);
 
+  // Cascading video load: hero → featured → collapsed
+  const [loadPhase, setLoadPhase] = useState('hero');
+  const phaseRef = useRef('hero');
+  const featuredLoadCount = useRef(0);
+  const featuredFilms = films.filter(f => !f.collapsed);
+
+  const advancePhase = useCallback((to) => {
+    if (
+      (to === 'featured' && phaseRef.current === 'hero') ||
+      (to === 'collapsed' && phaseRef.current === 'featured')
+    ) {
+      phaseRef.current = to;
+      setLoadPhase(to);
+    }
+  }, []);
+
+  const handleHeroReady = useCallback(() => advancePhase('featured'), [advancePhase]);
+
+  const handleFeaturedVideoReady = useCallback(() => {
+    featuredLoadCount.current += 1;
+    if (featuredLoadCount.current >= featuredFilms.length) {
+      advancePhase('collapsed');
+    }
+  }, [featuredFilms.length, advancePhase]);
+
+  // Fallback: start collapsed loading after 10s even if featured aren't all done
+  useEffect(() => {
+    if (loadPhase === 'featured') {
+      const timer = setTimeout(() => advancePhase('collapsed'), 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [loadPhase, advancePhase]);
+
   // Mute hero video when opening any film modal
   const muteHero = () => {
     document.querySelectorAll('video[data-hero-video]').forEach(v => { v.muted = true; });
@@ -51,7 +84,7 @@ function Films() {
       </Helmet>
 
       {/* HERO SECTION */}
-      <HeroSection onVideoClick={() => setShowShowreel(true)} />
+      <HeroSection onVideoClick={() => setShowShowreel(true)} onReady={handleHeroReady} />
 
       <div className="h-20 md:h-0" aria-hidden="true" />
 
@@ -67,6 +100,8 @@ function Films() {
                 film={film}
                 index={index}
                 onFilmClick={handleFilmClick}
+                shouldLoad={loadPhase !== 'hero'}
+                onVideoReady={handleFeaturedVideoReady}
               />
             </div>
           ) : (
@@ -90,6 +125,7 @@ function Films() {
             film={film}
             index={index}
             onFilmClick={handleFilmClick}
+            shouldLoad={loadPhase === 'collapsed'}
           />
         </React.Fragment>
       ))}

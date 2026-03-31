@@ -88,7 +88,7 @@ function Layout({ children }) {
 
       {/* Outer container - full viewport height with flex column layout
           This ensures the footer stays at the bottom even with little content */}
-      <div className="relative min-h-screen flex flex-col bg-background">
+      <div className="relative min-h-screen flex flex-col bg-background overflow-x-hidden">
         {/* NAVIGATION - Always at the top, wider padding */}
         <div className="md:px-[180px]">
           <Navigation />

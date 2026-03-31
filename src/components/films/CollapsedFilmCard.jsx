@@ -7,7 +7,7 @@ import { useRef, useState, useCallback } from 'react';
 import FeaturedFilmCard from './FeaturedFilmCard';
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
 
-function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
+function CollapsedFilmCard({ film, index = 0, onFilmClick, shouldLoad = false }) {
   const [phase, setPhase] = useState('collapsed'); // 'collapsed' | 'animating' | 'expanded'
   const containerRef = useRef(null);
   const contentRef = useRef(null);
@@ -124,7 +124,7 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
 
       {/* FeaturedFilmCard content — absolute when collapsed so it doesn't affect height */}
       <div ref={contentRef} className={phase === 'collapsed' ? 'absolute top-0 left-0 right-0' : ''}>
-        <FeaturedFilmCard film={film} index={index} onFilmClick={onFilmClick} />
+        <FeaturedFilmCard film={film} index={index} onFilmClick={onFilmClick} shouldLoad={phase !== 'collapsed' || shouldLoad} />
       </div>
     </article>
   );

@@ -79,6 +79,7 @@ function usePhotoSlideshow() {
   const queueRef = useRef([]);
   const indexRef = useRef(0);
   const cancelRef = useRef(false);
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const [currentPhoto, setCurrentPhoto] = useState(() => {
     const initial = shuffle(heroPhotos);
     queueRef.current = initial;
@@ -101,19 +102,24 @@ function usePhotoSlideshow() {
 
   const advance = useCallback(async () => {
     let attempts = 0;
-    while (attempts < 5) {
+    while (attempts < 20) {
       if (cancelRef.current) return;
       const idx = nextIndex();
       const src = queueRef.current[idx];
       try {
         const result = await preloadImage(src);
+        // On mobile, skip landscape images
+        if (isMobile && result.naturalWidth > result.naturalHeight) {
+          attempts++;
+          continue;
+        }
         if (!cancelRef.current) setCurrentPhoto(result);
         return;
       } catch {
         attempts++;
       }
     }
-  }, [nextIndex]);
+  }, [nextIndex, isMobile]);
 
   useEffect(() => {
     if (prefersReducedMotion || heroPhotos.length <= 1) return;
@@ -125,10 +131,18 @@ function usePhotoSlideshow() {
       img.src = src;
     });
 
-    // Load the first image's natural dimensions
-    preloadImage(queueRef.current[0]).then((result) => {
-      if (!cancelRef.current) setCurrentPhoto(result);
-    }).catch(() => {});
+    // Load the first suitable image
+    (async () => {
+      for (const src of queueRef.current) {
+        if (cancelRef.current) return;
+        try {
+          const result = await preloadImage(src);
+          if (isMobile && result.naturalWidth > result.naturalHeight) continue;
+          if (!cancelRef.current) setCurrentPhoto(result);
+          return;
+        } catch { /* skip */ }
+      }
+    })();
 
     let timer;
     const tick = async () => {

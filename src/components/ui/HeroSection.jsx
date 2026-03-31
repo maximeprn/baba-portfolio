@@ -1,5 +1,4 @@
 import { useRef, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { siteConfig } from '../../data/siteConfig';
 
 /**
@@ -149,7 +148,6 @@ function MuteButton({ isMuted, onClick }) {
 }
 
 function HeroSection({ onVideoClick }) {
-  const { center: navCenter } = siteConfig.navigation;
   const desktopVideoRef = useRef(null);
   const mobileVideoRef = useRef(null);
   const [isMuted, setIsMuted] = useState(true);
@@ -232,19 +230,6 @@ function HeroSection({ onVideoClick }) {
 
       {/* MOBILE: Fullscreen video + overlay name */}
       <div className="md:hidden flex flex-col h-[calc(100svh-5rem)]">
-        {/* Nav links */}
-        <div className="flex items-center justify-center gap-2 py-4">
-          {navCenter.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className="font-header font-normal text-xs uppercase hover:opacity-70 transition-opacity py-3 px-2"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-
         {/* Video + overlaid name */}
         <div className="flex-1 relative overflow-hidden" onClick={onVideoClick} style={{ containerType: 'inline-size' }}>
           <video

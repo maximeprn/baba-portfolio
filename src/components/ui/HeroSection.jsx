@@ -254,3 +254,4 @@ function HeroSection({ onVideoClick }) {
 }
 
 export default HeroSection;
+export { MobileHeroNameOverlay };

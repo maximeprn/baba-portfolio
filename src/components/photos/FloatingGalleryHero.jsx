@@ -10,6 +10,7 @@
 import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { siteConfig } from '../../data/siteConfig';
 import { heroPhotos } from '../../data/heroPhotos';
+import { MobileHeroNameOverlay } from '../ui/HeroSection';
 
 // Fisher-Yates shuffle (returns new array)
 function shuffle(arr) {
@@ -336,9 +337,9 @@ function FloatingGalleryHero() {
         </div>
       </div>
 
-      {/* Mobile: Fullscreen photo with name overlay */}
+      {/* Mobile: Fullscreen photo with name overlay (same layout as Films hero) */}
       <div
-        className="md:hidden relative h-[80svh] w-full overflow-hidden bg-white"
+        className="md:hidden relative h-[calc(100svh-5rem)] w-full overflow-hidden bg-white"
         style={{ containerType: 'inline-size' }}
       >
         <img
@@ -346,13 +347,7 @@ function FloatingGalleryHero() {
           alt="Photography portfolio"
           className="w-full h-full object-cover"
         />
-        <NameOverlay
-          color={currentPhoto.isLight ? 'black' : 'white'}
-          containerRef={null}
-          contentRef={null}
-          scale={scale}
-          style={{ zIndex: 30 }}
-        />
+        <MobileHeroNameOverlay />
       </div>
 
       <h1 className="sr-only">Photos</h1>

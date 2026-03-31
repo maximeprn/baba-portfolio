@@ -83,8 +83,7 @@ function Navigation() {
             <Link
               key={item.path}
               to={item.path}
-              className={`nav-link transition-opacity duration-150 ${isActive(item.path) ? 'opacity-100' : 'opacity-100 hover:opacity-70'}`}
-              // Accessibility: Indicate current page to screen readers
+              className={`font-header font-medium uppercase tracking-[0.05em] transition-all duration-150 ${isActive(item.path) ? 'text-[14px]' : 'text-xs hover:opacity-70'}`}
               aria-current={isActive(item.path) ? 'page' : undefined}
             >
               {item.label}
@@ -94,12 +93,12 @@ function Navigation() {
 
 
         {/* CENTER SECTION - Main navigation (Photos, Films) - Desktop only */}
-        <div className="hidden md:flex items-center justify-center gap-4">
+        <div className="flex items-center justify-center gap-4">
           {center.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`font-header font-normal uppercase transition-all duration-150 ${isActive(item.path) ? 'text-[1rem] opacity-100' : 'text-[0.75rem] opacity-100 hover:opacity-70'}`}
+              className={`font-header font-normal uppercase transition-all duration-150 ${isActive(item.path) ? 'text-[14px]' : 'text-[12px] hover:opacity-70'}`}
               aria-current={isActive(item.path) ? 'page' : undefined}
             >
               {item.label}
@@ -114,7 +113,7 @@ function Navigation() {
             <Link
               key={item.path}
               to={item.path}
-              className={`nav-link transition-opacity duration-150 ${isActive(item.path) ? 'opacity-100' : 'opacity-100 hover:opacity-70'}`}
+              className={`font-header font-medium uppercase tracking-[0.05em] transition-all duration-150 ${isActive(item.path) ? 'text-[14px]' : 'text-xs hover:opacity-70'}`}
               aria-current={isActive(item.path) ? 'page' : undefined}
             >
               {item.label}

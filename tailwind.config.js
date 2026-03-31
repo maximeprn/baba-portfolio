@@ -27,11 +27,11 @@ export default {
       // These map to CSS variables defined in index.css
       // Usage: className="font-header" or className="font-body"
       fontFamily: {
-        // Headers and navigation - Steps-Mono
+        // Headers and navigation - Helvetica Now Display
         'header': 'var(--font-header)',
-        // Project titles - Helvetica Now
+        // Project titles - Helvetica Now Display
         'title': 'var(--font-title)',
-        // Body text - American Typewriter
+        // Body text - Helvetica Now Text
         'body': 'var(--font-body)',
       },
 

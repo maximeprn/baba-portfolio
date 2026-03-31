@@ -1,5 +1,4 @@
 import { useRef, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { siteConfig } from '../../data/siteConfig';
 
 /**
@@ -148,11 +147,11 @@ function MuteButton({ isMuted, onClick }) {
   );
 }
 
-function HeroSection({ onVideoClick }) {
-  const { center: navCenter } = siteConfig.navigation;
+function HeroSection({ onVideoClick, onReady }) {
   const desktopVideoRef = useRef(null);
   const mobileVideoRef = useRef(null);
   const [isMuted, setIsMuted] = useState(true);
+  const readyFired = useRef(false);
 
   const isSafari = typeof navigator !== 'undefined'
     && /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -172,6 +171,10 @@ function HeroSection({ onVideoClick }) {
     video.controls = false;
     video.removeAttribute('controls');
     video.play().catch(() => {});
+    if (!readyFired.current) {
+      readyFired.current = true;
+      onReady?.();
+    }
   };
 
   // Non-Safari: unmute after 2.5s, re-mute if browser kills playback
@@ -213,7 +216,7 @@ function HeroSection({ onVideoClick }) {
             <video
               ref={desktopVideoRef}
               data-hero-video
-              src="/videos/Showreel 2021.mp4"
+              src={siteConfig.showreel.videoFile}
               autoPlay
               loop
               muted
@@ -232,25 +235,12 @@ function HeroSection({ onVideoClick }) {
 
       {/* MOBILE: Fullscreen video + overlay name */}
       <div className="md:hidden flex flex-col h-[calc(100svh-5rem)]">
-        {/* Nav links */}
-        <div className="flex items-center justify-center gap-4 py-4">
-          {navCenter.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className="font-header font-normal text-xs uppercase hover:opacity-70 transition-opacity"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
-
         {/* Video + overlaid name */}
         <div className="flex-1 relative overflow-hidden" onClick={onVideoClick} style={{ containerType: 'inline-size' }}>
           <video
             ref={mobileVideoRef}
             data-hero-video
-            src="/videos/Showreel 2021.mp4"
+            src={siteConfig.showreel.videoFile}
             autoPlay
             loop
             muted
@@ -269,3 +259,4 @@ function HeroSection({ onVideoClick }) {
 }
 
 export default HeroSection;
+export { MobileHeroNameOverlay };

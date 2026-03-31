@@ -80,6 +80,9 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
   }, []);
 
 
+  // Throttle scrollY state updates to ~15fps to avoid excessive re-renders
+  const lastScrollYUpdateRef = useRef(0);
+
   // Update scroll on each animation frame
   const updateScroll = useCallback(() => {
     const data = scrollDataRef.current;
@@ -96,11 +99,15 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
     // Apply transform
     content.style.transform = `translateY(${-rounded}px)`;
 
-    // Update scroll position state (throttled to avoid too many re-renders)
-    setScrollY(rounded);
-
-    // Notify all scroll listeners
+    // Notify all scroll listeners (real-time, no throttle)
     scrollListenersRef.current.forEach(listener => listener(rounded));
+
+    // Throttle scrollY state updates (~15fps)
+    const now = performance.now();
+    if (now - lastScrollYUpdateRef.current > 66) {
+      setScrollY(rounded);
+      lastScrollYUpdateRef.current = now;
+    }
 
     // Continue animation if not at target
     const diff = Math.abs(data.target - data.current);
@@ -405,6 +412,11 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
       const data = scrollDataRef.current;
       if (data.rafId) {
         cancelAnimationFrame(data.rafId);
+      }
+      // Restore ease if interrupted mid-scroll with custom ease
+      if (data._restoreEase != null) {
+        data.ease = data._restoreEase;
+        data._restoreEase = null;
       }
     };
   }, [isDesktop, handleWheel, handleKeyDown]);

@@ -19,6 +19,7 @@
  */
 
 // Import the ProjectCard component
+import { Helmet } from 'react-helmet-async';
 import ProjectCard from '../components/photos/ProjectCard';
 
 // Import the floating gallery hero
@@ -46,6 +47,11 @@ function Photos() {
         w-full
       "
     >
+      <Helmet>
+        <title>Photos | Basile Deschamps</title>
+        <meta name="description" content="Photo projects by Basile Deschamps — sports photography and visual storytelling." />
+        <meta property="og:title" content="Photos | Basile Deschamps" />
+      </Helmet>
       {/* FLOATING GALLERY HERO */}
       <FloatingGalleryHero />
 

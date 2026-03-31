@@ -46,15 +46,15 @@ function FilmCard({ film, onFilmClick }) {
           </div>
 
           {/* Credits */}
-          <div className="flex w-full max-w-[584px] items-start justify-center gap-11">
+          <div className="flex w-full max-w-[584px] items-start justify-center gap-6 md:gap-11">
             <div className="flex-1 font-header text-sm tracking-wide leading-7">
-              {credits.left.map((credit, i) => (
-                <p key={i}>{credit.role} : {credit.name}</p>
+              {credits.left.map((credit) => (
+                <p key={`${credit.role}-${credit.name}`}>{credit.role} : {credit.name}</p>
               ))}
             </div>
             <div className="flex-1 font-header text-sm tracking-wide leading-7">
-              {credits.right.map((credit, i) => (
-                <p key={i}>{credit.role} : {credit.name}</p>
+              {credits.right.map((credit) => (
+                <p key={`${credit.role}-${credit.name}`}>{credit.role} : {credit.name}</p>
               ))}
             </div>
           </div>

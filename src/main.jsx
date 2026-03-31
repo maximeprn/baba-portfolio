@@ -27,6 +27,9 @@ import ReactDOM from 'react-dom/client';
 // It enables navigation between different pages/views without page reloads
 import { BrowserRouter } from 'react-router-dom';
 
+// HelmetProvider enables per-page <head> management (title, meta tags, OG)
+import { HelmetProvider } from 'react-helmet-async';
+
 // Import the main App component - the root of our component tree
 import App from './App';
 
@@ -58,9 +61,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       Without this, we couldn't use <Link>, <Route>, or navigate
       between pages without full page reloads.
     */}
-    <BrowserRouter>
-      {/* The App component contains all our routes and pages */}
-      <App />
-    </BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </HelmetProvider>
   </React.StrictMode>
 );

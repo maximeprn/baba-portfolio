@@ -37,7 +37,7 @@ export default defineConfig({
     // Output directory for the built files
     outDir: 'dist',
     // Generate source maps for easier debugging in production
-    sourcemap: true
+    sourcemap: false
   },
 
   // Resolve configuration - how Vite finds and imports files

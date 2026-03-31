@@ -12,8 +12,7 @@
  * - Uses React Router for client-side navigation
  *
  * ROUTES:
- * /              → Films page (homepage)
- * /films/:slug   → Individual film detail page
+ * /              → Films page (homepage, film detail via modal overlay)
  * /photos        → Photo projects listing
  * /photos/:slug  → Individual photo project gallery
  * /about         → About page

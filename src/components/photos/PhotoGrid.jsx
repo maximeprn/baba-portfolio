@@ -79,13 +79,13 @@ function PhotoGrid({ photos, onPhotoClick }) {
               w-full
               h-full
               object-cover
-              transition-all              /* Smooth all transitions */
+              transition-all
               duration-300
-              group-hover:scale-105       /* Slight zoom on hover */
+              group-hover:scale-105
+              group-active:scale-105
             "
-            // Lazy loading for performance
-            // Images below the fold won't load until needed
             loading="lazy"
+            onError={(e) => { e.target.style.display = 'none'; }}
           />
 
           {/* Hover overlay */}

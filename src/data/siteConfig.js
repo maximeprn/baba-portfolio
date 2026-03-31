@@ -53,7 +53,7 @@ export const siteConfig = {
 
   contact: {
     // Email address for contact form and display
-    email: 'hello@basiledeschamps.com',
+    email: 'basiledeschamps3@gmail.com',
 
     // Phone number (optional - set to null if not wanted)
     phone: null,
@@ -70,10 +70,10 @@ export const siteConfig = {
 
   social: {
     // Instagram profile URL
-    instagram: 'https://instagram.com/basiledeschamps',
+    instagram: 'https://www.instagram.com/basile.deschamps/',
 
     // Vimeo profile for film work
-    vimeo: 'https://vimeo.com/basiledeschamps',
+    vimeo: 'https://vimeo.com/user37669788',
 
     // LinkedIn (optional)
     linkedin: null,
@@ -152,6 +152,7 @@ export const siteConfig = {
 
   showreel: {
     vimeoUrl: 'https://player.vimeo.com/video/989542038',
+    videoFile: '/videos/Showreel 2021.mp4',
   },
 
 

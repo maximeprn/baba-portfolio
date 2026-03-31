@@ -352,7 +352,7 @@ export const films = [
     description: 'First film in the Back to 1992 series for Hommage Clothing. Directed by Basile Deschamps. Early work, archive-inspired.',
     thumbnail: null,
     videoFile: '/videos/Hommage Clothing - Back to 1992 1.mp4',
-    videoUrl: null, // URL was corrupted — needs correct Vimeo ID
+    videoUrl: 'https://player.vimeo.com/video/269335097',
     videoType: 'vimeo',
     year: 2018,
     client: 'Hommage Clothing',

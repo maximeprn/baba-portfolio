@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useParams, Link } from 'react-router-dom';
 
 import PhotoGrid from '../components/photos/PhotoGrid';
@@ -40,6 +41,11 @@ function PhotoProject() {
 
   return (
     <>
+      <Helmet>
+        <title>{title} | Basile Deschamps</title>
+        <meta name="description" content={`${title} — ${description?.slice(0, 120) || 'Photo project by Basile Deschamps'}`} />
+        <meta property="og:title" content={`${title} | Basile Deschamps`} />
+      </Helmet>
       <div className="flex flex-col lg:flex-row w-full max-w-container px-6 py-8 gap-8 lg:gap-12">
         {/* LEFT SIDEBAR — sticky project info */}
         <aside className="w-full lg:w-80 lg:flex-shrink-0 lg:sticky lg:top-24 lg:self-start">

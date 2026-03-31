@@ -213,7 +213,7 @@ function HeroSection({ onVideoClick }) {
             <video
               ref={desktopVideoRef}
               data-hero-video
-              src="/videos/Showreel 2021.mp4"
+              src={siteConfig.showreel.videoFile}
               autoPlay
               loop
               muted
@@ -233,12 +233,12 @@ function HeroSection({ onVideoClick }) {
       {/* MOBILE: Fullscreen video + overlay name */}
       <div className="md:hidden flex flex-col h-[calc(100svh-5rem)]">
         {/* Nav links */}
-        <div className="flex items-center justify-center gap-4 py-4">
+        <div className="flex items-center justify-center gap-2 py-4">
           {navCenter.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className="font-header font-normal text-xs uppercase hover:opacity-70 transition-opacity"
+              className="font-header font-normal text-xs uppercase hover:opacity-70 transition-opacity py-3 px-2"
             >
               {item.label}
             </Link>
@@ -250,7 +250,7 @@ function HeroSection({ onVideoClick }) {
           <video
             ref={mobileVideoRef}
             data-hero-video
-            src="/videos/Showreel 2021.mp4"
+            src={siteConfig.showreel.videoFile}
             autoPlay
             loop
             muted

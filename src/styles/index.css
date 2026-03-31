@@ -246,7 +246,7 @@
   /* HTML element - sets the root font size */
   html {
     font-size: 16px; /* Base size for rem calculations */
-    scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+    /* scroll-behavior handled by SmoothScrollContext (desktop) and native (mobile) */
     -webkit-font-smoothing: antialiased; /* Smoother fonts on Mac */
     -moz-osx-font-smoothing: grayscale;
   }
@@ -337,28 +337,6 @@
     margin-right: auto;
     padding-left: var(--spacing-lg);
     padding-right: var(--spacing-lg);
-  }
-
-  /* Navigation link style */
-  .nav-link {
-    font-family: var(--font-header);
-    font-size: var(--text-xs);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    transition: opacity var(--transition-fast);
-  }
-
-  .nav-link:hover {
-    opacity: 0.7;
-  }
-
-  /* Main navigation items (PHOTOS, FILMS) */
-  .nav-link-main {
-    font-family: var(--font-header);
-    font-size: var(--text-xl);
-    font-weight: 400;
-    text-transform: uppercase;
   }
 
   /* Divider line */
@@ -463,8 +441,12 @@
       flex-shrink: 0;
     }
 
-    /* Text column — vertical offset for visual asymmetry */
+    /* Text column — constrained width, centered between video edge and screen edge */
     .film-card > div > div:last-child {
+      width: var(--text-width, 45%);
+      flex-shrink: 0;
+      margin-left: auto;
+      margin-right: auto;
       padding-top: var(--text-padding-top, 0);
     }
   }

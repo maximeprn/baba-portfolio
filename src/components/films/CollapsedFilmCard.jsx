@@ -14,14 +14,24 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
   const { scrollTo, getScrollPosition } = useSmoothScrollContext();
   const { title, description, year, category } = film;
 
-  const shortDescription = description.split(' ').slice(0, 5).join(' ');
+  const shortDescription = description.split(' ').slice(0, 5).join(' ') + '...';
+  const isExpandingRef = useRef(false);
 
   const handleClick = useCallback(() => {
-    if (phase !== 'collapsed') return;
+    if (phase !== 'collapsed' || isExpandingRef.current) return;
+    isExpandingRef.current = true;
 
     const container = containerRef.current;
     const content = contentRef.current;
     if (!container || !content) return;
+
+    // Skip animation for reduced-motion preference
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setPhase('expanded');
+      container.style.height = 'auto';
+      container.style.overflow = '';
+      return;
+    }
 
     const targetHeight = content.scrollHeight;
 
@@ -56,6 +66,13 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
     });
   }, [phase, scrollTo, getScrollPosition]);
 
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleClick();
+    }
+  }, [handleClick]);
+
   const handleTransitionEnd = useCallback((e) => {
     if (e.target !== containerRef.current || e.propertyName !== 'height') return;
     setPhase('expanded');
@@ -63,7 +80,6 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
     if (container) {
       container.style.transition = 'none';
       container.style.height = 'auto';
-      container.style.overflow = '';
     }
   }, []);
 
@@ -71,16 +87,21 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
     <article
       ref={containerRef}
       onClick={phase === 'collapsed' ? handleClick : undefined}
+      onKeyDown={phase === 'collapsed' ? handleKeyDown : undefined}
       onTransitionEnd={handleTransitionEnd}
-      className={`w-full bg-white relative ${phase === 'collapsed' ? 'cursor-pointer hover:opacity-70 transition-opacity duration-150' : ''}`}
+      role={phase === 'collapsed' ? 'button' : undefined}
+      tabIndex={phase === 'collapsed' ? 0 : undefined}
+      aria-expanded={phase !== 'collapsed'}
+      aria-label={phase === 'collapsed' ? `Expand ${title} film details` : undefined}
+      className={`w-full bg-white relative ${phase === 'collapsed' ? 'cursor-pointer hover:opacity-70 transition-opacity duration-150 md:h-9' : ''}`}
       style={{
         overflow: phase !== 'expanded' ? 'hidden' : undefined,
       }}
     >
-      {/* Collapsed text overlay — slides up and fades out */}
+      {/* Collapsed text overlay — normal flow on mobile (sizes container), absolute on desktop */}
       {phase !== 'expanded' && (
         <div
-          className="absolute top-0 left-0 right-0 bg-white z-10"
+          className={`${phase === 'collapsed' ? 'relative md:absolute' : 'absolute'} top-0 left-0 right-0 bg-white z-10`}
           style={{
             transition: 'transform 500ms ease-out, opacity 500ms ease-out',
             transform: phase === 'animating' ? 'translateY(-100%)' : 'translateY(0)',
@@ -89,7 +110,7 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
         >
           <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 px-4 lg:px-0 py-2 md:py-0 md:h-9">
             <p className="flex-1 font-header text-xs font-medium tracking-[1.8px] uppercase leading-[1.3]">
-              {title}, {year}
+              {title}
             </p>
             <p className="font-body text-xs tracking-[0.6px] leading-7 shrink-0 hidden md:block">
               {shortDescription}
@@ -101,8 +122,8 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
         </div>
       )}
 
-      {/* FeaturedFilmCard content — always rendered for preloading, revealed by height animation */}
-      <div ref={contentRef}>
+      {/* FeaturedFilmCard content — absolute when collapsed so it doesn't affect height */}
+      <div ref={contentRef} className={phase === 'collapsed' ? 'absolute top-0 left-0 right-0' : ''}>
         <FeaturedFilmCard film={film} index={index} onFilmClick={onFilmClick} />
       </div>
     </article>

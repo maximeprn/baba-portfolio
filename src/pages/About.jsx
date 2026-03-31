@@ -21,6 +21,7 @@
  */
 
 // Import site configuration for artist info
+import { Helmet } from 'react-helmet-async';
 import { siteConfig, getActiveSocialLinks } from '../data/siteConfig';
 
 
@@ -52,6 +53,12 @@ function About() {
         py-12
       "
     >
+      <Helmet>
+        <title>About | Basile Deschamps</title>
+        <meta name="description" content="About Basile Deschamps — sports photographer and filmmaker based in Paris, France." />
+        <meta property="og:title" content="About | Basile Deschamps" />
+      </Helmet>
+
       {/* PAGE HEADER */}
       <header className="w-full max-w-3xl mb-12">
         <h1

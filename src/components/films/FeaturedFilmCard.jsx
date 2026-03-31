@@ -4,8 +4,8 @@
  */
 
 const LAYOUT_VARIANTS = [
-  { videoWidth: '55%', paddingTop: '8rem', paddingBottom: '8rem', textPaddingTop: '0' },
-  { videoWidth: '55%', paddingTop: '8rem', paddingBottom: '8rem', textPaddingTop: '0' },
+  { videoWidth: '44%', textWidth: '45%', paddingTop: '8rem', paddingBottom: '8rem', textPaddingTop: '0' },
+  { videoWidth: '44%', textWidth: '45%', paddingTop: '8rem', paddingBottom: '8rem', textPaddingTop: '0' },
 ];
 
 function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
@@ -28,7 +28,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
   const handleVideoReady = (e) => {
     e.target.controls = false;
     e.target.removeAttribute('controls');
-    e.target.play().catch(() => {});
+    e.target.play().catch((err) => console.warn(`Video autoplay blocked for "${title}":`, err.message));
   };
 
   return (
@@ -38,9 +38,20 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
         '--section-padding-top': variant.paddingTop,
         '--section-padding-bottom': variant.paddingBottom,
         '--video-width': variant.videoWidth,
+        '--text-width': variant.textWidth,
         '--text-padding-top': variant.textPaddingTop,
       }}
     >
+      {/* TITLE — mobile only, above the video */}
+      <header className="px-4 lg:hidden">
+        <h3
+          onClick={handleClick}
+          className="font-header text-lg font-medium tracking-widest uppercase cursor-pointer hover:opacity-70 transition-opacity duration-150 leading-tight mb-4"
+        >
+          {title}
+        </h3>
+      </header>
+
       <div
         className={`px-4 lg:px-0 flex flex-col lg:items-center ${isVideoLeft ? 'lg:flex-row' : 'lg:flex-row-reverse'}`}
       >
@@ -50,11 +61,11 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
           className="w-full overflow-hidden cursor-pointer hover:opacity-90 transition-opacity duration-300"
           style={{
             aspectRatio,
-            ...(thumbnail && {
+            ...(thumbnail ? {
               backgroundImage: `url(${thumbnail})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-            }),
+            } : {}),
           }}
         >
           <video
@@ -72,9 +83,9 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick }) {
         </div>
 
         {/* TEXT CONTENT */}
-        <div className={`flex flex-col justify-center flex-1 min-w-0 gap-5 items-start lg:px-8 xl:px-12 2xl:px-20`}>
-          {/* TITLE */}
-          <header>
+        <div className={`flex flex-col justify-center min-w-0 gap-5 items-start lg:px-8 xl:px-12 2xl:px-20`}>
+          {/* TITLE — desktop only (mobile title is overlaid on video) */}
+          <header className="hidden lg:block">
             <h3
               onClick={handleClick}
               className="font-header text-lg font-medium tracking-widest uppercase cursor-pointer hover:opacity-70 transition-opacity duration-150 leading-tight"

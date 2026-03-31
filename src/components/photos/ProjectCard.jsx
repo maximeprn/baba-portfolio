@@ -80,17 +80,18 @@ function ProjectCard({ project }) {
         {/* Cover image with hover effect */}
         <img
           src={coverImage}
-          alt={title}
+          alt={`Cover image from ${title}`}
           loading="lazy"
           className="
             w-full
             h-full
-            object-cover                 /* Cover the area */
-            transition-transform         /* Smooth transform animation */
-            duration-500                 /* 500ms animation */
-            ease-out                     /* Ease out timing */
-            group-hover:scale-105        /* Zoom in slightly on card hover */
+            object-cover
+            transition-transform
+            duration-500
+            ease-out
+            group-hover:scale-105
           "
+          onError={(e) => { e.target.style.display = 'none'; }}
         />
 
         {/* Optional: Overlay on hover

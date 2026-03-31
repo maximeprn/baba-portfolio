@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async';
 import { siteConfig, getActiveSocialLinks } from '../data/siteConfig';
 
 function Contact() {
@@ -6,6 +7,11 @@ function Contact() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] w-full px-6 py-12">
+      <Helmet>
+        <title>Contact | Basile Deschamps</title>
+        <meta name="description" content="Get in touch with Basile Deschamps — film director and photographer based in Paris." />
+        <meta property="og:title" content="Contact | Basile Deschamps" />
+      </Helmet>
       <h1 className="font-header text-4xl md:text-5xl text-center mb-12">
         CONTACT
       </h1>

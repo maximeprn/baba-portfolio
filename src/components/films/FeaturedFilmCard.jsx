@@ -153,9 +153,11 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
       <header className="px-4 lg:hidden">
         <h3
           onClick={handleClick}
-          className="font-header text-lg font-medium tracking-widest uppercase cursor-pointer hover:opacity-70 transition-opacity duration-150 leading-tight mb-4"
+          className="font-header text-lg font-medium tracking-widest uppercase cursor-pointer leading-tight mb-4 group/ffc-title-m"
         >
-          {title}
+          <span className="px-2 py-0.5 box-decoration-clone transition-colors duration-150 group-hover/ffc-title-m:bg-gray-900 group-hover/ffc-title-m:text-white">
+            {title}
+          </span>
         </h3>
       </header>
 
@@ -199,9 +201,11 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
           <header className="hidden lg:block ffc-title">
             <h3
               onClick={handleClick}
-              className="font-header text-lg font-medium tracking-widest uppercase cursor-pointer hover:opacity-70 transition-opacity duration-150 leading-tight"
+              className="font-header text-lg font-medium tracking-widest uppercase cursor-pointer leading-tight group/ffc-title-d"
             >
-              {title}
+              <span className="px-2 py-0.5 box-decoration-clone transition-colors duration-150 group-hover/ffc-title-d:bg-gray-900 group-hover/ffc-title-d:text-white">
+                {title}
+              </span>
             </h3>
           </header>
 

@@ -93,32 +93,22 @@ export const siteConfig = {
 
   navigation: {
     // Items displayed on the left side of the nav
-    left: [
-      {
-        label: 'ABOUT',
-        path: '/about',
-      },
-    ],
+    left: [],
 
     // Items displayed in the center of the nav (main sections)
     center: [
       {
-        label: 'PHOTOS',
+        label: 'Photos',
         path: '/photos',
       },
       {
-        label: 'FILMS',
+        label: 'Films',
         path: '/',
       },
     ],
 
     // Items displayed on the right side of the nav
-    right: [
-      {
-        label: 'CONTACT',
-        path: '/contact',
-      },
-    ],
+    right: [],
   },
 
 

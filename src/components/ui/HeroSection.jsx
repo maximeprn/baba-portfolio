@@ -2,120 +2,32 @@ import { useRef, useState, useEffect } from 'react';
 import { siteConfig } from '../../data/siteConfig';
 
 /**
- * HeroNameOverlay — White "BASILE DESCHAMPS" + "REINVENTING THE FRAME"
- * Positioned at the bottom of the video container, clipped by overflow-hidden.
- * Uses ResizeObserver + scale() to auto-fit text within the container.
+ * HeroBioOverlay — Top-left bio + selected clients, bottom-left contact info.
+ * Used by both Films and Photos heroes (desktop + mobile).
+ *
+ * Desktop: 28px / 25px text, nowrap (intentional — the long client list
+ * overflows the right edge of the viewport on narrower screens).
+ * Mobile: scaled down + allowed to wrap; contact stacks vertically.
  */
-function HeroNameOverlay() {
-  const { firstName, lastName, tagline } = siteConfig.artist;
-  const taglineWords = tagline.split(' ');
-  const containerRef = useRef(null);
-  const contentRef = useRef(null);
-  const [scale, setScale] = useState(1);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    const content = contentRef.current;
-    if (!container || !content) return;
-
-    const update = () => {
-      const cw = container.clientWidth;
-      const tw = content.scrollWidth;
-      setScale(tw > cw ? cw / tw : 1);
-    };
-
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(container);
-    return () => ro.disconnect();
-  }, []);
-
+function HeroBioOverlay() {
   return (
-    <div ref={containerRef} className="absolute bottom-0 left-0 right-0 overflow-hidden pb-4 pointer-events-none">
-      <div
-        ref={contentRef}
-        className="flex items-end justify-center w-fit mx-auto"
-        style={{
-          gap: '3.6cqw',
-          transform: `scale(${scale})`,
-          transformOrigin: 'bottom center',
-        }}
-        aria-label="Artist name"
-      >
-        {/* LEFT — "REINVENTING" + "BASILE" */}
-        <div className="flex flex-col items-end">
-          <div className="w-full flex justify-end pr-1">
-            <span
-              className="font-header text-white whitespace-nowrap"
-              style={{ fontSize: '1cqw' }}
-            >
-              {taglineWords[0]?.toUpperCase()}
-            </span>
-          </div>
-          <span
-            className="font-header font-bold text-white whitespace-nowrap leading-none"
-            style={{ fontSize: '9cqw' }}
-          >
-            {firstName.toUpperCase()}
-          </span>
-        </div>
-
-        {/* RIGHT — "THE" + "FRAME" + "DESCHAMPS" */}
-        <div className="flex flex-col items-start">
-          <div className="w-full flex justify-between px-1">
-            <span
-              className="font-header text-white whitespace-nowrap"
-              style={{ fontSize: '1cqw' }}
-            >
-              {taglineWords[1]?.toUpperCase()}
-            </span>
-            <span
-              className="font-header text-white whitespace-nowrap"
-              style={{ fontSize: '1cqw' }}
-            >
-              {taglineWords[2]?.toUpperCase()}
-            </span>
-          </div>
-          <span
-            className="font-header font-bold text-white whitespace-nowrap leading-none"
-            style={{ fontSize: '9cqw' }}
-          >
-            {lastName.toUpperCase()}
-          </span>
-        </div>
+    <>
+      {/* TOP-LEFT: bio + selected clients */}
+      <div className="absolute top-[100px] left-8 right-8 md:right-auto z-10 flex flex-col items-start gap-3.5 text-white pointer-events-none font-header">
+        <p className="m-0 font-medium leading-tight tracking-[-0.01em] text-lg md:text-[28px] md:whitespace-nowrap">
+          Basile Deschamps is a film director and photographer based in Paris.
+        </p>
+        <p className="m-0 font-medium leading-tight tracking-[-0.01em] text-lg md:text-[28px] md:whitespace-nowrap">
+          Selected clients include Salomon, Parel Studios, Lorette Colé Duprat, On, Asics, Pag, Specialized, Veja.
+        </p>
       </div>
-    </div>
-  );
-}
 
-/** MobileHeroNameOverlay — Stacked tagline + "BASILE" / "DESCHAMPS" left-aligned at bottom of video */
-function MobileHeroNameOverlay() {
-  const { firstName, lastName, tagline } = siteConfig.artist;
-  const taglineWords = tagline.split(' ');
-  return (
-    <div className="absolute bottom-0 left-0 right-0 flex flex-col items-start pl-4 pb-4 pointer-events-none">
-      {/* "REINVENTING" above "BASILE" */}
-      <span className="font-header text-white" style={{ fontSize: '2cqw' }}>
-        {taglineWords[0]?.toUpperCase()}
-      </span>
-      <span className="font-header font-bold text-white leading-none" style={{ fontSize: '13cqw' }}>
-        {firstName.toUpperCase()}
-      </span>
-      {/* "THE FRAME" spread above "DESCHAMPS", both wrapped so width matches */}
-      <div className="flex flex-col">
-        <div className="flex justify-between px-1">
-          <span className="font-header text-white" style={{ fontSize: '2cqw' }}>
-            {taglineWords[1]?.toUpperCase()}
-          </span>
-          <span className="font-header text-white" style={{ fontSize: '2cqw' }}>
-            {taglineWords[2]?.toUpperCase()}
-          </span>
-        </div>
-        <span className="font-header font-bold text-white leading-none" style={{ fontSize: '13cqw' }}>
-          {lastName.toUpperCase()}
-        </span>
+      {/* BOTTOM-LEFT: contact */}
+      <div className="absolute bottom-10 left-8 z-10 flex flex-col md:flex-row gap-2 md:gap-6 text-white font-header font-medium tracking-[0.15em] pointer-events-none">
+        <span className="uppercase text-base md:text-[25px]">+33 (0)6 17 91 79 89</span>
+        <span className="text-base md:text-[25px]">basiledeschamps3@gmail.com</span>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -208,10 +120,11 @@ function HeroSection({ onVideoClick, onReady }) {
   };
 
   return (
-    <section className="relative w-full md:w-[calc(100%+200px)]" aria-label="Hero section">
-      {/* DESKTOP: Sticky contained video with 60px inset */}
-      <div className="hidden md:block relative w-full" style={{ height: 'calc(100svh - 5rem + 150px)' }}>
-        <div className="sticky top-0 h-[calc(100svh-5rem)] w-full px-[60px] py-[20px]">
+    <section className="relative w-full" aria-label="Hero section">
+      {/* DESKTOP: Sticky full-bleed video. The +150px keeps the documented
+          scroll-to-reveal allowance below the hero (see memory: hero-150px-intentional). */}
+      <div className="hidden md:block relative w-full" style={{ height: 'calc(100svh + 150px)' }}>
+        <div className="sticky top-0 h-[100svh] w-full">
           <div className="relative w-full h-full overflow-hidden" style={{ containerType: 'inline-size' }}>
             <video
               ref={desktopVideoRef}
@@ -227,14 +140,14 @@ function HeroSection({ onVideoClick, onReady }) {
               className="w-full h-full object-cover cursor-pointer"
               aria-hidden="true"
             />
-            <HeroNameOverlay />
+            <HeroBioOverlay />
             <MuteButton isMuted={isMuted} onClick={toggleMute} />
           </div>
         </div>
       </div>
 
       {/* MOBILE: Fullscreen video + overlay name */}
-      <div className="md:hidden flex flex-col h-[calc(100svh-5rem)]">
+      <div className="md:hidden flex flex-col h-[100svh]">
         {/* Video + overlaid name */}
         <div className="flex-1 relative overflow-hidden" onClick={onVideoClick} style={{ containerType: 'inline-size' }}>
           <video
@@ -250,7 +163,7 @@ function HeroSection({ onVideoClick, onReady }) {
             className="absolute inset-0 w-full h-full object-cover"
             aria-hidden="true"
           />
-          <MobileHeroNameOverlay />
+          <HeroBioOverlay />
           <MuteButton isMuted={isMuted} onClick={toggleMute} />
         </div>
       </div>
@@ -259,4 +172,4 @@ function HeroSection({ onVideoClick, onReady }) {
 }
 
 export default HeroSection;
-export { MobileHeroNameOverlay };
+export { HeroBioOverlay };

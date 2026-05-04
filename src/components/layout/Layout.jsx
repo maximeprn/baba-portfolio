@@ -80,6 +80,12 @@ function ScrollToTop() {
  * The page component (Films, About, etc.) becomes the "children" prop
  */
 function Layout({ children }) {
+  // Hero pages get full-bleed content (no top/side padding) so the hero can
+  // sit edge-to-edge under the fixed nav. Other pages keep the standard
+  // padding and add pt-20 to clear the now-fixed nav.
+  const { pathname } = useLocation();
+  const isHeroPage = pathname === '/' || pathname === '/photos';
+
   return (
     // SmoothScrollProvider wraps everything for buttery smooth scrolling
     <SmoothScrollProvider smoothness={0.08}>
@@ -89,18 +95,19 @@ function Layout({ children }) {
       {/* Outer container - full viewport height with flex column layout
           This ensures the footer stays at the bottom even with little content */}
       <div className="relative min-h-screen flex flex-col bg-background overflow-x-hidden">
-        {/* NAVIGATION - Always at the top, wider padding */}
-        <div className="md:px-[180px]">
-          <Navigation />
-        </div>
+        {/* NAVIGATION — fixed-positioned and rendered via portal to document.body.
+            Lives outside the smooth-scroll transformed wrapper so it stays stuck. */}
+        <Navigation />
 
-        {/* MAIN CONTENT AREA — narrower padding than nav */}
-        <main className="flex-1 flex flex-col items-center w-full md:px-[100px]">
+        {/* MAIN CONTENT AREA — full-bleed on hero pages, padded otherwise */}
+        <main
+          className={`flex-1 flex flex-col items-center w-full ${isHeroPage ? '' : 'pt-20 md:px-[100px]'}`}
+        >
           {children}
         </main>
 
 
-        {/* FOOTER - Matches content padding */}
+        {/* FOOTER — standard side padding on every page */}
         <div className="md:px-[100px]">
           <Footer />
         </div>

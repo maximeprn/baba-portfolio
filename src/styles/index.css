@@ -276,15 +276,12 @@
     margin: 0;
   }
 
-  /* Links - default styling */
+  /* Links - default styling. No global hover color: components opt in with
+     Tailwind hover utilities (e.g. Footer uses hover:text-muted). A global
+     a:hover rule clashes with hero links that need a fixed white color. */
   a {
     color: inherit; /* Inherit text color from parent */
     text-decoration: none; /* No underline by default */
-    transition: color var(--transition-fast);
-  }
-
-  a:hover {
-    color: var(--color-accent);
   }
 
   /* Images - responsive by default */

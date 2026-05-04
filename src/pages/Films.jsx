@@ -102,51 +102,56 @@ function Films() {
         <meta property="og:type" content="website" />
       </Helmet>
 
-      {/* HERO SECTION */}
+      {/* HERO SECTION — full-bleed */}
       <HeroSection onVideoClick={() => setShowShowreel(true)} onReady={handleHeroReady} />
 
-      <div className="h-10 md:h-0" aria-hidden="true" />
+      {/* POST-HERO CONTENT — re-applies the md:px-[100px] gutter that Layout
+          drops on hero pages, so TitleSection's -mx-[100px] escape still works
+          and the cards have the same gutter as on every other page. */}
+      <div className="flex flex-col items-center w-full md:px-[100px]">
+        <div className="h-10 md:h-0" aria-hidden="true" />
 
-      {/* CURATED WORKS — hidden for now, may reintroduce later */}
-      {/* <TitleSection title="Curated Works" borderTop /> */}
+        {/* CURATED WORKS — hidden for now, may reintroduce later */}
+        {/* <TitleSection title="Curated Works" borderTop /> */}
 
-      {films.filter(f => !f.collapsed).map((film, index) => (
-        <div key={film.id} className="py-2.5 w-full">
-          {film.featured ? (
-            <FeaturedFilmCard
-              film={film}
-              index={index}
-              onFilmClick={handleFilmClick}
-              shouldLoad={loadPhase !== 'hero'}
-              onVideoReady={handleFeaturedVideoReady}
-            />
-          ) : (
-            <FilmCard
-              film={film}
-              onFilmClick={handleFilmClick}
-            />
-          )}
-        </div>
-      ))}
+        {films.filter(f => !f.collapsed).map((film, index) => (
+          <div key={film.id} className="py-2.5 w-full">
+            {film.featured ? (
+              <FeaturedFilmCard
+                film={film}
+                index={index}
+                onFilmClick={handleFilmClick}
+                shouldLoad={loadPhase !== 'hero'}
+                onVideoReady={handleFeaturedVideoReady}
+              />
+            ) : (
+              <FilmCard
+                film={film}
+                onFilmClick={handleFilmClick}
+              />
+            )}
+          </div>
+        ))}
 
-      {/* OTHER PROJECTS */}
-      <div className="h-32" aria-hidden="true" />
-      <TitleSection title="Other Projects" />
+        {/* OTHER PROJECTS */}
+        <div className="h-32" aria-hidden="true" />
+        <TitleSection title="Other Projects" />
 
-      {films.filter(f => f.collapsed).map((film, index) => (
-        <CollapsedFilmCard
-          key={film.id}
-          film={film}
-          index={index}
-          onFilmClick={handleFilmClick}
-          shouldLoad={loadPhase === 'collapsed'}
-          onWillExpand={handleCollapsedWillExpand}
-          onDidCollapse={handleCollapsedDidCollapse}
-          closeSignal={closeSignals[film.id] || 0}
-        />
-      ))}
+        {films.filter(f => f.collapsed).map((film, index) => (
+          <CollapsedFilmCard
+            key={film.id}
+            film={film}
+            index={index}
+            onFilmClick={handleFilmClick}
+            shouldLoad={loadPhase === 'collapsed'}
+            onWillExpand={handleCollapsedWillExpand}
+            onDidCollapse={handleCollapsedDidCollapse}
+            closeSignal={closeSignals[film.id] || 0}
+          />
+        ))}
 
-      <div className="h-20" aria-hidden="true" />
+        <div className="h-20" aria-hidden="true" />
+      </div>
 
       {/* SHOWREEL OVERLAY */}
       {showShowreel && (

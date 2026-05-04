@@ -63,7 +63,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
     return () => observer.disconnect();
   }, []);
 
-  // Subtle opacity ramp when the video crosses the top/bottom edge of the
+  // Subtle opacity ramp when the card crosses the top/bottom edge of the
   // viewport. Driven per-frame off the smooth-scroll listener (native scroll
   // on mobile via the same hook). Reduced-motion users opt out entirely.
   useEffect(() => {
@@ -131,6 +131,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
 
   return (
     <article
+      ref={wrapperRef}
       className="film-card w-full bg-white"
       style={{
         '--section-padding-top': variant.paddingTop,
@@ -163,7 +164,6 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
       >
         {/* VIDEO */}
         <div
-          ref={wrapperRef}
           onClick={handleClick}
           className="w-full overflow-hidden cursor-pointer"
           style={{
@@ -182,7 +182,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
             loop
             playsInline
             muted
-            preload={shouldLoad ? 'auto' : 'none'}
+            preload="metadata"
             onLoadedData={handleVideoReady}
             className="w-full h-full object-cover pointer-events-none"
             aria-label={title}

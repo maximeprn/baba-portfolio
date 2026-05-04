@@ -46,13 +46,15 @@ function Navigation() {
                 key={item.path}
                 to={item.path}
                 className={[
-                  'inline-block font-header font-medium tracking-[0.08em] transition-transform duration-200 ease-out hover:scale-110',
+                  'inline-block font-header font-medium tracking-[0.08em] group/nav-link',
                   active ? 'text-[18px]' : 'text-[16px]',
                   linkColor,
                 ].join(' ')}
                 aria-current={active ? 'page' : undefined}
               >
-                {item.label}
+                <span className="px-2 py-0.5 box-decoration-clone transition-colors duration-150 group-hover/nav-link:bg-white group-hover/nav-link:text-black">
+                  {item.label}
+                </span>
               </Link>
             );
           })}

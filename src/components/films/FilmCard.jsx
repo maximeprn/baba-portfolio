@@ -16,7 +16,7 @@ function FilmCard({ film, onFilmClick }) {
   const handleClick = () => onFilmClick(film);
 
   return (
-    <article className="w-full max-w-container bg-white border-t border-b border-border px-[5%] py-8 lg:py-12">
+    <article className="w-full max-w-container bg-white border-t border-b border-border px-[5%] py-8 lg:py-3">
       <div className={`flex flex-col gap-8 items-center ${isImageLeft ? 'lg:flex-row' : 'lg:flex-row-reverse'}`}>
         {/* IMAGE */}
         <div className="w-full lg:w-1/2 flex-shrink-0" onClick={handleClick}>
@@ -40,7 +40,7 @@ function FilmCard({ film, onFilmClick }) {
           </header>
 
           <div className="relative w-full max-w-[584px]">
-            <p className="font-header text-sm tracking-wide leading-6 text-primary">
+            <p className="font-header text-xs tracking-wide leading-6 text-primary">
               {description}
             </p>
           </div>

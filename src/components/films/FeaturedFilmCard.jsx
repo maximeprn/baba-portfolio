@@ -4,8 +4,8 @@
  */
 
 const LAYOUT_VARIANTS = [
-  { videoWidth: '44%', textWidth: '45%', paddingTop: '8rem', paddingBottom: '8rem', textPaddingTop: '0' },
-  { videoWidth: '44%', textWidth: '45%', paddingTop: '8rem', paddingBottom: '8rem', textPaddingTop: '0' },
+  { videoWidth: '44%', textWidth: '45%', paddingTop: '2rem', paddingBottom: '2rem', textPaddingTop: '0' },
+  { videoWidth: '44%', textWidth: '45%', paddingTop: '2rem', paddingBottom: '2rem', textPaddingTop: '0' },
 ];
 
 function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onVideoReady }) {
@@ -24,7 +24,11 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
   const isVideoLeft = imagePosition === 'left';
   const variant = LAYOUT_VARIANTS[index % LAYOUT_VARIANTS.length];
 
-  const handleClick = () => onFilmClick(film);
+  // stopPropagation so an enclosing CollapsedFilmCard doesn't treat this as a "close" click.
+  const handleClick = (e) => {
+    e?.stopPropagation?.();
+    onFilmClick(film);
+  };
   const handleVideoReady = (e) => {
     e.target.controls = false;
     e.target.removeAttribute('controls');
@@ -83,8 +87,11 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
           />
         </div>
 
-        {/* TEXT CONTENT */}
-        <div className={`flex flex-col justify-center min-w-0 gap-5 items-start lg:px-8 xl:px-12 2xl:px-20`}>
+        {/* TEXT CONTENT — stopPropagation so reading text doesn't collapse an enclosing card */}
+        <div
+          className={`flex flex-col justify-center min-w-0 gap-5 items-start lg:px-8 xl:px-12 2xl:px-20`}
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* TITLE — desktop only (mobile title is overlaid on video) */}
           <header className="hidden lg:block">
             <h3
@@ -106,7 +113,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
 
           {/* DESCRIPTION */}
           <div className="relative w-full overflow-hidden">
-            <p className="font-header text-xs md:text-sm tracking-[0.15em] leading-6 md:leading-7 text-primary">
+            <p className="font-header text-xs tracking-[0.15em] leading-6 text-primary">
               {description}
             </p>
           </div>

@@ -76,7 +76,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
             loop
             playsInline
             muted
-            preload={shouldLoad ? 'auto' : 'none'}
+            preload="metadata"
             onLoadedData={handleVideoReady}
             className="w-full h-full object-cover pointer-events-none"
             aria-label={title}

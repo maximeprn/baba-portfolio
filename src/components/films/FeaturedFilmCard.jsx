@@ -5,6 +5,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
+
 // Per-element padding + margin-bottom variants. Cycled by index for a
 // "slightly random but intentional" feel. Desktop-only — see ffc-* rules
 // in src/styles/index.css. Margin-bottom values stay <= 2rem.
@@ -46,7 +48,9 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
   const variant = LAYOUT_VARIANTS[index % LAYOUT_VARIANTS.length];
 
   const videoRef = useRef(null);
+  const wrapperRef = useRef(null);
   const [isInView, setIsInView] = useState(false);
+  const { addScrollListener } = useSmoothScrollContext();
 
   useEffect(() => {
     const video = videoRef.current;
@@ -58,6 +62,49 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
     observer.observe(video);
     return () => observer.disconnect();
   }, []);
+
+  // Subtle opacity ramp when the video crosses the top/bottom edge of the
+  // viewport. Driven per-frame off the smooth-scroll listener (native scroll
+  // on mobile via the same hook). Reduced-motion users opt out entirely.
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const FADE_RAMP_VH = 0.20;
+    let ramp = window.innerHeight * FADE_RAMP_VH;
+
+    // Smootherstep (Perlin): 6t⁵ − 15t⁴ + 10t³.
+    // Zero 1st AND 2nd derivatives at 0/1 → fades begin/end without a kink.
+    const smootherstep = (t) => {
+      const c = t < 0 ? 0 : t > 1 ? 1 : t;
+      return c * c * c * (c * (c * 6 - 15) + 10);
+    };
+
+    const update = () => {
+      const rect = wrapper.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const enterT = (vh - rect.top) / ramp;
+      const leaveT = rect.bottom / ramp;
+      const opacity = Math.min(smootherstep(enterT), smootherstep(leaveT));
+      wrapper.style.opacity = String(opacity);
+    };
+
+    const handleResize = () => {
+      ramp = window.innerHeight * FADE_RAMP_VH;
+      update();
+    };
+
+    update();
+    const unsubscribe = addScrollListener(update);
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener('resize', handleResize);
+      wrapper.style.opacity = '';
+    };
+  }, [addScrollListener]);
 
   // Playback is driven by the in-view effect — not by autoPlay or onLoadedData —
   // so videos only run while the user can actually see them.
@@ -116,8 +163,9 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
       >
         {/* VIDEO */}
         <div
+          ref={wrapperRef}
           onClick={handleClick}
-          className="w-full overflow-hidden cursor-pointer hover:opacity-90 transition-opacity duration-300"
+          className="w-full overflow-hidden cursor-pointer"
           style={{
             aspectRatio,
             ...(thumbnail ? {

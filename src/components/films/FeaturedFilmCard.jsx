@@ -3,6 +3,8 @@
  * Clicking opens a film detail modal (no navigation to /films/:slug).
  */
 
+import { useEffect, useRef, useState } from 'react';
+
 // Per-element padding + margin-bottom variants. Cycled by index for a
 // "slightly random but intentional" feel. Desktop-only — see ffc-* rules
 // in src/styles/index.css. Margin-bottom values stay <= 2rem.
@@ -43,6 +45,32 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
   const isVideoLeft = imagePosition === 'left';
   const variant = LAYOUT_VARIANTS[index % LAYOUT_VARIANTS.length];
 
+  const videoRef = useRef(null);
+  const [isInView, setIsInView] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { threshold: 0.25 }
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
+  // Playback is driven by the in-view effect — not by autoPlay or onLoadedData —
+  // so videos only run while the user can actually see them.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (isInView && shouldLoad) {
+      video.play().catch((err) => console.warn(`Video play blocked for "${title}":`, err.message));
+    } else {
+      video.pause();
+    }
+  }, [isInView, shouldLoad, title]);
+
   // stopPropagation so an enclosing CollapsedFilmCard doesn't treat this as a "close" click.
   const handleClick = (e) => {
     e?.stopPropagation?.();
@@ -51,7 +79,6 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
   const handleVideoReady = (e) => {
     e.target.controls = false;
     e.target.removeAttribute('controls');
-    e.target.play().catch((err) => console.warn(`Video autoplay blocked for "${title}":`, err.message));
     onVideoReady?.();
   };
 
@@ -101,9 +128,9 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
           }}
         >
           <video
+            ref={videoRef}
             src={shouldLoad ? videoFile : undefined}
             poster={thumbnail || undefined}
-            autoPlay
             loop
             playsInline
             muted

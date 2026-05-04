@@ -127,6 +127,7 @@ function Films() {
             ) : (
               <FilmCard
                 film={film}
+                index={index}
                 onFilmClick={handleFilmClick}
               />
             )}

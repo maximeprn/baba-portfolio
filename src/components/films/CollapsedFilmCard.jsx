@@ -17,6 +17,18 @@ const OVERLAY_TRANSITION_MS = 500;
 // Delay before starting the overlay slide-in so it lands right as the height transition ends.
 const OVERLAY_REVEAL_DELAY_MS = Math.max(0, CLOSE_DURATION_MS - OVERLAY_TRANSITION_MS);
 
+// Per-card horizontal drift for the collapsed row. Cycled by index so each
+// card sits slightly differently inside its band. Adds to the parent <div>'s
+// own px-4 — these are extra inset on top of that.
+// Title shifts via padding-left on the left-aligned <p>; metadata shifts via
+// padding-right on the right-aligned <p> (text-right pulls the span back
+// inward as we add padding-right).
+const COLLAPSED_VARIANTS = [
+  { titlePl: '1.5rem', metaPr: '0.5rem' },
+  { titlePl: '0.5rem', metaPr: '2rem'   },
+  { titlePl: '2rem',   metaPr: '1rem'   },
+];
+
 function CollapsedFilmCard({
   film,
   index = 0,
@@ -41,6 +53,7 @@ function CollapsedFilmCard({
   const prevPhaseRef = useRef(phase);
   const { scrollTo, getScrollPosition } = useSmoothScrollContext();
   const { title, description, year, category } = film;
+  const collapsedVariant = COLLAPSED_VARIANTS[index % COLLAPSED_VARIANTS.length];
 
   // First sentence of the description (matches up to and including the first . ! or ?)
   const firstSentence = (description.match(/^[^.!?]+[.!?]/)?.[0] || description).trim();
@@ -256,10 +269,12 @@ function CollapsedFilmCard({
         overflow: phase !== 'expanded' ? 'hidden' : undefined,
       }}
     >
-      {/* Collapsed text overlay — normal flow on mobile (sizes container), absolute on desktop */}
+      {/* Collapsed text overlay — normal flow on mobile (sizes container), absolute on desktop.
+          On hover (collapsed only), each of the three text elements gets its own
+          black-on-white chip — three separate boxes, not one row-wide box. */}
       {showOverlay && (
         <div
-          className={`${phase === 'collapsed' ? 'relative md:absolute' : 'absolute'} top-0 left-0 right-0 bg-white z-10 ${phase === 'collapsed' ? 'transition-colors duration-500 hover:bg-black hover:text-white' : ''}`}
+          className={`${phase === 'collapsed' ? 'relative md:absolute group/row' : 'absolute'} top-0 left-0 right-0 bg-white z-10`}
           style={{
             transition: `transform ${OVERLAY_TRANSITION_MS}ms ease-out, opacity ${OVERLAY_TRANSITION_MS}ms ease-out`,
             transform: overlayHidden ? 'translateY(-100%)' : 'translateY(0)',
@@ -267,14 +282,26 @@ function CollapsedFilmCard({
           }}
         >
           <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 px-4 py-2 md:py-0 md:h-9">
-            <p className="flex-1 font-header text-xs font-medium tracking-[1.8px] uppercase leading-[1.3]">
-              {title}
+            <p
+              className="flex-1 font-header font-medium tracking-[1.8px] uppercase"
+              style={{ paddingLeft: collapsedVariant.titlePl }}
+            >
+              <span className="inline-block px-2 py-0.5 text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
+                {title}
+              </span>
             </p>
-            <p className="font-body text-xs tracking-[0.6px] leading-7 shrink-0 hidden md:block">
-              {firstSentence}
+            <p className="font-body tracking-[0.6px] shrink-0 hidden md:block">
+              <span className="inline-block px-2 py-0.5 text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
+                {firstSentence}
+              </span>
             </p>
-            <p className="flex-1 font-header text-[10px] font-medium tracking-[1.5px] text-right uppercase whitespace-pre-wrap">
-              {year}  •  {category}
+            <p
+              className="flex-1 font-header font-medium tracking-[1.5px] text-right uppercase whitespace-pre-wrap"
+              style={{ paddingRight: collapsedVariant.metaPr }}
+            >
+              <span className="inline-block px-2 py-0.5 text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
+                {year}  •  {category}
+              </span>
             </p>
           </div>
         </div>
@@ -324,13 +351,10 @@ function CollapsedFilmCard({
                 }
               : undefined
           }
-          className={`group/close flex items-center justify-center pb-8 pt-2 ${
+          className={`flex items-center justify-center pb-8 pt-2 ${
             showCloseIndicator ? 'cursor-pointer' : 'invisible pointer-events-none'
           }`}
         >
-          <span className="font-header text-[10px] font-medium tracking-[0.2em] uppercase mr-0 opacity-0 max-w-0 overflow-hidden whitespace-nowrap group-hover/close:opacity-100 group-hover/close:max-w-[120px] group-hover/close:mr-2 transition-all duration-300 ease-out">
-            Collapse
-          </span>
           <svg
             width="12"
             height="12"

@@ -71,6 +71,9 @@ function preloadImage(src) {
   });
 }
 
+// Number of upcoming photos to warm in the browser cache after each advance.
+const PRELOAD_AHEAD = 10;
+
 /**
  * Hook: usePhotoSlideshow
  * Returns { src, naturalWidth, naturalHeight } for the current photo.
@@ -79,7 +82,9 @@ function usePhotoSlideshow() {
   const queueRef = useRef([]);
   const indexRef = useRef(0);
   const cancelRef = useRef(false);
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
+  );
   const [currentPhoto, setCurrentPhoto] = useState(() => {
     const initial = shuffle(heroPhotos);
     queueRef.current = initial;
@@ -90,6 +95,15 @@ function usePhotoSlideshow() {
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Track viewport width so the landscape-skip filter stays correct after resize/rotation.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mql = window.matchMedia('(max-width: 767px)');
+    const onChange = (e) => setIsMobile(e.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+
   const nextIndex = useCallback(() => {
     let idx = indexRef.current + 1;
     if (idx >= queueRef.current.length) {
@@ -98,6 +112,19 @@ function usePhotoSlideshow() {
     }
     indexRef.current = idx;
     return idx;
+  }, []);
+
+  // Warm the browser cache for the next N photos in the queue.
+  const warmUpNext = useCallback((count) => {
+    const queue = queueRef.current;
+    if (!queue.length) return;
+    const start = indexRef.current + 1;
+    for (let i = 0; i < count; i++) {
+      const src = queue[(start + i) % queue.length];
+      if (!src) continue;
+      const img = new Image();
+      img.src = src;
+    }
   }, []);
 
   const advance = useCallback(async () => {
@@ -113,32 +140,32 @@ function usePhotoSlideshow() {
           attempts++;
           continue;
         }
-        if (!cancelRef.current) setCurrentPhoto(result);
+        if (!cancelRef.current) {
+          setCurrentPhoto(result);
+          warmUpNext(PRELOAD_AHEAD);
+        }
         return;
       } catch {
         attempts++;
       }
     }
-  }, [nextIndex, isMobile]);
+  }, [nextIndex, isMobile, warmUpNext]);
 
   useEffect(() => {
     if (prefersReducedMotion || heroPhotos.length <= 1) return;
     cancelRef.current = false;
 
-    // Batch-preload all images upfront (they're light)
-    queueRef.current.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
-
-    // Load the first suitable image
+    // Load the first suitable image, then warm the next 10.
     (async () => {
       for (const src of queueRef.current) {
         if (cancelRef.current) return;
         try {
           const result = await preloadImage(src);
           if (isMobile && result.naturalWidth > result.naturalHeight) continue;
-          if (!cancelRef.current) setCurrentPhoto(result);
+          if (!cancelRef.current) {
+            setCurrentPhoto(result);
+            warmUpNext(PRELOAD_AHEAD);
+          }
           return;
         } catch { /* skip */ }
       }
@@ -157,7 +184,7 @@ function usePhotoSlideshow() {
       cancelRef.current = true;
       clearTimeout(timer);
     };
-  }, [advance, prefersReducedMotion]);
+  }, [advance, prefersReducedMotion, isMobile, warmUpNext]);
 
   return currentPhoto;
 }

@@ -1,124 +1,157 @@
 /**
- * ============================================================================
- * PHOTOS PAGE
- * ============================================================================
+ * Photos page
  *
- * Lists all photo projects as a grid of cards.
- * Each card links to the full project gallery.
+ * Floating gallery hero (flashing photo slideshow) + a list of featured photo
+ * projects rendered as compact cards that expand inline into artistic galleries.
+ * Single-expand enforcement (only one project expanded at a time) is owned here.
  *
- * URL: /photos
- *
- * PAGE STRUCTURE:
- * 1. Page title
- * 2. Grid of project cards
- *
- * DATA SOURCE:
- * Photo projects come from /src/data/photoProjects.js
- *
- * ============================================================================
+ * Spec: .mdd/docs/05-featured-photo-cards.md
  */
 
-// Import the ProjectCard component
+import { useState, useCallback, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import ProjectCard from '../components/photos/ProjectCard';
 
-// Import the floating gallery hero
 import FloatingGalleryHero from '../components/photos/FloatingGalleryHero';
+import FeaturedPhotoCard from '../components/photos/FeaturedPhotoCard';
+import Lightbox from '../components/ui/Lightbox';
 
-// Import photo projects data
-import { photoProjects } from '../data/photoProjects';
+import { getFeaturedProjects, photoProjects } from '../data/photoProjects';
 
-
-/**
- * Photos Page Component
- *
- * Displays all photo projects in a responsive grid.
- *
- * @returns {JSX.Element} The Photos listing page
- */
 function Photos() {
+  const featuredProjects = getFeaturedProjects();
+
+  // Single-expand orchestrator
+  const [expandedProjectId, setExpandedProjectId] = useState(null);
+  const [closeSignals, setCloseSignals] = useState({});
+
+  const handleWillExpand = useCallback((id) => {
+    setExpandedProjectId((prev) => {
+      if (prev !== null && prev !== id) {
+        setCloseSignals((sigs) => ({ ...sigs, [prev]: (sigs[prev] || 0) + 1 }));
+      }
+      return id;
+    });
+  }, []);
+
+  const handleDidCollapse = useCallback((id) => {
+    setExpandedProjectId((prev) => (prev === id ? null : prev));
+  }, []);
+
+  // Lightbox state — bound to the currently expanded project so it can never
+  // outlive its source. Closing/switching projects resets it.
+  const [lightbox, setLightbox] = useState(null); // { projectId, index } | null
+  const lightboxProject = lightbox
+    ? photoProjects.find((p) => p.id === lightbox.projectId)
+    : null;
+
+  const handlePhotoClick = useCallback((project, photoIndex) => {
+    setLightbox({ projectId: project.id, index: photoIndex });
+  }, []);
+
+  const handleLightboxClose = useCallback(() => setLightbox(null), []);
+  const handleLightboxNavigate = useCallback(
+    (newIndex) => setLightbox((l) => (l ? { ...l, index: newIndex } : l)),
+    [],
+  );
+
+  // Reset Lightbox whenever the expanded project changes (or collapses to null).
+  useEffect(() => {
+    setLightbox((l) => {
+      if (!l) return l;
+      if (expandedProjectId === null) return null;
+      if (l.projectId !== expandedProjectId) return null;
+      return l;
+    });
+  }, [expandedProjectId]);
+
+  // Background warm-up: after mount, fetch full-project galleries for all featured
+  // projects so expansion reveals already-cached photos. Sequential with a small
+  // stagger to avoid burst.
+  useEffect(() => {
+    let cancelled = false;
+    const STAGGER_MS = 50;
+
+    const warmProject = async (project) => {
+      for (const photo of project.photos) {
+        if (cancelled) return;
+        const img = new Image();
+        img.src = photo.src;
+        await new Promise((resolve) => {
+          const t = setTimeout(resolve, STAGGER_MS);
+          img.onload = img.onerror = () => {
+            clearTimeout(t);
+            resolve();
+          };
+        });
+      }
+    };
+
+    (async () => {
+      // Defer slightly so the page paints + compact previews load eagerly first.
+      await new Promise((r) => setTimeout(r, 600));
+      for (const project of featuredProjects) {
+        if (cancelled) return;
+        await warmProject(project);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [featuredProjects]);
+
+  // imagePosition alternates by display index in the featured array (L, R, L, R, …),
+  // unless a project sets `imagePosition` explicitly in its data.
+  const positionFor = (project, idx) =>
+    project.imagePosition || (idx % 2 === 0 ? 'left' : 'right');
+
   return (
-    // Main page container
-    <div
-      className="
-        flex
-        flex-col
-        items-center
-        w-full
-      "
-    >
+    <div className="flex flex-col items-center w-full">
       <Helmet>
         <title>Photos | Basile Deschamps</title>
-        <meta name="description" content="Photo projects by Basile Deschamps — sports photography and visual storytelling." />
+        <meta
+          name="description"
+          content="Photo projects by Basile Deschamps — sports photography and visual storytelling."
+        />
         <meta property="og:title" content="Photos | Basile Deschamps" />
       </Helmet>
-      {/* FLOATING GALLERY HERO */}
+
+      {/* HERO */}
       <FloatingGalleryHero />
 
-      {/* PROJECTS GRID CONTAINER */}
-      <div
-        className="
-          w-full
-          max-w-container
-          px-6
-          pt-8
-          pb-12
-        "
-      >
+      {/* FEATURED PROJECTS */}
+      <div className="flex flex-col items-center w-full md:px-[100px]">
+        <div className="h-10 md:h-16" aria-hidden="true" />
 
-
-      {/* PROJECTS GRID
-          Grid layout with responsive columns:
-          - 1 column on mobile (default)
-          - 2 columns on medium screens (md:)
-          - 3 columns on large screens (lg:)
-      */}
-      <section
-        className="
-          grid
-          grid-cols-1
-          md:grid-cols-2
-          lg:grid-cols-3
-          gap-8                          /* Space between cards */
-          w-full
-        "
-        aria-label="Photo projects"
-      >
-        {/*
-          Map through all projects and render a card for each.
-
-          The spread operator {...project} passes all project properties
-          as individual props, but we're using project={project} instead
-          for clarity and explicit prop passing.
-        */}
-        {photoProjects.map((project) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-          />
+        {featuredProjects.map((project, idx) => (
+          <div key={project.id} className="py-2.5 w-full">
+            <FeaturedPhotoCard
+              project={project}
+              index={idx}
+              imagePosition={positionFor(project, idx)}
+              onPhotoClick={handlePhotoClick}
+              onWillExpand={handleWillExpand}
+              onDidCollapse={handleDidCollapse}
+              closeSignal={closeSignals[project.id] || 0}
+            />
+          </div>
         ))}
-      </section>
 
-
-      {/* EMPTY STATE
-          Shows a message if there are no projects
-          This is good UX - don't leave users wondering if something broke
-      */}
-      {photoProjects.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20">
-          <p className="font-body text-muted text-lg">
-            No photo projects yet.
-          </p>
-        </div>
-      )}
-
-
-      {/* BOTTOM SPACING */}
-      <div className="h-20" aria-hidden="true" />
+        <div className="h-20" aria-hidden="true" />
       </div>
+
+      {/* LIGHTBOX */}
+      {lightboxProject && (
+        <Lightbox
+          photos={lightboxProject.photos}
+          currentIndex={lightbox.index}
+          isOpen={true}
+          onClose={handleLightboxClose}
+          onNavigate={handleLightboxNavigate}
+        />
+      )}
     </div>
   );
 }
 
-// Export for use in App.jsx router
 export default Photos;

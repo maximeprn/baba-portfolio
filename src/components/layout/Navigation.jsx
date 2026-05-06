@@ -23,6 +23,11 @@ function Navigation() {
 
   const isHeroPage = location.pathname === '/' || location.pathname === '/photos';
   const linkColor = isHeroPage ? 'text-white' : 'text-[var(--color-text)]';
+  // Chip hover inverts the link's resting color: white-on-hero → black chip text on white bg,
+  // dark-on-page → white chip text on black bg.
+  const chipHover = isHeroPage
+    ? 'group-hover/nav-link:bg-white group-hover/nav-link:text-black'
+    : 'group-hover/nav-link:bg-gray-900 group-hover/nav-link:text-white';
 
   const isActive = (path) => {
     if (path === '/') return location.pathname === '/';
@@ -52,7 +57,7 @@ function Navigation() {
                 ].join(' ')}
                 aria-current={active ? 'page' : undefined}
               >
-                <span className="px-2 py-0.5 box-decoration-clone transition-colors duration-150 group-hover/nav-link:bg-white group-hover/nav-link:text-black">
+                <span className={`px-2 py-0.5 box-decoration-clone transition-colors duration-150 ${chipHover}`}>
                   {item.label}
                 </span>
               </Link>

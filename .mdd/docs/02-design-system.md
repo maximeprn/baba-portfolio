@@ -77,7 +77,7 @@ Defined in `index.css:148-157`.
 | `--text-3xl` | 1.875rem | 30 | Page titles |
 | `--text-4xl` | 2.25rem | 36 | Large headings |
 | `--text-subheading` | 1.25rem | 20 | "REINVENTING THE FRAME" tagline |
-| `--text-hero` | 8.75rem | **140** | "BASILE DESCHAMPS" hero wordmark |
+| `--text-hero` | 8.75rem | **140** | _Retired._ Originally for the BASILE DESCHAMPS hero wordmark; the hero was redesigned (commit `0e6bcbb`) to a bio + contact overlay. Token still defined in `index.css` but no longer consumed. Slated for removal. |
 
 ### Letter-spacing & weight
 
@@ -85,9 +85,16 @@ Defined in `index.css:148-157`.
 - Hero name (`text-hero`) is rendered at weight 700, line-height 1.
 - Body line-height: 1.6. Headings: 1.2.
 
-### The wordmark
+### The hero expression
 
-The 140px **BASILE DESCHAMPS** in Helvetica Now Display Bold IS the logo. There is no separate logomark, badge, or icon. The split-color version (`PersistentHeroText.jsx`) renders the name twice — once in white over imagery, once in black over background — using clip-path to mask the transition. Treat this as the canonical brand expression.
+The site has no logomark, badge, or icon. The canonical brand expression is the **`HeroBioOverlay`** rendered on top of the full-bleed hero media (showreel video on `/`, flashing photo slideshow on `/photos`). It places two elements over the imagery, both in white Helvetica Now Display:
+
+- **Top-left** — bio statement + selected clients, on two lines. Desktop uses 28px with `whitespace-nowrap` (the long client list intentionally bleeds past the right edge of the viewport on narrower screens — read as a marquee, not a wrap). Mobile scales to `text-lg` and is allowed to wrap.
+- **Bottom-left** — phone number + email, in tracked uppercase Helvetica Now Display. Desktop is 25px in a horizontal row; mobile stacks vertically at `text-base`.
+
+`HeroBioOverlay` is exported from `src/components/ui/HeroSection.jsx` and reused unchanged by `FloatingGalleryHero.jsx`. Treat **this overlay** — bio over imagery — as the canonical brand expression. Any new hero surface should reuse it, not introduce a separate wordmark.
+
+> Historical note: the original hero used a 140px **BASILE DESCHAMPS** wordmark via a `PersistentHeroText.jsx` component (split-color over imagery vs background, masked with clip-path). That component still exists in the repo as of 2026-05-05 but is no longer imported anywhere; treat it as retired pending deletion. The `--text-hero` (140px) token is similarly unused.
 
 ## Spacing & Layout
 
@@ -167,11 +174,12 @@ Always use **`svh`** (small viewport height) not `vh` for mobile heights — avo
 - **Footer** (`Footer.jsx`) — copyright + social links.
 
 ### UI primitives
-- **HeroSection** — fullscreen sticky video hero with scroll-linked scale. Separate mobile/desktop render paths. Used on Films home + About.
-- **PersistentHeroText** — split-color BASILE DESCHAMPS overlay (white-on-video, black-on-background) using clip-path masks.
+- **HeroSection** — full-bleed sticky showreel video hero with mute toggle. Renders `HeroBioOverlay` on top. Separate mobile/desktop render paths. Used on the Films homepage (`/`).
+- **HeroBioOverlay** — exported from `HeroSection.jsx`. Top-left bio + selected clients, bottom-left phone + email. The canonical brand expression — see *Typography > The hero expression*. Reused by `FloatingGalleryHero` so the Photos hero matches the Films hero.
 - **TitleSection** — section title block.
 - **Divider** — 1px hairline (`--color-border`).
-- **Lightbox** — fullscreen photo viewer with body-overflow lock + arrow-key navigation.
+- **Lightbox** — fullscreen photo viewer with body-overflow lock + arrow-key navigation. Used by `PhotoProject` only.
+- **PersistentHeroText** _(retired)_ — split-color BASILE DESCHAMPS overlay using clip-path masks. File still in `src/components/ui/PersistentHeroText.jsx` but no consumers as of 2026-05-05.
 
 ### Films
 - **FilmCard** — alternating left/right text + 16:9 video (uses CSS `flex-row` / `flex-row-reverse`, never absolute positioning).
@@ -224,7 +232,7 @@ These are not visual tokens but they constrain how new design ideas should be im
 
 ### Logo / wordmark
 
-No logomark file. The wordmark is rendered live as DOM text (Helvetica Now Display Bold, 140px). No favicon currently in repo (referenced `/images/og-image.jpg` is not present — known gap).
+No logomark file and no wordmark. The brand identity on the homepage is the live `HeroBioOverlay` (bio + clients + contact) rendered over the showreel video / photo slideshow — see *Typography > The hero expression*. There is no favicon checked in. The `siteConfig.seo.ogImage` path (`/images/og-image.jpg`) is referenced but the asset is not present — known gap (audit 2026-05-05 H02-1).
 
 ## Dependencies
 

@@ -21,7 +21,7 @@ Make `FeaturedFilmCard` videos gently fade out as they cross the top or bottom e
 
 ## Architecture
 
-Each `FeaturedFilmCard` registers a per-frame scroll listener via `useSmoothScrollContext().addScrollListener` (already implemented in `src/context/SmoothScrollContext.jsx:332`). On every scroll frame, the component reads the video wrapper's `getBoundingClientRect()` and writes an opacity directly to the wrapper's `style.opacity` — no React state, no re-render. On mobile (where smooth scroll falls back to native), the same listener fires from the native scroll handler, so the path is unified.
+Each `FeaturedFilmCard` registers a per-frame scroll listener via `useSmoothScrollContext().addScrollListener` (implemented in `src/context/SmoothScrollContext.jsx`). On every scroll frame, the component reads the card's outer `<article>` `getBoundingClientRect()` and writes an opacity directly to its `style.opacity` — no React state, no re-render. On mobile (where smooth scroll falls back to native), the same listener fires from the native scroll handler, so the path is unified.
 
 ```
 Scroll event (smooth or native)
@@ -30,16 +30,16 @@ Scroll event (smooth or native)
 addScrollListener fires per-card update()
         │
         ▼
-update():  rect = wrapper.getBoundingClientRect()
+update():  rect = articleRef.getBoundingClientRect()
            enterT = smootherstep((vh - rect.top) / RAMP)
            leaveT = smootherstep( rect.bottom    / RAMP)
            opacity = min(enterT, leaveT)
         │
         ▼
-wrapper.style.opacity = opacity
+articleRef.style.opacity = opacity
 ```
 
-The opacity is applied to the video **wrapper div** (`FeaturedFilmCard.jsx:118-129`) rather than the `<video>` element, so the poster `backgroundImage` set on the wrapper fades together with the playing video frame — they appear as one block.
+The opacity is applied to the **outer `<article>`** (the same element that owns the `film-card` class — see `FeaturedFilmCard.jsx`'s `wrapperRef`), so the entire card fades as a single unit: the title (mobile-only above the video), the video block (with its poster `backgroundImage`), the metadata line, and the description paragraph all dim together. Because the fade only kicks in within ~20% of viewport height of the top/bottom edge, the metadata/description fade is barely perceptible in practice — the visual impression is still that of the video block fading at the viewport edges, just implemented at the card scope rather than the inner video wrapper scope.
 
 ## Data Model
 
@@ -64,7 +64,7 @@ N/A.
 - **Reduced motion:** if `window.matchMedia('(prefers-reduced-motion: reduce)').matches`, the effect is skipped — the wrapper keeps its default opacity 1 and the listener is never registered.
 - **Mount/unmount:** initial `update()` is called once after mount (so cards already in view aren't briefly transparent). On unmount, the listener and resize handler are cleaned up.
 - **Resize handling:** `RAMP` and the wrapper rect both depend on viewport height. A resize listener recomputes `RAMP` and re-runs `update()`.
-- **Coexistence with collapsed cards:** while a `CollapsedFilmCard` is in `'collapsed'` phase, the wrapper is `visibility: hidden` (`CollapsedFilmCard.jsx:322`); the opacity write still happens but is invisible. No conflict.
+- **Coexistence with collapsed cards:** while a `CollapsedFilmCard` is in `'collapsed'` phase, its `contentRef` (which wraps the inner `FeaturedFilmCard`) carries `visibility: hidden`; the opacity write on the inner article still happens but is invisible. No conflict.
 - **No CSS transition:** because `update()` runs every scroll frame, a CSS `transition: opacity` would double-smooth and cause lag. Opacity is set directly via inline style.
 
 ## Dependencies

@@ -11,7 +11,7 @@ test_files: []
 known_issues:
   - "Rapid back-to-back clicks across cards leave A's open animation in flight when B is clicked; A's close is queued via pendingCloseRef until A reaches 'expanded'. Acceptable steady-state but not optimized."
   - "When the auto-close target (A) is below the newly-clicked card (B) in document order, no scroll adjustment is made (correct), but the smooth-scroll glide may still feel slightly off on very tall expanded layouts due to non-A page reflow."
-  - "On touch devices, the X close indicator is always visible (no hover) but the 'Collapse' label never appears. Users tap anywhere on the expanded card to close — affordance is implicit."
+  - "On touch devices, the X close indicator is always visible (no hover-reveal). Users tap the X or anywhere on the expanded card's whitespace to close — affordance is implicit."
 ---
 
 # 03 — Collapsed Film Cards: Shutter Expand/Collapse
@@ -45,7 +45,7 @@ Each `CollapsedFilmCard` owns its own animation state. The parent (`Films.jsx`) 
 |---|---|---|
 | `'collapsed'` | Idle single-row band | Article `md:h-9` (36px desktop), overflow:hidden. Overlay rendered as the visible row. `contentRef` is `position:absolute top-0 left-0 right-0` + `visibility:hidden` (no pixels rendered) |
 | `'animating'` | Open in progress | Article inline `style.height` transitioning collapsed→target with `OPEN_TRANSITION` (1200ms). Overlay sliding up + fading out (500ms). `contentRef` becomes visible and in-flow |
-| `'expanded'` | Stable expanded view | Article `style.height = 'auto'`. Overlay unmounted. Close indicator (X + hover-revealed "Collapse" label) sits at the bottom of `contentRef`. Article also gets the `group` class for hover-reveal of the X |
+| `'expanded'` | Stable expanded view | Article `style.height = 'auto'`. Overlay unmounted. Close indicator (a 12px X svg, no text label) sits at the bottom of `contentRef`. Article also gets the `group` class for hover-reveal of the X. |
 | `'closing'` | Close in progress | Article transitioning expanded→collapsed with `CLOSE_TRANSITION` (600ms). Overlay re-mounts at `translateY(-100%)` opacity 0; cross-fades in over the **last 500ms** of the close so it lands fully visible exactly when the height transition ends |
 
 ## Animation Constants (`CollapsedFilmCard.jsx` top of file)
@@ -130,11 +130,11 @@ With correction: the data-attribute pair `data-cfc-eh` / `data-cfc-ch` published
 
 | Surface | Hover behavior |
 |---|---|
-| Collapsed band | `transition-colors duration-500 hover:bg-black hover:text-white` — the entire band inverts to a black bar with white text |
-| Inner flex (collapsed) | 16px horizontal padding (`px-4`) so text breathes inside the inverted band |
+| Collapsed band | The outer overlay carries `group/row`. Each of the three text elements (title, first sentence, year • category) is wrapped in its own `<span>` carrying `group-hover/row:bg-gray-900 group-hover/row:text-white` — so on hover the band shows **three separate black-on-white pills**, not a single band-wide invert. Trigger is band-wide; visual is per-element. |
+| Inner flex (collapsed) | 16px horizontal padding (`px-4`) so the chips breathe inside the band |
 | Expanded card (article) | Class `group` is added — used to gate the X icon's reveal |
 | X svg | `md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300` — invisible by default, fades in on article hover |
-| Indicator strip | Class `group/close` — when hovered directly, the "Collapse" label slides in from the left of the X via `max-width:0 → 120px` + opacity transition, 300ms ease-out |
+| Indicator strip | Currently the strip itself is the click target with the X icon centered; the standalone "Collapse" label has been removed from the implementation |
 
 ### Description first sentence
 

@@ -28,6 +28,7 @@ export function useSmoothScrollContext() {
       scrollToElement: (el, options) => el?.scrollIntoView({ behavior: options?.instant ? 'instant' : 'smooth', block: options?.block || 'start' }),
       getScrollPosition: () => window.scrollY,
       addScrollListener: () => () => {},
+      setScrollLocked: () => {},
       scrollY: 0,
     };
   }
@@ -69,6 +70,13 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
   // Scroll position state that triggers re-renders for subscribers
   const [scrollY, setScrollY] = useState(0);
   const scrollListenersRef = useRef(new Set());
+
+  // Hard lock — when set, wheel/key/touch handlers bail out so an overlay
+  // (e.g. Lightbox) can disable page scroll without unmounting the provider.
+  const isLockedRef = useRef(false);
+  const setScrollLocked = useCallback((locked) => {
+    isLockedRef.current = !!locked;
+  }, []);
 
   // Listen for resize to toggle smooth scroll
   useEffect(() => {
@@ -130,6 +138,7 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
 
   // Handle wheel events
   const handleWheel = useCallback((e) => {
+    if (isLockedRef.current) return;
     const content = contentRef.current;
     if (!content) return;
 
@@ -156,6 +165,7 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback((e) => {
+    if (isLockedRef.current) return;
     const content = contentRef.current;
     if (!content) return;
 
@@ -263,6 +273,11 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
       data.current = targetPos;
       data.target = targetPos;
       content.style.transform = `translateY(${-targetPos}px)`;
+      // Notify scroll-aware components (e.g. the FeaturedPhotoCard header
+      // pin) that scroll changed instantly — otherwise they'd keep using
+      // a stale anchor until the next user-driven scroll.
+      setScrollY(targetPos);
+      scrollListenersRef.current.forEach((listener) => listener(targetPos));
     } else {
       // Temporarily override ease if a custom value is provided
       if (ease) {
@@ -427,6 +442,7 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
     scrollToElement,
     getScrollPosition,
     addScrollListener,
+    setScrollLocked,
     scrollY,
   };
 

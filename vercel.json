@@ -1,5 +1,5 @@
 {
-  "buildCommand": "echo '=== configure lfs endpoint ===' && git config lfs.url \"https://x-access-token:${GITHUB_TOKEN}@github.com/maximeprn/baba-portfolio.git/info/lfs\" && echo '=== git lfs install ===' && git lfs install --local && echo '=== git lfs pull ===' && git lfs pull && echo '=== vite build ===' && vite build && echo '=== dist/videos sample sizes ===' && ls -lh dist/videos | head -5",
+  "buildCommand": "bash scripts/vercel-build.sh",
   "rewrites": [
     {
       "source": "/(.*)",

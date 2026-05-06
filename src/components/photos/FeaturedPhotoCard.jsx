@@ -88,7 +88,7 @@ function FeaturedPhotoCard({
     if (phase === 'expanded') {
       article.style.transition = 'none';
       article.style.height = 'auto';
-      article.style.overflow = '';
+      article.style.clipPath = '';
       const gallery = galleryWrapRef.current;
       if (gallery) {
         gallery.style.transition = '';
@@ -107,7 +107,7 @@ function FeaturedPhotoCard({
     } else if (phase === 'collapsed') {
       article.style.transition = 'none';
       article.style.height = '';
-      article.style.overflow = '';
+      article.style.clipPath = '';
       delete article.dataset.fpcEh;
       delete article.dataset.fpcCh;
     }
@@ -177,10 +177,14 @@ function FeaturedPhotoCard({
     }
 
     // Pin the article to its current height before the layout swap so
-    // nothing jumps when the gallery mounts in flow.
+    // nothing jumps when the gallery mounts in flow. We use clip-path
+    // instead of overflow:hidden so the gallery header's `position: sticky`
+    // (active on mobile) keeps treating the viewport as its scroll ancestor
+    // — overflow:hidden would re-anchor sticky to the article and pop the
+    // header out of the viewport on close.
     article.style.transition = 'none';
     article.style.height = `${collapsedHeight}px`;
-    article.style.overflow = 'hidden';
+    article.style.clipPath = 'inset(0)';
 
     setPhase('animating-open');
     // Continues in the 'animating-open' useLayoutEffect below.
@@ -222,7 +226,7 @@ function FeaturedPhotoCard({
     const collapsedHeight = collapsedHeightRef.current;
     article.style.transition = 'none';
     article.style.height = `${collapsedHeight}px`;
-    article.style.overflow = 'hidden';
+    article.style.clipPath = 'inset(0)';
 
     // scrollHeight reflects the natural content height now that gallery is in flow.
     const targetHeight = article.scrollHeight;
@@ -285,7 +289,7 @@ function FeaturedPhotoCard({
 
     article.style.transition = 'none';
     article.style.height = `${expandedHeight}px`;
-    article.style.overflow = 'hidden';
+    article.style.clipPath = 'inset(0)';
 
     setPhase('animating-close');
   }, [phase]);

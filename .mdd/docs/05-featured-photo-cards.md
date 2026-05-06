@@ -60,9 +60,9 @@ PhotoCardPreview.jsx           ExpandedPhotoGallery.jsx
 | Phase | Preview shown? | Gallery shown? | DOM state |
 |---|---|---|---|
 | `'collapsed'` | yes (in flow) | no | Article auto-sized by preview. `cursor-pointer`, click → open. |
-| `'animating-open'` | no | yes (in flow) | Article inline `style.height` transitions collapsed→target with `OPEN_TRANSITION` (1200ms). Preview-matched gallery imgs animate `transform` from FIRST→identity (LAST). Non-preview gallery cells animate `opacity 0→1` with stagger. `overflow:hidden` on article. |
-| `'expanded'` | no | yes (in flow) | `style.height: auto`, `overflow: visible`. Article carries `group` for X-icon hover-reveal. Click anywhere outside the gallery imgs / header text → close. |
-| `'animating-close'` | yes (absolute overlay) | yes (in flow, fading) | Article transitions expanded→collapsed (600ms). Gallery `opacity 1→0` over 200ms. Preview overlay slides in `translateY(-100%)→0`, `opacity 0→1` over the **last 500ms** so it lands fully visible at t=600ms. |
+| `'animating-open'` | no | yes (in flow) | Article inline `style.height` transitions collapsed→target with `OPEN_TRANSITION` (1200ms). Preview-matched gallery imgs animate `transform` from FIRST→identity (LAST). Non-preview gallery cells animate `opacity 0→1` with stagger. `clip-path: inset(0)` on article (not `overflow:hidden` — see Header Pin). |
+| `'expanded'` | no | yes (in flow) | `style.height: auto`, `clip-path: none`. Article carries `group` for X-icon hover-reveal. Click anywhere outside the gallery imgs / header text → close. |
+| `'animating-close'` | yes (absolute overlay) | yes (in flow, fading) | Article transitions expanded→collapsed (600ms). Gallery `opacity 1→0` over 200ms. Preview overlay slides in `translateY(-100%)→0`, `opacity 0→1` over the **last 500ms** so it lands fully visible at t=600ms. `clip-path: inset(0)` on article. |
 
 ## Animation Constants (`FeaturedPhotoCard.jsx` top of file)
 
@@ -235,29 +235,38 @@ The smooth-scroll target inside `useLayoutEffect[animating-open]` is then just `
 
 ## Header Pin
 
-`position: sticky` would be the obvious choice but doesn't work here: on desktop the SmoothScrollProvider sets `body { overflow: hidden }` and translates content via CSS transform. There is no real scrolling ancestor for sticky to attach to.
+Two paths, dispatched by viewport width:
 
-`ExpandedPhotoGallery` instead subscribes to `addScrollListener` and applies a `translate3d(0, …, 0)` to the header that exactly cancels the wrapper's `translateY(-scrollY)` whenever the header's natural document-space top would otherwise scroll above viewport top:
+**Mobile (< 1024 px):** the page scrolls natively, so we use plain CSS `position: sticky; top: 0` on the `<header>`. The browser updates its position in lockstep with paint. Running JS here would chase passive `scroll` events, which fire AFTER the browser has already painted the new scroll position — every tick the header would drift one frame and snap back, visible as a tremble while scrolling. The sticky-with-bottom-stop release is what `position: sticky` does natively (the header stops sticking once its containing block's bottom is reached).
+
+**Desktop (≥ 1024 px):** `SmoothScrollContext` sets `body { overflow: hidden }` and translates content via CSS transform — no real scrolling ancestor for sticky to attach to. `ExpandedPhotoGallery` instead subscribes to `addScrollListener` (called inside the smooth-scroll rAF, BEFORE paint) and applies a `translate3d(0, …, 0)` to the header that exactly cancels the wrapper's `translateY(-scrollY)` whenever the header's natural document-space top would otherwise scroll above viewport top:
 
 ```js
-useEffect(() => {
-  if (!isExpanded) return;
+useLayoutEffect(() => {
+  if (!pinHeader) return;
+  if (!isDesktop) return;                                       // mobile uses sticky
   const header = headerRef.current;
   header.style.transform = '';                                  // measure clean
   const initialScroll = getScrollPosition();
   const headerDocTop = header.getBoundingClientRect().top + initialScroll;
   const apply = (scrollY) => {
     const visualTop = headerDocTop - scrollY;
-    header.style.transform = visualTop < 0
-      ? `translate3d(0, ${-visualTop}px, 0)`
-      : '';
+    if (visualTop >= 0) { header.style.transform = ''; return; }
+    const articleBottomVisual = article.getBoundingClientRect().bottom;
+    const headerBottomLimit = articleBottomVisual - RELEASE_MARGIN_PX;
+    const desiredHeaderTop = Math.min(0, headerBottomLimit - header.offsetHeight);
+    header.style.transform = `translate3d(0, ${desiredHeaderTop - visualTop}px, 0)`;
   };
   apply(initialScroll);
   return addScrollListener(apply);
-}, [isExpanded, ...]);
+}, [pinHeader, isDesktop, ...]);
 ```
 
-Header carries `relative z-10 bg-white` so masonry photos that scroll under it don't show through. Pin engages only in the stable `'expanded'` phase — during `'animating-open'` the header rides up with the gallery as the page scrolls into position.
+Header className: `sticky top-0 lg:relative lg:top-auto z-10 bg-white …`. At lg+ the `lg:relative` override drops it back to relative so the desktop JS pin's `transform` writes don't fight sticky's own positioning. `bg-white z-10` keeps masonry photos that scroll under it from showing through. The pin engages for the entire non-collapsed lifecycle — during `'animating-open'` the header would otherwise scroll past and then snap back when the pin activated at transitionend.
+
+### Article clip: `clip-path: inset(0)`, not `overflow: hidden`
+
+During `'animating-open'` and `'animating-close'` the article must clip its overflow so (a) the morph imgs don't escape the growing/shrinking box and (b) the close-path overlay can sit at `translateY(-100%)` invisibly above the article before sliding down. We use `clip-path: inset(0)` — not `overflow: hidden` — because `overflow: hidden` would make the article a sticky scroll-ancestor on mobile, instantly re-anchoring the sticky header from the viewport to the article (popping it off-screen if the user is scrolled deep into the gallery) the moment close starts, before the gallery's 200 ms opacity fade can mask it. `clip-path` produces the same visual clipping without affecting sticky's scroll-ancestor calculation.
 
 ## `[data-fpc-eh]` / `[data-fpc-ch]` markers
 
@@ -272,7 +281,7 @@ Set during `useLayoutEffect[animating-open]`, deleted in `useLayoutEffect[collap
 | Collage img       | `collapsed` | `pointer-events: none` — falls through to article |
 | Title / meta / desc text | `collapsed` | bubbles to article → `handleOpen` (entire card is clickable) |
 | Gallery img       | `expanded`  | `stopPropagation` + `onPhotoClick(project, idx)` → Lightbox |
-| Header text in gallery | `expanded` | `stopPropagation` — reading the pinned title doesn't toggle phase |
+| Header (title / meta / description) | `expanded` | bubbles to article → `handleClose` (the pinned header is the primary collapse affordance once expanded; `cursor-pointer` advertises this) |
 | Close X strip     | `expanded`  | `handleClose` |
 
 ## Reduced Motion

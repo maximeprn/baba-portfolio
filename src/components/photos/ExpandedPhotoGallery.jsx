@@ -14,21 +14,45 @@
  * RELEASE_MARGIN_PX) so it slides off-screen exactly as the gallery ends —
  * no leftover header floating over the next section.
  *
- * `position: sticky` would be the obvious tool but doesn't apply: on desktop
- * `SmoothScrollContext` translates content via CSS transform, so there's no
- * real scrolling ancestor for sticky to attach to. We subscribe to
- * `addScrollListener` and compute the transform manually.
+ * Two pin paths:
+ *
+ * - Mobile (< 1024 px): native `position: sticky; top: 0`. The page scrolls
+ *   natively, so the browser pins the header in lockstep with paint. Running
+ *   the JS path here would chase passive `scroll` events that fire AFTER the
+ *   browser has already painted the new scroll position, so every scroll
+ *   tick the header would drift one frame and snap back — visible jitter.
+ *
+ * - Desktop (>= 1024 px): `SmoothScrollContext` translates content via CSS
+ *   transform, so there's no real scrolling ancestor for sticky to attach
+ *   to. We subscribe to `addScrollListener` (called inside the smooth-scroll
+ *   rAF, BEFORE paint) and compute the transform manually.
  */
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
 
 const RELEASE_MARGIN_PX = 24;
+const DESKTOP_MEDIA_QUERY = '(min-width: 1024px)';
 
 function ExpandedPhotoGallery({ project, pinHeader, onPhotoClick, onClose }) {
   const { title, description, year, client, category, photos } = project;
   const headerRef = useRef(null);
   const { addScrollListener, getScrollPosition } = useSmoothScrollContext();
+
+  // Track whether we're on the desktop smooth-scroll path. Below 1024 px the
+  // header pins via CSS sticky (see the className on <header>), so the JS
+  // pin must bail out — otherwise it competes with sticky and the lagged
+  // scroll-event updates produce the jitter we're trying to fix.
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window === 'undefined' || window.matchMedia(DESKTOP_MEDIA_QUERY).matches,
+  );
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia(DESKTOP_MEDIA_QUERY);
+    const handler = (e) => setIsDesktop(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   // Pin the header at viewport top while the gallery is open, with a
   // sticky-with-bottom-stop release so it slides off-screen as the article
@@ -43,9 +67,15 @@ function ExpandedPhotoGallery({ project, pinHeader, onPhotoClick, onClose }) {
   // could land before the pin is wired up.
   useLayoutEffect(() => {
     if (!pinHeader) return;
+    if (!isDesktop) return; // Mobile: handled by CSS sticky on <header>.
     const header = headerRef.current;
     if (!header) return;
-    const article = header.closest('article[data-featured-photo-card]');
+    // Match either card type — FeaturedPhotoCard or CollapsedPhotoCard —
+    // since both render this gallery as their expanded body and both want
+    // the same sticky-with-bottom-stop pin behavior.
+    const article = header.closest(
+      'article[data-featured-photo-card], article[data-collapsed-photo-card]',
+    );
     if (!article) return;
 
     // Reset any leftover transform so we can measure natural positions.
@@ -79,17 +109,22 @@ function ExpandedPhotoGallery({ project, pinHeader, onPhotoClick, onClose }) {
       unsubscribe();
       if (headerRef.current) headerRef.current.style.transform = '';
     };
-  }, [pinHeader, addScrollListener, getScrollPosition]);
+  }, [pinHeader, isDesktop, addScrollListener, getScrollPosition]);
 
   return (
     <div className="w-full px-4 md:px-0">
       {/* Title block — pinned to viewport top while expanded. bg-white +
           z-10 ensure the masonry photos that scroll under it don't show
-          through. py-* matches the previous pt-* + mb-* spacing. */}
+          through. py-* matches the previous pt-* + mb-* spacing.
+          On mobile we use native CSS sticky (zero scroll-event lag); at
+          lg+ we drop back to relative because the desktop JS pin sets
+          `transform` directly and doesn't want sticky in the way.
+          Click bubbles to the article on purpose: tapping the pinned
+          header again is the primary collapse affordance once the gallery
+          is open (matches the X strip / article-whitespace gestures). */}
       <header
         ref={headerRef}
-        className="relative z-10 bg-white pt-4 md:pt-8 pb-6 md:pb-10 will-change-transform"
-        onClick={(e) => e.stopPropagation()}
+        className="sticky top-0 lg:relative lg:top-auto z-10 bg-white pt-4 md:pt-8 pb-6 md:pb-10 will-change-transform cursor-pointer"
       >
         <h3 className="font-header text-lg md:text-2xl font-medium tracking-widest uppercase leading-tight">
           {title}

@@ -19,6 +19,8 @@
  * ============================================================================
  */
 
+import { shortVideo } from './videoShorts';
+
 export const siteConfig = {
   // -------------------------------------------------------------------------
   // ARTIST INFORMATION
@@ -142,7 +144,9 @@ export const siteConfig = {
 
   showreel: {
     vimeoUrl: 'https://player.vimeo.com/video/989542038',
-    videoFile: '/videos/Showreel 2021.mp4',
+    // Resolved through ./videoShorts so the autoplaying hero background
+    // streams the shortened teaser when one exists in public/videos/.
+    videoFile: shortVideo('/videos/Showreel 2021.mp4'),
   },
 
 

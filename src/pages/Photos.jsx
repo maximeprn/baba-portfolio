@@ -13,12 +13,19 @@ import { Helmet } from 'react-helmet-async';
 
 import FloatingGalleryHero from '../components/photos/FloatingGalleryHero';
 import FeaturedPhotoCard from '../components/photos/FeaturedPhotoCard';
+import CollapsedPhotoCard from '../components/photos/CollapsedPhotoCard';
 import Lightbox from '../components/ui/Lightbox';
+import TitleSection from '../components/ui/TitleSection';
 
-import { getFeaturedProjects, photoProjects } from '../data/photoProjects';
+import {
+  getFeaturedProjects,
+  getNonFeaturedProjects,
+  photoProjects,
+} from '../data/photoProjects';
 
 function Photos() {
   const featuredProjects = getFeaturedProjects();
+  const otherProjects = getNonFeaturedProjects();
 
   // Single-expand orchestrator
   const [expandedProjectId, setExpandedProjectId] = useState(null);
@@ -136,6 +143,30 @@ function Photos() {
             />
           </div>
         ))}
+
+        {/* OTHER PROJECTS — non-featured projects rendered as collapsed
+            single-row bands. Click expands directly into the same gallery
+            view used by FeaturedPhotoCard. Single-expand state is shared
+            with the featured cards above, so opening any card collapses
+            whichever was previously open (Featured or Collapsed).
+            Spec: .mdd/docs/06-collapsed-photo-cards.md */}
+        {otherProjects.length > 0 && (
+          <>
+            <div className="h-32" aria-hidden="true" />
+            <TitleSection title="Other Projects" />
+            {otherProjects.map((project, idx) => (
+              <CollapsedPhotoCard
+                key={project.id}
+                project={project}
+                index={idx}
+                onPhotoClick={handlePhotoClick}
+                onWillExpand={handleWillExpand}
+                onDidCollapse={handleDidCollapse}
+                closeSignal={closeSignals[project.id] || 0}
+              />
+            ))}
+          </>
+        )}
 
         <div className="h-20" aria-hidden="true" />
       </div>

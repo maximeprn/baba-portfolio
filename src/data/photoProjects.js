@@ -425,6 +425,7 @@ export const photoProjects = [
 ];
 
 export const getFeaturedProjects = () => photoProjects.filter((p) => p.featured);
+export const getNonFeaturedProjects = () => photoProjects.filter((p) => !p.featured);
 export const getProjectBySlug = (slug) => photoProjects.find((p) => p.slug === slug);
 
 export default photoProjects;

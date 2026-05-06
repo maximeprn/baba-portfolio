@@ -1,4 +1,5 @@
 {
+  "buildCommand": "echo '=== git lfs install ===' && git lfs install --local && echo '=== git lfs pull ===' && git lfs pull && echo '=== vite build ===' && vite build && echo '=== dist/videos sample sizes ===' && ls -lh dist/videos | head -5",
   "rewrites": [
     {
       "source": "/(.*)",

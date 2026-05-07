@@ -12,7 +12,6 @@
  */
 
 import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
-import { flushSync } from 'react-dom';
 
 import PhotoCardPreview from './PhotoCardPreview';
 import ExpandedPhotoGallery from './ExpandedPhotoGallery';
@@ -57,6 +56,10 @@ function FeaturedPhotoCard({
   const lastCloseSignalRef = useRef(closeSignal);
   const firstRectsRef      = useRef(new Map()); // photoIdx → DOMRect
   const prevPhaseRef       = useRef(phase);
+  // Set when the close was triggered by a sibling opening (closeSignal
+  // bumped). The opening sibling owns the scroll motion; we skip the
+  // close-time scroll-to-top to avoid two competing scroll animations.
+  const isSiblingCloseRef  = useRef(false);
 
   const { scrollTo, getScrollPosition, isDesktop } = useSmoothScrollContext();
   const { id, title, description, year, client, category } = project;
@@ -120,40 +123,18 @@ function FeaturedPhotoCard({
     const previewWrap = previewWrapRef.current;
     if (!article || !previewWrap) return;
 
-    // ANCHOR — the viewport y-coord of this article at click time. We will
-    // keep this position INVARIANT across the previously-expanded sibling's
-    // collapse so the user perceives the gallery unfolding right here, not
-    // after a long scroll trip across the document.
-    const articleTopPre = article.getBoundingClientRect().top;
-    const scrollPre = getScrollPosition();
+    // Tell the parent we're opening — it bumps the previously-expanded
+    // sibling's closeSignal, which triggers that sibling's animated
+    // close. No flushSync: we WANT the sibling's close and our open to
+    // animate in parallel so the user perceives a single coordinated
+    // motion (B expanding) rather than "A snaps shut, page jumps, B
+    // expands" three-step shuffle.
+    onWillExpand?.(id);
 
-    // Force the previously-expanded sibling (if any) to collapse fully —
-    // state + DOM + style cleanup — synchronously, before we go on. We
-    // moved the sibling's closeSignal handler to useLayoutEffect for this
-    // reason: flushSync flushes layout effects but not passive ones, so
-    // by the end of this block the other card's article has shrunk to its
-    // collapsed height and its [data-fpc-eh] markers are gone. No paint
-    // happens between this and our re-anchor below — the user never sees
-    // the intermediate state.
-    flushSync(() => {
-      onWillExpand?.(id);
-    });
-
-    // Re-anchor: the sibling's collapse pulled this article up in the
-    // viewport because the wrapper's translateY hasn't moved yet. Jump
-    // scroll INSTANTLY (no animation) so this article is back at exactly
-    // articleTopPre. From the user's perspective: the previous card's
-    // collapse was invisible.
-    const articleTopPost = article.getBoundingClientRect().top;
-    const collapseDelta = articleTopPre - articleTopPost; // ≥ 0
-    const adjustedScroll = Math.max(0, scrollPre - collapseDelta);
-    if (collapseDelta > 0) {
-      scrollTo(adjustedScroll, { instant: true });
-    }
-
-    // FIRST rects: snapshot preview imgs in the post-anchor layout. Because
-    // we restored the article to articleTopPre, these match what the user's
-    // eye sees at click time — the morph will start exactly from the click.
+    // FIRST rects: snapshot preview imgs at click time. The sibling has
+    // received closeSignal but hasn't actually collapsed yet (its close
+    // animation is starting in parallel), so these rects reflect what
+    // the user sees on screen the instant they tapped.
     const firstRects = new Map();
     previewWrap.querySelectorAll('[data-fpc-preview="1"]').forEach((img) => {
       const idx = parseInt(img.dataset.photoIdx, 10);
@@ -235,15 +216,26 @@ function FeaturedPhotoCard({
 
     article.getBoundingClientRect();
 
-    // Smooth-scroll our top to viewport y=0 (the gallery header / title
-    // ends up pinned to the top edge). This is a SMALL local motion —
-    // articleTop is the post-anchor viewport y from handleOpen, which is
-    // typically just a few hundred px. No sibling-delta correction needed:
-    // flushSync already collapsed any expanded sibling before we got here,
-    // so [data-fpc-eh] markers on the page only point at our own article.
+    // Smooth-scroll our top to viewport y=0, with a siblingDelta
+    // correction: any previously-expanded photo card ABOVE us is in the
+    // process of closing in parallel, and will pull our absolute top up
+    // by (expanded − collapsed) once it lands. We read those heights
+    // off the [data-fpc-eh] / [data-cpc-eh] markers each card publishes
+    // while open, so we predict the post-collapse position without
+    // having to wait for the sibling's animation to finish.
     const articleTop = article.getBoundingClientRect().top;
     const currentScroll = getScrollPosition();
-    const targetScroll = Math.max(0, articleTop + currentScroll);
+    let siblingDelta = 0;
+    document.querySelectorAll('[data-fpc-eh], [data-cpc-eh]').forEach((el) => {
+      if (el === article) return;
+      const expH = parseFloat(el.dataset.fpcEh || el.dataset.cpcEh || '0');
+      const colH = parseFloat(el.dataset.fpcCh || el.dataset.cpcCh || '0');
+      const siblingTop = el.getBoundingClientRect().top;
+      if (siblingTop < articleTop) {
+        siblingDelta += expH - colH;
+      }
+    });
+    const targetScroll = Math.max(0, articleTop + currentScroll - siblingDelta);
 
     let cancelled = false;
 
@@ -337,9 +329,15 @@ function FeaturedPhotoCard({
 
     const targetHeight = collapsedHeightRef.current || 0;
 
-    const articleAbsoluteTop =
-      article.getBoundingClientRect().top + getScrollPosition();
-    scrollTo(Math.max(0, articleAbsoluteTop), isDesktop ? { ease: 0.05 } : undefined);
+    // User-initiated close → scroll the collapsed card top to viewport
+    // y=0. Sibling-triggered close → skip; the opening sibling owns
+    // the scroll motion and targeting both simultaneously would race.
+    if (!isSiblingCloseRef.current) {
+      const articleAbsoluteTop =
+        article.getBoundingClientRect().top + getScrollPosition();
+      scrollTo(Math.max(0, articleAbsoluteTop), isDesktop ? { ease: 0.05 } : undefined);
+    }
+    isSiblingCloseRef.current = false;
 
     const rafId = requestAnimationFrame(() => {
       article.style.transition = CLOSE_TRANSITION;
@@ -365,24 +363,23 @@ function FeaturedPhotoCard({
   }, [phase, handleClose]);
 
   // Auto-close when parent bumps closeSignal (single-expand enforcement).
-  // Switching to a new card collapses this one INSTANTLY — no fade, no
-  // height shutter, no overlay slide-in. The 'collapsed' useLayoutEffect
-  // clears any inline styles left over from a possibly-interrupted open.
-  //
-  // useLayoutEffect (not useEffect) so that the new card can wrap
-  // `onWillExpand` in `flushSync` and have THIS card's full collapse
-  // (state + DOM) commit synchronously — before the new card captures
-  // its scroll anchor and FIRST rects. flushSync flushes layout effects;
-  // it does NOT flush passive effects.
+  // Animated close so it runs IN PARALLEL with the new card's expand —
+  // the user perceives one coordinated motion (B opening) rather than
+  // "A snaps shut, page jumps, B expands". For non-expanded states
+  // (mid-animation), fall back to instant collapse so we don't fight
+  // the current animation.
   useLayoutEffect(() => {
     if (closeSignal === lastCloseSignalRef.current) return;
     lastCloseSignalRef.current = closeSignal;
-    if (phase !== 'collapsed') {
+    if (phase === 'expanded') {
+      isSiblingCloseRef.current = true;
+      handleClose();
+    } else if (phase !== 'collapsed') {
       isAnimatingRef.current = false;
       pendingCloseRef.current = false;
       setPhase('collapsed');
     }
-  }, [closeSignal, phase]);
+  }, [closeSignal, phase, handleClose]);
 
   const handleArticleClick = useCallback((e) => {
     if (phase === 'collapsed') {

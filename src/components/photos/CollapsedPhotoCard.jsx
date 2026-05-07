@@ -6,16 +6,16 @@
  * no FLIP morph and no in-card video — the expanded body is just the
  * same gallery used by FeaturedPhotoCard.
  *
- * Cross-card-type single-expand: a click here flushSync-collapses any
- * currently-expanded FeaturedPhotoCard (or other CollapsedPhotoCard) so
- * the new card's scroll anchor is correct. Mirror of FeaturedPhotoCard's
- * anchored open.
+ * Cross-card-type single-expand: a click here triggers an animated
+ * close of any currently-expanded photo card (Featured or Collapsed)
+ * via parent's closeSignal bump. The opening card's smooth-scroll
+ * targets the SIBLING-DELTA-corrected position so the close animation
+ * and the open animation run in parallel without competing scrolls.
  *
  * Spec: .mdd/docs/06-collapsed-photo-cards.md
  */
 
 import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
-import { flushSync } from 'react-dom';
 
 import ExpandedPhotoGallery from './ExpandedPhotoGallery';
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
@@ -61,6 +61,11 @@ function CollapsedPhotoCard({
   const pendingCloseRef    = useRef(false);
   const lastCloseSignalRef = useRef(closeSignal);
   const prevPhaseRef       = useRef(phase);
+  // Flag set when the close was triggered by a sibling opening (via
+  // closeSignal). The opening sibling owns the scroll motion in that
+  // case, so we skip the closing-time scroll-to-top to avoid two
+  // competing scroll animations.
+  const isSiblingCloseRef  = useRef(false);
 
   const { scrollTo, getScrollPosition, isDesktop } = useSmoothScrollContext();
   const { id, title, description, year, client, category } = project;
@@ -88,7 +93,10 @@ function CollapsedPhotoCard({
     return () => clearTimeout(t);
   }, [phase]);
 
-  // Settle inline styles when phase reaches a stable state.
+  // Settle inline styles when phase reaches a stable state. The
+  // data-cpc-eh / data-cpc-ch markers expose this article's expanded /
+  // collapsed heights so a SIBLING that's about to open can predict the
+  // doc shrinkage without waiting for our close to actually finish.
   useLayoutEffect(() => {
     const article = articleRef.current;
     if (!article) return;
@@ -103,6 +111,8 @@ function CollapsedPhotoCard({
     } else if (phase === 'collapsed') {
       article.style.transition = 'none';
       article.style.height = '';
+      delete article.dataset.cpcEh;
+      delete article.dataset.cpcCh;
     }
   }, [phase]);
 
@@ -112,28 +122,13 @@ function CollapsedPhotoCard({
     const article = articleRef.current;
     if (!article) return;
 
-    // ANCHOR — viewport y of this article at click time. We keep this
-    // INVARIANT across any currently-expanded sibling's collapse so the
-    // user perceives the gallery unfolding right here, not after a long
-    // scroll trip elsewhere.
-    const articleTopPre = article.getBoundingClientRect().top;
-    const scrollPre = getScrollPosition();
-
-    // Force any currently-expanded sibling (Featured or Collapsed) to
-    // collapse fully — state + DOM + style cleanup — synchronously.
-    // flushSync flushes layout effects but not passive ones; siblings
-    // listen for closeSignal in useLayoutEffect for exactly this reason.
-    flushSync(() => {
-      onWillExpand?.(id);
-    });
-
-    // Re-anchor: the sibling's collapse pulled this article up. Jump
-    // scroll INSTANTLY to put it back at articleTopPre.
-    const articleTopPost = article.getBoundingClientRect().top;
-    const collapseDelta = articleTopPre - articleTopPost; // ≥ 0
-    if (collapseDelta > 0) {
-      scrollTo(Math.max(0, scrollPre - collapseDelta), { instant: true });
-    }
+    // Tell the parent we're opening — it'll bump the previously-expanded
+    // sibling's closeSignal, which triggers that sibling's animated
+    // close. Do NOT flushSync: we want the sibling's close and our open
+    // to animate in parallel so the user perceives a single coordinated
+    // motion (B expanding) instead of "A snaps shut → page jumps → B
+    // expands" three-step shuffle.
+    onWillExpand?.(id);
 
     const collapsedHeight = article.offsetHeight;
     collapsedHeightRef.current = collapsedHeight;
@@ -178,6 +173,30 @@ function CollapsedPhotoCard({
     article.style.height = `${collapsedHeight}px`;
     const targetHeight = article.scrollHeight;
 
+    // Publish heights so siblings that open later can predict our
+    // shrinkage without waiting for our close to finish.
+    article.dataset.cpcEh = String(targetHeight);
+    article.dataset.cpcCh = String(collapsedHeight);
+
+    // Predict siblingDelta: any photo card ABOVE us that is currently
+    // expanded (its closeSignal has been incremented by the parent and
+    // it's about to animate-close in parallel with our open) will pull
+    // our absolute top up by (expanded − collapsed) once it finishes.
+    let siblingDelta = 0;
+    const articleTop = article.getBoundingClientRect().top;
+    document.querySelectorAll('[data-fpc-eh], [data-cpc-eh]').forEach((el) => {
+      if (el === article) return;
+      const expH = parseFloat(el.dataset.fpcEh || el.dataset.cpcEh || '0');
+      const colH = parseFloat(el.dataset.fpcCh || el.dataset.cpcCh || '0');
+      const siblingTop = el.getBoundingClientRect().top;
+      if (siblingTop < articleTop) {
+        siblingDelta += expH - colH;
+      }
+    });
+
+    const articleAbsoluteTop = articleTop + getScrollPosition();
+    const targetScroll = Math.max(0, articleAbsoluteTop - siblingDelta);
+
     let cancelled = false;
 
     const startHeightTransition = () => {
@@ -187,33 +206,23 @@ function CollapsedPhotoCard({
     };
 
     if (!isDesktop) {
-      // Mobile — serialize.
-      const articleAbsoluteTop = article.getBoundingClientRect().top + getScrollPosition();
-      const targetScroll = Math.max(0, articleAbsoluteTop);
+      // Mobile — serialize the scroll, then start the height transition.
+      // Sibling's close animates in parallel during the scroll: the
+      // smooth-scroll target = post-collapse position, so by the time
+      // the scroll settles the sibling has shrunk and our absolute top
+      // matches the target. Single coordinated motion, no jumps.
       scrollTo(targetScroll).then(() => {
         if (cancelled) return;
-        // One rAF so the browser commits the post-scroll layout before
-        // we kick off the height transition.
         requestAnimationFrame(startHeightTransition);
       });
       return () => { cancelled = true; };
     }
 
-    // Desktop — snap-trick: temporarily expand to grow the doc, scrollTo
-    // with the valid (post-expand) maxScroll, snap back, then transition.
-    const rafId = requestAnimationFrame(() => {
-      article.style.transition = 'none';
-      article.style.height = `${targetHeight}px`;
-      article.getBoundingClientRect();
-
-      const articleAbsoluteTop = article.getBoundingClientRect().top + getScrollPosition();
-      const targetScroll = Math.max(0, articleAbsoluteTop);
-      scrollTo(targetScroll, { ease: 0.05 });
-
-      article.style.height = `${collapsedHeight}px`;
-      article.getBoundingClientRect();
-      startHeightTransition();
-    });
+    // Desktop — parallel: smooth-scroll lerp + sibling close + our
+    // expand all run together. data.target is a fixed pixel value so
+    // the lerp survives doc-height changes mid-flight.
+    scrollTo(targetScroll, { ease: 0.05 });
+    const rafId = requestAnimationFrame(startHeightTransition);
 
     return () => {
       cancelled = true;
@@ -262,13 +271,17 @@ function CollapsedPhotoCard({
     const targetHeight =
       collapsedHeightRef.current || (window.innerWidth >= 768 ? 36 : 0);
 
-    // Scroll the collapsed card's top to viewport y=0 in parallel with
-    // the height collapse. Browser clamps to maxScroll if the article
-    // sits too close to doc end after close — that's fine; the user
-    // lands "as close to article-top as the doc allows".
-    const articleAbsoluteTop =
-      article.getBoundingClientRect().top + getScrollPosition();
-    scrollTo(Math.max(0, articleAbsoluteTop), isDesktop ? { ease: 0.05 } : undefined);
+    // User-initiated close → scroll the collapsed card top to viewport
+    // y=0 so the user doesn't land mid-gallery. Sibling-triggered close
+    // → skip the scroll: the opening sibling owns the scroll motion and
+    // scrolls to ITS post-collapse target. Two competing smooth-scrolls
+    // would race and feel jumpy.
+    if (!isSiblingCloseRef.current) {
+      const articleAbsoluteTop =
+        article.getBoundingClientRect().top + getScrollPosition();
+      scrollTo(Math.max(0, articleAbsoluteTop), isDesktop ? { ease: 0.05 } : undefined);
+    }
+    isSiblingCloseRef.current = false;
 
     const rafId = requestAnimationFrame(() => {
       article.style.transition = CLOSE_TRANSITION;
@@ -293,19 +306,28 @@ function CollapsedPhotoCard({
     }
   }, [phase, handleClose]);
 
-  // Auto-close when parent bumps closeSignal. INSTANT collapse — no fade,
-  // no shutter. useLayoutEffect (not useEffect) so flushSync from a sibling
-  // open path can drain this fully before the new card captures its
-  // anchor + FIRST rects.
+  // Auto-close when parent bumps closeSignal. We animate the close in
+  // parallel with the new card's open (instead of snapping shut) so the
+  // user perceives a single coordinated motion: B expanding while A
+  // closes, with the page smoothly scrolling so B's top lands at
+  // viewport y=0. This is what fixes the "se fait scroller sans le
+  // vouloir" feeling — no instant collapse, no instant re-anchor.
+  //
+  // For non-expanded states (animating-open mid-flight, closing already
+  // in progress), fall back to instant collapse so we don't fight the
+  // current animation.
   useLayoutEffect(() => {
     if (closeSignal === lastCloseSignalRef.current) return;
     lastCloseSignalRef.current = closeSignal;
-    if (phase !== 'collapsed') {
+    if (phase === 'expanded') {
+      isSiblingCloseRef.current = true;
+      handleClose();
+    } else if (phase !== 'collapsed') {
       isAnimatingRef.current = false;
       pendingCloseRef.current = false;
       setPhase('collapsed');
     }
-  }, [closeSignal, phase]);
+  }, [closeSignal, phase, handleClose]);
 
   const handleArticleClick = useCallback((e) => {
     if (phase === 'collapsed') {

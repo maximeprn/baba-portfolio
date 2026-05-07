@@ -56,10 +56,6 @@ function FeaturedPhotoCard({
   const lastCloseSignalRef = useRef(closeSignal);
   const firstRectsRef      = useRef(new Map()); // photoIdx → DOMRect
   const prevPhaseRef       = useRef(phase);
-  // Set when the close was triggered by a sibling opening (closeSignal
-  // bumped). The opening sibling owns the scroll motion; we skip the
-  // close-time scroll-to-top to avoid two competing scroll animations.
-  const isSiblingCloseRef  = useRef(false);
 
   const { scrollTo, getScrollPosition, isDesktop } = useSmoothScrollContext();
   const { id, title, description, year, client, category } = project;
@@ -216,26 +212,16 @@ function FeaturedPhotoCard({
 
     article.getBoundingClientRect();
 
-    // Smooth-scroll our top to viewport y=0, with a siblingDelta
-    // correction: any previously-expanded photo card ABOVE us is in the
-    // process of closing in parallel, and will pull our absolute top up
-    // by (expanded − collapsed) once it lands. We read those heights
-    // off the [data-fpc-eh] / [data-cpc-eh] markers each card publishes
-    // while open, so we predict the post-collapse position without
-    // having to wait for the sibling's animation to finish.
+    // Smooth-scroll our top to viewport y=0. The previously-expanded
+    // sibling (if any) stays expanded above us throughout the scroll —
+    // by the time the scroll settles, the sibling has been pushed
+    // off-screen above viewport. The sibling's actual collapse fires
+    // AFTER our open transition ends, off-screen, with a synchronous
+    // scrollY compensation (see handleTransitionEnd → 'photo-card-
+    // expand-done' event).
     const articleTop = article.getBoundingClientRect().top;
     const currentScroll = getScrollPosition();
-    let siblingDelta = 0;
-    document.querySelectorAll('[data-fpc-eh], [data-cpc-eh]').forEach((el) => {
-      if (el === article) return;
-      const expH = parseFloat(el.dataset.fpcEh || el.dataset.cpcEh || '0');
-      const colH = parseFloat(el.dataset.fpcCh || el.dataset.cpcCh || '0');
-      const siblingTop = el.getBoundingClientRect().top;
-      if (siblingTop < articleTop) {
-        siblingDelta += expH - colH;
-      }
-    });
-    const targetScroll = Math.max(0, articleTop + currentScroll - siblingDelta);
+    const targetScroll = Math.max(0, articleTop + currentScroll);
 
     let cancelled = false;
 
@@ -329,15 +315,12 @@ function FeaturedPhotoCard({
 
     const targetHeight = collapsedHeightRef.current || 0;
 
-    // User-initiated close → scroll the collapsed card top to viewport
-    // y=0. Sibling-triggered close → skip; the opening sibling owns
-    // the scroll motion and targeting both simultaneously would race.
-    if (!isSiblingCloseRef.current) {
-      const articleAbsoluteTop =
-        article.getBoundingClientRect().top + getScrollPosition();
-      scrollTo(Math.max(0, articleAbsoluteTop), isDesktop ? { ease: 0.05 } : undefined);
-    }
-    isSiblingCloseRef.current = false;
+    // User-initiated close (sibling-triggered closes bypass this
+    // 'animating-close' phase). Always scroll the collapsed card top to
+    // viewport y=0 so the user doesn't land mid-gallery.
+    const articleAbsoluteTop =
+      article.getBoundingClientRect().top + getScrollPosition();
+    scrollTo(Math.max(0, articleAbsoluteTop), isDesktop ? { ease: 0.05 } : undefined);
 
     const rafId = requestAnimationFrame(() => {
       article.style.transition = CLOSE_TRANSITION;
@@ -352,6 +335,14 @@ function FeaturedPhotoCard({
     if (phase === 'animating-open') {
       setPhase('expanded');
       isAnimatingRef.current = false;
+      // Notify any sibling that's been waiting to collapse.
+      const article = articleRef.current;
+      if (article) {
+        const sourceTop = article.getBoundingClientRect().top + getScrollPosition();
+        window.dispatchEvent(new CustomEvent('photo-card-expand-done', {
+          detail: { sourceTop },
+        }));
+      }
       if (pendingCloseRef.current) {
         pendingCloseRef.current = false;
         requestAnimationFrame(() => handleClose());
@@ -360,26 +351,58 @@ function FeaturedPhotoCard({
       setPhase('collapsed');
       isAnimatingRef.current = false;
     }
-  }, [phase, handleClose]);
+  }, [phase, handleClose, getScrollPosition]);
 
-  // Auto-close when parent bumps closeSignal (single-expand enforcement).
-  // Animated close so it runs IN PARALLEL with the new card's expand —
-  // the user perceives one coordinated motion (B opening) rather than
-  // "A snaps shut, page jumps, B expands". For non-expanded states
-  // (mid-animation), fall back to instant collapse so we don't fight
-  // the current animation.
+  // Auto-close when parent bumps closeSignal. We DELAY the actual
+  // collapse until the new card finishes expanding (window event
+  // 'photo-card-expand-done'). By then the new card has scrolled the
+  // user past us — we're off-screen above the viewport — so we collapse
+  // INSTANTLY (no animation) and instant-scroll-adjust scrollY by our
+  // (expanded − collapsed) delta in the same JS execution. The browser
+  // paints both updates as one frame → invisible to the user.
   useLayoutEffect(() => {
     if (closeSignal === lastCloseSignalRef.current) return;
     lastCloseSignalRef.current = closeSignal;
+
     if (phase === 'expanded') {
-      isSiblingCloseRef.current = true;
-      handleClose();
+      let active = true;
+      const handleExpandDone = (e) => {
+        if (!active) return;
+        active = false;
+        window.removeEventListener('photo-card-expand-done', handleExpandDone);
+
+        const article = articleRef.current;
+        if (!article) {
+          setPhase('collapsed');
+          return;
+        }
+
+        const expHeight = article.offsetHeight;
+        const colHeight = collapsedHeightRef.current || 0;
+        const delta = Math.max(0, expHeight - colHeight);
+
+        const myTop = article.getBoundingClientRect().top + getScrollPosition();
+        const sourceTop = e.detail?.sourceTop ?? myTop;
+        const isAbove = myTop < sourceTop;
+
+        setPhase('collapsed');
+        if (isAbove && delta > 0) {
+          const newScrollY = Math.max(0, getScrollPosition() - delta);
+          scrollTo(newScrollY, { instant: true });
+        }
+      };
+      window.addEventListener('photo-card-expand-done', handleExpandDone);
+      return () => {
+        active = false;
+        window.removeEventListener('photo-card-expand-done', handleExpandDone);
+      };
     } else if (phase !== 'collapsed') {
       isAnimatingRef.current = false;
       pendingCloseRef.current = false;
       setPhase('collapsed');
     }
-  }, [closeSignal, phase, handleClose]);
+    return undefined;
+  }, [closeSignal, phase, getScrollPosition, scrollTo]);
 
   const handleArticleClick = useCallback((e) => {
     if (phase === 'collapsed') {

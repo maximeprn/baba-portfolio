@@ -17,7 +17,7 @@
  *   (h-svh avoids the iOS address-bar overflow trap).
  */
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
@@ -32,6 +32,14 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
   // when there are 2+ photos.
   const canNavigate = photos.length > 1;
 
+  // Touch-swipe nav. Direction is locked on first significant move so a
+  // mostly-vertical drag (system gesture, accidental finger drift) doesn't
+  // hijack into a horizontal swipe.
+  const [dragX, setDragX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const touchRef = useRef(null);
+  const swipedRef = useRef(false);
+
   const goToPrev = useCallback(() => {
     if (!canNavigate) return;
     onNavigate((currentIndex - 1 + photos.length) % photos.length);
@@ -41,6 +49,54 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
     if (!canNavigate) return;
     onNavigate((currentIndex + 1) % photos.length);
   }, [canNavigate, currentIndex, photos.length, onNavigate]);
+
+  const handleTouchStart = useCallback((e) => {
+    if (!canNavigate || e.touches.length !== 1) return;
+    const t = e.touches[0];
+    touchRef.current = {
+      x: t.clientX,
+      y: t.clientY,
+      time: Date.now(),
+      locked: null, // 'horizontal' | 'vertical' | null until first significant move
+    };
+    swipedRef.current = false;
+  }, [canNavigate]);
+
+  const handleTouchMove = useCallback((e) => {
+    if (!touchRef.current || e.touches.length !== 1) return;
+    const t = e.touches[0];
+    const dx = t.clientX - touchRef.current.x;
+    const dy = t.clientY - touchRef.current.y;
+
+    if (touchRef.current.locked === null && Math.abs(dx) + Math.abs(dy) > 8) {
+      touchRef.current.locked = Math.abs(dx) > Math.abs(dy) ? 'horizontal' : 'vertical';
+    }
+
+    if (touchRef.current.locked === 'horizontal') {
+      setIsDragging(true);
+      setDragX(dx);
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (!touchRef.current) return;
+    const dx = dragX;
+    const elapsed = Date.now() - touchRef.current.time;
+    // Past 15% of viewport → commit. Or a short, fast flick (>30px in <250ms).
+    const threshold = Math.min(80, window.innerWidth * 0.15);
+    const fastFlick = Math.abs(dx) > 30 && elapsed < 250;
+
+    if (dx > threshold || (fastFlick && dx > 0)) {
+      goToPrev();
+    } else if (dx < -threshold || (fastFlick && dx < 0)) {
+      goToNext();
+    }
+
+    if (Math.abs(dx) > 5) swipedRef.current = true;
+    setDragX(0);
+    setIsDragging(false);
+    touchRef.current = null;
+  }, [dragX, goToPrev, goToNext]);
 
   // Keyboard navigation + body / smooth-scroll lock.
   useEffect(() => {
@@ -87,11 +143,23 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
 
   const overlay = (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 touch-pan-y"
       role="dialog"
       aria-modal="true"
       aria-label="Image lightbox"
-      onClick={onClose}
+      onClick={() => {
+        // Suppress the synthesized click that fires after a swipe gesture
+        // on the backdrop — otherwise a swipe-to-nav also closes the lightbox.
+        if (swipedRef.current) {
+          swipedRef.current = false;
+          return;
+        }
+        onClose();
+      }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
     >
       {/* Close (X) */}
       <button
@@ -141,10 +209,16 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
         src={currentPhoto.src}
         alt={currentPhoto.alt || ''}
         onClick={(e) => e.stopPropagation()}
+        draggable={false}
         className="block object-contain select-none"
         style={{
           maxWidth: 'calc(100vw - 2rem)',
           maxHeight: 'calc(100svh - 2rem)',
+          transform: `translateX(${dragX}px)`,
+          // While dragging: no transition (image follows the finger 1:1).
+          // On release: transition lets the image either spring back or settle
+          // to 0 after the index swap, so neither feels jarring.
+          transition: isDragging ? 'none' : 'transform 220ms ease-out',
         }}
       />
 

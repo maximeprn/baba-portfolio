@@ -146,25 +146,29 @@ function HeroSection({ onVideoClick, onReady }) {
         </div>
       </div>
 
-      {/* MOBILE: Fullscreen video + overlay name */}
-      <div className="md:hidden flex flex-col h-[100svh]">
-        {/* Video + overlaid name */}
-        <div className="flex-1 relative overflow-hidden" onClick={onVideoClick} style={{ containerType: 'inline-size' }}>
-          <video
-            ref={mobileVideoRef}
-            data-hero-video
-            src={siteConfig.showreel.videoFile}
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            onLoadedData={handleVideoReady}
-            className="absolute inset-0 w-full h-full object-cover"
-            aria-hidden="true"
-          />
-          <HeroBioOverlay />
-          <MuteButton isMuted={isMuted} onClick={toggleMute} />
+      {/* MOBILE/TABLET: Sticky full-bleed video — mirrors the desktop pattern so
+          the bio + contact overlay pins through the 150px scroll-reveal window
+          (see memory: hero-150px-intentional). Native sticky (no JS), so no
+          scroll-event lag → no jitter. */}
+      <div className="md:hidden relative w-full" style={{ height: 'calc(100svh + 150px)' }}>
+        <div className="sticky top-0 h-[100svh] w-full">
+          <div className="relative w-full h-full overflow-hidden" onClick={onVideoClick} style={{ containerType: 'inline-size' }}>
+            <video
+              ref={mobileVideoRef}
+              data-hero-video
+              src={siteConfig.showreel.videoFile}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              onLoadedData={handleVideoReady}
+              className="absolute inset-0 w-full h-full object-cover"
+              aria-hidden="true"
+            />
+            <HeroBioOverlay />
+            <MuteButton isMuted={isMuted} onClick={toggleMute} />
+          </div>
         </div>
       </div>
     </section>

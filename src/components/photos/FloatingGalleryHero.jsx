@@ -180,14 +180,20 @@ function FloatingGalleryHero() {
         </div>
       </div>
 
-      {/* Mobile: Fullscreen photo */}
-      <div className="md:hidden relative h-[100svh] w-full overflow-hidden bg-black">
-        <img
-          src={currentPhoto.src}
-          alt="Photography portfolio"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <HeroBioOverlay />
+      {/* Mobile/Tablet: Sticky full-bleed photo — mirrors the desktop pattern so
+          the bio + contact overlay pins through the 150px scroll-reveal window
+          (see memory: hero-150px-intentional). Native sticky → no jitter. */}
+      <div className="md:hidden relative w-full" style={{ height: 'calc(100svh + 150px)' }}>
+        <div className="sticky top-0 h-[100svh] w-full">
+          <div className="relative w-full h-full overflow-hidden bg-black">
+            <img
+              src={currentPhoto.src}
+              alt="Photography portfolio"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <HeroBioOverlay />
+          </div>
+        </div>
       </div>
 
       <h1 className="sr-only">Photos</h1>

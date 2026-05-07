@@ -94,7 +94,10 @@ function Layout({ children }) {
 
       {/* Outer container - full viewport height with flex column layout
           This ensures the footer stays at the bottom even with little content */}
-      <div className="relative min-h-screen flex flex-col bg-background overflow-x-hidden">
+      {/* overflow-x-clip (not -hidden) so it doesn't become a scroll container —
+          otherwise it would override the viewport as the sticky-positioning
+          ancestor for the hero pin and cause iOS jitter on native scroll. */}
+      <div className="relative min-h-screen flex flex-col bg-background overflow-x-clip">
         {/* NAVIGATION — fixed-positioned and rendered via portal to document.body.
             Lives outside the smooth-scroll transformed wrapper so it stays stuck. */}
         <Navigation />

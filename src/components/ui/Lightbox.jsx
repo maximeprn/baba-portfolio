@@ -9,18 +9,33 @@
  * y=-scrollY in the viewport, i.e. offscreen as soon as the user has
  * scrolled past zero. We portal to document.body to escape that.
  *
- * Features:
- * - Backdrop click + Escape close
- * - Left/right arrow buttons + ←/→ keys navigate
- * - Body scroll lock + smooth-scroll wheel/key lock while open
- * - Image is centered and clamped to the viewport via max-w/max-h on the img
- *   (h-svh avoids the iOS address-bar overflow trap).
+ * Touch nav model (iOS Photos style):
+ * - Renders a 3-slide track [prev, current, next], each one viewport
+ *   wide. Track is offset by -viewportWidth so the current slide is
+ *   centered at rest.
+ * - Drag translates the whole track 1:1 with the finger; the prev/next
+ *   slides come into view from the sides.
+ * - On commit: animate the track to ±viewportWidth so the destination
+ *   slide arrives at center, then on transitionend swap the index and
+ *   snap the track back to centered (no transition) — visually
+ *   seamless because the same image is now in slot 1.
  */
 
 import { useEffect, useCallback, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
+
+
+// Phase machine for the swipe track:
+// - idle: track at rest, transitions enabled
+// - dragging: finger down, no transition, track follows finger
+// - committing-prev / committing-next: animating to neighbor; on
+//   transitionend → swap index + snap
+// - snapping: one render with transition disabled to reposition the
+//   track to centered after the index swap
+// - cancelling: animating back to centered (swipe didn't pass threshold)
+const SWIPE_TRANSITION = 'transform 280ms cubic-bezier(0.32, 0.72, 0, 1)';
 
 
 function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
@@ -32,13 +47,31 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
   // when there are 2+ photos.
   const canNavigate = photos.length > 1;
 
-  // Touch-swipe nav. Direction is locked on first significant move so a
-  // mostly-vertical drag (system gesture, accidental finger drift) doesn't
-  // hijack into a horizontal swipe.
   const [dragX, setDragX] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
+  const [phase, setPhase] = useState('idle');
+  const [viewportWidth, setViewportWidth] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth : 0,
+  );
   const touchRef = useRef(null);
   const swipedRef = useRef(false);
+
+  // Track viewport width — slide width + commit distance both depend on it.
+  useEffect(() => {
+    const onResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // Reset track state when the lightbox opens/closes so a stale phase
+  // (e.g. mid-commit when something else closes it) can't bleed in.
+  useEffect(() => {
+    if (!isOpen) {
+      setDragX(0);
+      setPhase('idle');
+      touchRef.current = null;
+      swipedRef.current = false;
+    }
+  }, [isOpen]);
 
   const goToPrev = useCallback(() => {
     if (!canNavigate) return;
@@ -50,8 +83,22 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
     onNavigate((currentIndex + 1) % photos.length);
   }, [canNavigate, currentIndex, photos.length, onNavigate]);
 
+  // After the snap render (no-transition centering with the new index),
+  // hand back to idle so the next gesture animates normally.
+  useEffect(() => {
+    if (phase !== 'snapping') return;
+    // Two RAFs: first commits the no-transition render to the screen,
+    // second flips the phase so the next style read includes transition.
+    const raf1 = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setPhase('idle'));
+    });
+    return () => cancelAnimationFrame(raf1);
+  }, [phase]);
+
   const handleTouchStart = useCallback((e) => {
     if (!canNavigate || e.touches.length !== 1) return;
+    // Don't interrupt commit/snap — those need to complete cleanly.
+    if (phase === 'committing-prev' || phase === 'committing-next' || phase === 'snapping') return;
     const t = e.touches[0];
     touchRef.current = {
       x: t.clientX,
@@ -60,7 +107,7 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
       locked: null, // 'horizontal' | 'vertical' | null until first significant move
     };
     swipedRef.current = false;
-  }, [canNavigate]);
+  }, [canNavigate, phase]);
 
   const handleTouchMove = useCallback((e) => {
     if (!touchRef.current || e.touches.length !== 1) return;
@@ -73,7 +120,7 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
     }
 
     if (touchRef.current.locked === 'horizontal') {
-      setIsDragging(true);
+      setPhase('dragging');
       setDragX(dx);
     }
   }, []);
@@ -83,20 +130,42 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
     const dx = dragX;
     const elapsed = Date.now() - touchRef.current.time;
     // Past 15% of viewport → commit. Or a short, fast flick (>30px in <250ms).
-    const threshold = Math.min(80, window.innerWidth * 0.15);
+    const threshold = Math.min(80, viewportWidth * 0.15);
     const fastFlick = Math.abs(dx) > 30 && elapsed < 250;
 
-    if (dx > threshold || (fastFlick && dx > 0)) {
-      goToPrev();
-    } else if (dx < -threshold || (fastFlick && dx < 0)) {
-      goToNext();
-    }
-
     if (Math.abs(dx) > 5) swipedRef.current = true;
-    setDragX(0);
-    setIsDragging(false);
     touchRef.current = null;
-  }, [dragX, goToPrev, goToNext]);
+
+    if (dx > threshold || (fastFlick && dx > 0)) {
+      setDragX(viewportWidth);
+      setPhase('committing-prev');
+    } else if (dx < -threshold || (fastFlick && dx < 0)) {
+      setDragX(-viewportWidth);
+      setPhase('committing-next');
+    } else if (Math.abs(dx) > 0) {
+      setDragX(0);
+      setPhase('cancelling');
+    } else {
+      // No real horizontal motion (probably a tap or vertical drift).
+      setPhase('idle');
+    }
+  }, [dragX, viewportWidth]);
+
+  // Track transition end → finalize commit/cancel.
+  const handleTrackTransitionEnd = useCallback((e) => {
+    if (e.propertyName !== 'transform') return;
+    if (phase === 'committing-prev') {
+      goToPrev();
+      setDragX(0);
+      setPhase('snapping');
+    } else if (phase === 'committing-next') {
+      goToNext();
+      setDragX(0);
+      setPhase('snapping');
+    } else if (phase === 'cancelling') {
+      setPhase('idle');
+    }
+  }, [phase, goToPrev, goToNext]);
 
   // Keyboard navigation + body / smooth-scroll lock.
   useEffect(() => {
@@ -141,9 +210,26 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
     return null;
   }
 
+  const prevPhoto = canNavigate
+    ? photos[(currentIndex - 1 + photos.length) % photos.length]
+    : null;
+  const nextPhoto = canNavigate
+    ? photos[(currentIndex + 1) % photos.length]
+    : null;
+
+  // Track: 3 slides side-by-side, offset by -viewportWidth so the middle
+  // (current) slide is centered at rest. Single-photo case: 1 slide, no
+  // offset.
+  const trackBaseOffset = canNavigate ? -viewportWidth : 0;
+  const trackTranslateX = trackBaseOffset + dragX;
+  const trackTransition =
+    phase === 'dragging' || phase === 'snapping' ? 'none' : SWIPE_TRANSITION;
+
+  const slides = canNavigate ? [prevPhoto, currentPhoto, nextPhoto] : [currentPhoto];
+
   const overlay = (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 touch-pan-y"
+      className="fixed inset-0 z-[100] bg-black/90 overflow-hidden touch-pan-y"
       role="dialog"
       aria-modal="true"
       aria-label="Image lightbox"
@@ -161,6 +247,42 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchEnd}
     >
+      {/* Carousel track */}
+      <div
+        className="absolute inset-0 flex"
+        style={{
+          transform: `translate3d(${trackTranslateX}px, 0, 0)`,
+          transition: trackTransition,
+          willChange: 'transform',
+        }}
+        onTransitionEnd={handleTrackTransitionEnd}
+      >
+        {slides.map((photo, i) => (
+          <div
+            // Key by slot index, not src: keeps DOM nodes stable across
+            // index swaps so React reuses the <img> elements (avoids a
+            // re-decode flash on the post-snap render).
+            key={i}
+            className="flex-shrink-0 h-full flex items-center justify-center"
+            style={{ width: viewportWidth }}
+          >
+            <img
+              src={photo.src}
+              alt={photo.alt || ''}
+              onClick={(e) => e.stopPropagation()}
+              draggable={false}
+              className="block object-contain select-none"
+              style={{
+                maxWidth: 'calc(100vw - 2rem)',
+                maxHeight: 'calc(100svh - 2rem)',
+                WebkitTouchCallout: 'none',
+                WebkitUserSelect: 'none',
+              }}
+            />
+          </div>
+        ))}
+      </div>
+
       {/* Close (X) */}
       <button
         type="button"
@@ -201,29 +323,8 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
         </button>
       )}
 
-      {/* Main image — centered via the parent's flex; h-svh on a wrapper
-          would create a positioning child of the fixed parent, which is
-          unnecessary. The img clamps to (vw, svh) directly so iOS Safari's
-          address bar never causes overflow. */}
-      <img
-        src={currentPhoto.src}
-        alt={currentPhoto.alt || ''}
-        onClick={(e) => e.stopPropagation()}
-        draggable={false}
-        className="block object-contain select-none"
-        style={{
-          maxWidth: 'calc(100vw - 2rem)',
-          maxHeight: 'calc(100svh - 2rem)',
-          transform: `translateX(${dragX}px)`,
-          // While dragging: no transition (image follows the finger 1:1).
-          // On release: transition lets the image either spring back or settle
-          // to 0 after the index swap, so neither feels jarring.
-          transition: isDragging ? 'none' : 'transform 220ms ease-out',
-        }}
-      />
-
       {/* Counter / caption */}
-      <div className="absolute bottom-4 left-0 right-0 flex flex-col items-center gap-2 text-white pointer-events-none">
+      <div className="absolute bottom-4 left-0 right-0 flex flex-col items-center gap-2 text-white pointer-events-none z-10">
         {currentPhoto.caption && (
           <p className="font-body text-sm text-center max-w-lg px-4">{currentPhoto.caption}</p>
         )}

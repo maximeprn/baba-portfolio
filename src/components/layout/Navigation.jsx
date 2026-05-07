@@ -9,30 +9,104 @@
  * - Hero pages (/, /photos): white text — overlays the hero image/video.
  * - All other pages: dark text — overlays the page header in flow.
  *
+ * Selected/hover highlight: a single "pill" sits behind the link of the
+ * current page. Hovering another link slides the pill to it; leaving the
+ * hover slides it back to the active page. The pill is rendered with
+ * three layers:
+ *   1. The pill background (opaque rectangle) behind everything.
+ *   2. The default-color <Link>s (interactive).
+ *   3. An inverted-color clone, clipped to the pill's rect via clip-path,
+ *      so the letters that sit under the pill always read in the
+ *      opposite color — no matter where the pill is mid-slide.
+ *
  * ============================================================================
  */
 
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import { siteConfig } from '../../data/siteConfig';
 
 
+const PILL_TRANSITION = 'cubic-bezier(0.4, 0, 0.2, 1) 320ms';
+
 function Navigation() {
   const location = useLocation();
   const { center } = siteConfig.navigation;
 
+  const containerRef = useRef(null);
+  const linkRefs = useRef({});
+  const [hoveredPath, setHoveredPath] = useState(null);
+  const [pillRect, setPillRect] = useState(null);
+  // Suppress transitions on the very first measurement so the pill doesn't
+  // glide in from (0,0). Flips to true after the first paint.
+  const [armed, setArmed] = useState(false);
+
   const isHeroPage = location.pathname === '/' || location.pathname === '/photos';
   const linkColor = isHeroPage ? 'text-white' : 'text-[var(--color-text)]';
-  // Chip hover inverts the link's resting color: white-on-hero → black chip text on white bg,
-  // dark-on-page → white chip text on black bg.
-  const chipHover = isHeroPage
-    ? 'group-hover/nav-link:bg-white group-hover/nav-link:text-black'
-    : 'group-hover/nav-link:bg-gray-900 group-hover/nav-link:text-white';
+  const invertedColor = isHeroPage ? 'text-black' : 'text-white';
+  const pillBg = isHeroPage ? 'bg-white' : 'bg-gray-900';
 
   const isActive = (path) => {
     if (path === '/') return location.pathname === '/';
     return location.pathname.startsWith(path);
   };
+
+  const activeItem = center.find((item) => isActive(item.path));
+  const targetPath = hoveredPath ?? activeItem?.path ?? null;
+
+  const measure = useCallback(() => {
+    if (!targetPath || !containerRef.current) {
+      setPillRect(null);
+      return;
+    }
+    const linkEl = linkRefs.current[targetPath];
+    if (!linkEl) return;
+    // The pill matches the chip span (the padded box around the label),
+    // not the whole <Link> — so its size is consistent across links of
+    // different label widths.
+    const chip = linkEl.querySelector('[data-nav-chip]') || linkEl;
+    const chipBox = chip.getBoundingClientRect();
+    const containerBox = containerRef.current.getBoundingClientRect();
+    setPillRect({
+      x: chipBox.left - containerBox.left,
+      y: chipBox.top - containerBox.top,
+      w: chipBox.width,
+      h: chipBox.height,
+      cw: containerBox.width,
+      ch: containerBox.height,
+    });
+  }, [targetPath]);
+
+  // Measure synchronously before paint so the pill is already in place
+  // on first render — no jump.
+  useLayoutEffect(() => {
+    measure();
+  }, [measure, location.pathname]);
+
+  // Arm transitions one frame after the first measurement so the very
+  // first paint isn't a slide-in from (0,0).
+  useEffect(() => {
+    if (armed || !pillRect) return;
+    const raf = requestAnimationFrame(() => setArmed(true));
+    return () => cancelAnimationFrame(raf);
+  }, [armed, pillRect]);
+
+  // Re-measure on layout changes (window resize, font load).
+  useEffect(() => {
+    if (!containerRef.current) return undefined;
+    const ro = new ResizeObserver(() => measure());
+    ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, [measure]);
+
+  // Clip-path for the inverted-text overlay: an inset rectangle whose
+  // interior matches the pill's bounds. When the pill slides, the
+  // clip-path animates with it and the inverted letters appear/disappear
+  // exactly where the pill is.
+  const clipPath = pillRect
+    ? `inset(${pillRect.y}px ${pillRect.cw - pillRect.x - pillRect.w}px ${pillRect.ch - pillRect.y - pillRect.h}px ${pillRect.x}px)`
+    : 'inset(50% 50% 50% 50%)'; // fully closed = nothing visible
 
   return (
     <header
@@ -42,27 +116,94 @@ function Navigation() {
         className="w-full max-w-container mx-auto px-4 md:px-6 flex items-center justify-center pointer-events-auto"
         role="navigation"
         aria-label="Main navigation"
+        onMouseLeave={() => setHoveredPath(null)}
       >
-        <div className="flex items-center justify-center gap-12 md:gap-16">
+        <div
+          ref={containerRef}
+          className="relative flex items-center justify-center gap-12 md:gap-16"
+        >
+          {/* Layer 1 — sliding pill background. */}
+          <div
+            aria-hidden="true"
+            className={`absolute pointer-events-none ${pillBg}`}
+            style={{
+              left: 0,
+              top: 0,
+              width: pillRect ? pillRect.w : 0,
+              height: pillRect ? pillRect.h : 0,
+              transform: pillRect
+                ? `translate(${pillRect.x}px, ${pillRect.y}px)`
+                : 'translate(0, 0)',
+              opacity: pillRect ? 1 : 0,
+              transition: armed
+                ? `transform ${PILL_TRANSITION}, width ${PILL_TRANSITION}, height ${PILL_TRANSITION}, opacity 150ms linear`
+                : 'none',
+            }}
+          />
+
+          {/* Layer 2 — default-color, interactive links. */}
           {center.map((item) => {
             const active = isActive(item.path);
             return (
               <Link
                 key={item.path}
                 to={item.path}
+                ref={(el) => {
+                  if (el) linkRefs.current[item.path] = el;
+                  else delete linkRefs.current[item.path];
+                }}
+                onMouseEnter={() => setHoveredPath(item.path)}
+                onFocus={() => setHoveredPath(item.path)}
+                onBlur={() => setHoveredPath(null)}
                 className={[
-                  'inline-block font-header font-medium tracking-[0.08em] group/nav-link',
+                  'relative inline-block font-header font-medium tracking-[0.08em]',
                   active ? 'text-[18px]' : 'text-[16px]',
                   linkColor,
                 ].join(' ')}
                 aria-current={active ? 'page' : undefined}
               >
-                <span className={`px-2 py-0.5 box-decoration-clone transition-colors duration-150 ${chipHover}`}>
+                <span
+                  data-nav-chip
+                  className="px-2 py-0.5 box-decoration-clone"
+                >
                   {item.label}
                 </span>
               </Link>
             );
           })}
+
+          {/* Layer 3 — inverted-color clone, clipped to the pill. Mirrors
+              the layout of layer 2 exactly so letters line up pixel-for-
+              pixel under the pill. */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 pointer-events-none flex items-center justify-center gap-12 md:gap-16"
+            style={{
+              clipPath,
+              WebkitClipPath: clipPath,
+              transition: armed
+                ? `clip-path ${PILL_TRANSITION}, -webkit-clip-path ${PILL_TRANSITION}`
+                : 'none',
+            }}
+          >
+            {center.map((item) => {
+              const active = isActive(item.path);
+              return (
+                <span
+                  key={item.path}
+                  className={[
+                    'inline-block font-header font-medium tracking-[0.08em]',
+                    active ? 'text-[18px]' : 'text-[16px]',
+                    invertedColor,
+                  ].join(' ')}
+                >
+                  <span className="px-2 py-0.5 box-decoration-clone">
+                    {item.label}
+                  </span>
+                </span>
+              );
+            })}
+          </div>
         </div>
       </nav>
     </header>

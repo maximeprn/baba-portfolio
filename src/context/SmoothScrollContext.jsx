@@ -358,6 +358,13 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
 
     // On mobile/tablet, use native scroll
     if (!isDesktop) {
+      // Carry the smooth-scroll position across the desktop→mobile
+      // breakpoint. Without this, removing the contentRef's transform
+      // hands the page back to the body's native scroll, whose
+      // scrollTop was 0 (body never scrolled while smooth-scroll was
+      // active) — so the user would jump straight to the top.
+      const carryOver = scrollDataRef.current.current;
+
       // Reset any smooth scroll styles
       document.body.style.overflow = '';
       document.body.style.height = '';
@@ -367,6 +374,14 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
       content.style.width = '';
       content.style.willChange = '';
       content.style.transform = '';
+
+      // Restore the carried-over scroll position synchronously, before
+      // the next paint, so there's no visible jump to the top.
+      if (carryOver > 0) {
+        window.scrollTo(0, carryOver);
+        setScrollY(carryOver);
+        scrollListenersRef.current.forEach((listener) => listener(carryOver));
+      }
 
       // Track native scroll for scrollY state
       const handleNativeScroll = () => {
@@ -380,7 +395,14 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
       };
     }
 
-    // Desktop: use custom smooth scroll
+    // Desktop: use custom smooth scroll.
+    // Carry the native scroll position across the mobile→desktop
+    // breakpoint. After we set body to overflow:hidden + the contentRef
+    // to position:fixed, the body's scrollTop becomes irrelevant and
+    // the content visually resets to the top — unless we re-apply the
+    // saved position as a transform.
+    const carryOver = window.scrollY;
+
     // Set up body styles
     document.body.style.overflow = 'hidden';
     document.body.style.height = '100vh';
@@ -391,6 +413,18 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
     content.style.left = '0';
     content.style.width = '100%';
     content.style.willChange = 'transform';
+
+    // Restore the carried-over position into the smooth-scroll state +
+    // apply the transform synchronously so the user stays at the same
+    // scroll level as before the breakpoint flip.
+    if (carryOver > 0) {
+      const data = scrollDataRef.current;
+      data.current = carryOver;
+      data.target = carryOver;
+      content.style.transform = `translateY(${-carryOver}px)`;
+      setScrollY(carryOver);
+      scrollListenersRef.current.forEach((listener) => listener(carryOver));
+    }
 
     // Add event listeners (wheel only on desktop, no touch events needed)
     window.addEventListener('wheel', handleWheel, { passive: false });

@@ -414,8 +414,15 @@ function FeaturedPhotoCard({
           }
         >
           <div
-            className={`flex flex-col gap-4 px-4 md:px-0 py-8 md:py-10 md:gap-8 md:items-center ${
-              isImageLeft ? 'md:flex-row' : 'md:flex-row-reverse'
+            className={`flex flex-col-reverse gap-4 px-4 md:px-0 py-8 md:py-10 md:items-center ${
+              // Asymmetric gap. Image-LEFT / text-RIGHT: text *starts* right
+              // after the gap, needs breathing room → 96px. Text-LEFT /
+              // image-RIGHT: text is left-aligned so its content naturally
+              // ends well before the column edge, leaving a big visual
+              // buffer already → 32px is plenty.
+              isImageLeft
+                ? 'md:gap-x-24 md:flex-row'
+                : 'md:gap-x-8 md:flex-row-reverse'
             }`}
           >
             {/* Collage half */}

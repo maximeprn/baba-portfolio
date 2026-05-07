@@ -131,7 +131,7 @@ function Photos() {
         <div className="h-10 md:h-16" aria-hidden="true" />
 
         {featuredProjects.map((project, idx) => (
-          <div key={project.id} className="py-2.5 w-full">
+          <div key={project.id} className="py-2.5 w-full max-w-[1320px]">
             <FeaturedPhotoCard
               project={project}
               index={idx}

@@ -144,7 +144,7 @@ export const photoProjects = [
       { src: '/img/BABA%20PHOTOS/DigitalTravel10.jpeg', alt: "Digital Travel — 10", aspectRatio: 0.7803 },
     ],
     preview: { pattern: 0, photos: [0, 5, 9] },
-    featured: true,
+    featured: false,
   },
   {
     id: 8,
@@ -178,8 +178,9 @@ export const photoProjects = [
       { src: '/img/BABA%20PHOTOS/Judo5.jpeg', alt: "Judo — 5", aspectRatio: 0.7953 },
       { src: '/img/BABA%20PHOTOS/Judo6.jpeg', alt: "Judo — 6", aspectRatio: 0.7947 },
     ],
-    preview: { pattern: 3, photos: [0, 3] },
-    featured: false,
+    // Big-LEFT top + small-RIGHT lower; collapses to one full-bleed image below 1350px.
+    preview: { pattern: 11, photos: [0, 3], mobilePattern: 10, mobilePhotos: [0], maxHeight: '60vh', mobileBreakpoint: 1349 },
+    featured: true,
   },
   {
     id: 10,
@@ -199,7 +200,7 @@ export const photoProjects = [
       { src: '/img/BABA%20PHOTOS/Les%20Others6.jpeg', alt: "Les Others — 7", aspectRatio: 1.2386 },
     ],
     preview: { pattern: 1, photos: [0, 3] },
-    featured: true,
+    featured: false,
   },
   {
     id: 11,
@@ -217,8 +218,9 @@ export const photoProjects = [
       { src: '/img/BABA%20PHOTOS/Lorette%20Col%C3%A9%20Duprat3.jpeg', alt: "Lorette Colé Duprat — 5", aspectRatio: 1 },
       { src: '/img/BABA%20PHOTOS/Lorette%20Col%C3%A9%20Duprat6.jpeg', alt: "Lorette Colé Duprat — 6", aspectRatio: 0.8 },
     ],
-    preview: { pattern: 5, photos: [0, 3] },
-    featured: false,
+    // Small-LEFT top + big-RIGHT bottom; collapses to one full-bleed image below 1350px.
+    preview: { pattern: 12, photos: [3, 0], mobilePattern: 10, mobilePhotos: [0], maxHeight: '60vh', mobileBreakpoint: 1349 },
+    featured: true,
   },
   {
     id: 12,
@@ -270,7 +272,8 @@ export const photoProjects = [
       { src: '/img/BABA%20PHOTOS/nuatelier5.jpeg', alt: "Nu Atelier — 7", aspectRatio: 0.8006 },
       { src: '/img/BABA%20PHOTOS/nuatelier6.jpeg', alt: "Nu Atelier — 8", aspectRatio: 0.8036 },
     ],
-    preview: { pattern: 2, photos: [0, 4, 7] },
+    // Big-LEFT bottom + small-RIGHT top; collapses to one full-bleed image below 1350px.
+    preview: { pattern: 13, photos: [0, 4], mobilePattern: 10, mobilePhotos: [0], maxHeight: '60vh', mobileBreakpoint: 1349 },
     featured: true,
   },
   {
@@ -361,7 +364,8 @@ export const photoProjects = [
       { src: '/img/BABA%20PHOTOS/simond5.jpeg', alt: "Simond — 6", aspectRatio: 0.8 },
       { src: '/img/BABA%20PHOTOS/simond6.jpeg', alt: "Simond — 7", aspectRatio: 0.8 },
     ],
-    preview: { pattern: 3, photos: [0, 3] },
+    // Small-LEFT middle + big-RIGHT top; collapses to one full-bleed image below 1350px.
+    preview: { pattern: 14, photos: [3, 0], mobilePattern: 10, mobilePhotos: [0], maxHeight: '60vh', mobileBreakpoint: 1349 },
     featured: true,
   },
   {
@@ -382,7 +386,8 @@ export const photoProjects = [
       { src: '/img/BABA%20PHOTOS/TedaxMax6.jpeg', alt: "Tedax Max — 7", aspectRatio: 0.8 },
       { src: '/img/BABA%20PHOTOS/TedaxMax7.jpeg', alt: "Tedax Max — 8", aspectRatio: 0.8 },
     ],
-    preview: { pattern: 4, photos: [0, 4, 7] },
+    // Big-LEFT middle + small-RIGHT lower; collapses to one full-bleed image below 1350px.
+    preview: { pattern: 15, photos: [0, 4], mobilePattern: 10, mobilePhotos: [0], maxHeight: '60vh', mobileBreakpoint: 1349 },
     featured: true,
   },
   {

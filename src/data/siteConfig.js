@@ -94,6 +94,15 @@ export const siteConfig = {
   // Main navigation menu items
 
   navigation: {
+    // Active link visual style:
+    //   'pill'        — sliding inverted-chip highlight (boxed style).
+    //                    Defaults to the active page; follows hover.
+    //   'bold-larger' — active link is rendered slightly larger and
+    //                    with heavier font weight; no background.
+    // Toggleable from a future CMS / admin panel: surface this single
+    // string and the nav switches behavior at next render.
+    activeStyle: 'bold-larger',
+
     // Items displayed on the left side of the nav
     left: [],
 

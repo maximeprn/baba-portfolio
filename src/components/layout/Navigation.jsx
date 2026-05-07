@@ -9,15 +9,19 @@
  * - Hero pages (/, /photos): white text — overlays the hero image/video.
  * - All other pages: dark text — overlays the page header in flow.
  *
- * Selected/hover highlight: a single "pill" sits behind the link of the
- * current page. Hovering another link slides the pill to it; leaving the
- * hover slides it back to the active page. The pill is rendered with
- * three layers:
- *   1. The pill background (opaque rectangle) behind everything.
- *   2. The default-color <Link>s (interactive).
- *   3. An inverted-color clone, clipped to the pill's rect via clip-path,
- *      so the letters that sit under the pill always read in the
- *      opposite color — no matter where the pill is mid-slide.
+ * Active-link style is toggled via siteConfig.navigation.activeStyle:
+ *
+ *   'pill'        — sliding inverted-chip highlight that follows hover and
+ *                   defaults to the active page. Three render layers
+ *                   (background pill + default-color links + clipped
+ *                   inverted-color clone) so letters under the pill always
+ *                   read in the contrasting colour.
+ *   'bold-larger' — active link is rendered slightly bigger + with heavier
+ *                   font weight; no background, no clone, no measurements.
+ *
+ * Both implementations live in this file so swapping is a one-line config
+ * change. Wire siteConfig.navigation.activeStyle to a CMS-controlled
+ * setting to flip styles without a code deploy.
  *
  * ============================================================================
  */
@@ -30,10 +34,18 @@ import { siteConfig } from '../../data/siteConfig';
 
 const PILL_TRANSITION = 'cubic-bezier(0.4, 0, 0.2, 1) 320ms';
 
-function Navigation() {
-  const location = useLocation();
-  const { center } = siteConfig.navigation;
 
+/**
+ * NavPill — sliding inverted-chip highlight.
+ *
+ * Three layers:
+ *   1. The pill background (opaque rectangle) behind everything.
+ *   2. The default-color <Link>s (interactive).
+ *   3. An inverted-color clone, clipped to the pill's rect via clip-path,
+ *      so the letters that sit under the pill always read in the
+ *      opposite color — no matter where the pill is mid-slide.
+ */
+function NavPill({ center, isActive, isHeroPage }) {
   const containerRef = useRef(null);
   const linkRefs = useRef({});
   const [hoveredPath, setHoveredPath] = useState(null);
@@ -42,15 +54,9 @@ function Navigation() {
   // glide in from (0,0). Flips to true after the first paint.
   const [armed, setArmed] = useState(false);
 
-  const isHeroPage = location.pathname === '/' || location.pathname === '/photos';
   const linkColor = isHeroPage ? 'text-white' : 'text-[var(--color-text)]';
   const invertedColor = isHeroPage ? 'text-black' : 'text-white';
   const pillBg = isHeroPage ? 'bg-white' : 'bg-gray-900';
-
-  const isActive = (path) => {
-    if (path === '/') return location.pathname === '/';
-    return location.pathname.startsWith(path);
-  };
 
   const activeItem = center.find((item) => isActive(item.path));
   const targetPath = hoveredPath ?? activeItem?.path ?? null;
@@ -82,7 +88,7 @@ function Navigation() {
   // on first render — no jump.
   useLayoutEffect(() => {
     measure();
-  }, [measure, location.pathname]);
+  }, [measure]);
 
   // Arm transitions one frame after the first measurement so the very
   // first paint isn't a slide-in from (0,0).
@@ -109,6 +115,144 @@ function Navigation() {
     : 'inset(50% 50% 50% 50%)'; // fully closed = nothing visible
 
   return (
+    <div
+      ref={containerRef}
+      className="relative flex items-center justify-center gap-12 md:gap-16"
+      onMouseLeave={() => setHoveredPath(null)}
+    >
+      {/* Layer 1 — sliding pill background. */}
+      <div
+        aria-hidden="true"
+        className={`absolute pointer-events-none ${pillBg}`}
+        style={{
+          left: 0,
+          top: 0,
+          width: pillRect ? pillRect.w : 0,
+          height: pillRect ? pillRect.h : 0,
+          transform: pillRect
+            ? `translate(${pillRect.x}px, ${pillRect.y}px)`
+            : 'translate(0, 0)',
+          opacity: pillRect ? 1 : 0,
+          transition: armed
+            ? `transform ${PILL_TRANSITION}, width ${PILL_TRANSITION}, height ${PILL_TRANSITION}, opacity 150ms linear`
+            : 'none',
+        }}
+      />
+
+      {/* Layer 2 — default-color, interactive links. */}
+      {center.map((item) => {
+        const active = isActive(item.path);
+        return (
+          <Link
+            key={item.path}
+            to={item.path}
+            ref={(el) => {
+              if (el) linkRefs.current[item.path] = el;
+              else delete linkRefs.current[item.path];
+            }}
+            onMouseEnter={() => setHoveredPath(item.path)}
+            onFocus={() => setHoveredPath(item.path)}
+            onBlur={() => setHoveredPath(null)}
+            className={[
+              'relative inline-block font-header font-medium tracking-[0.08em]',
+              active ? 'text-[18px]' : 'text-[16px]',
+              linkColor,
+            ].join(' ')}
+            aria-current={active ? 'page' : undefined}
+          >
+            <span
+              data-nav-chip
+              className="px-2 py-0.5 box-decoration-clone"
+            >
+              {item.label}
+            </span>
+          </Link>
+        );
+      })}
+
+      {/* Layer 3 — inverted-color clone, clipped to the pill. Mirrors
+          the layout of layer 2 exactly so letters line up pixel-for-
+          pixel under the pill. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none flex items-center justify-center gap-12 md:gap-16"
+        style={{
+          clipPath,
+          WebkitClipPath: clipPath,
+          transition: armed
+            ? `clip-path ${PILL_TRANSITION}, -webkit-clip-path ${PILL_TRANSITION}`
+            : 'none',
+        }}
+      >
+        {center.map((item) => {
+          const active = isActive(item.path);
+          return (
+            <span
+              key={item.path}
+              className={[
+                'inline-block font-header font-medium tracking-[0.08em]',
+                active ? 'text-[18px]' : 'text-[16px]',
+                invertedColor,
+              ].join(' ')}
+            >
+              <span className="px-2 py-0.5 box-decoration-clone">
+                {item.label}
+              </span>
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+
+/**
+ * NavBoldLarger — active link rendered slightly larger + with heavier
+ * font weight. No background, no measurements, no animations beyond a
+ * subtle hover dim on inactive links.
+ */
+function NavBoldLarger({ center, isActive, linkColor }) {
+  return (
+    <div className="flex items-center justify-center gap-12 md:gap-16">
+      {center.map((item) => {
+        const active = isActive(item.path);
+        return (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={[
+              'inline-block font-header tracking-[0.08em] transition-opacity duration-150',
+              active
+                ? 'text-[20px] font-semibold'
+                : 'text-[16px] font-medium hover:opacity-70',
+              linkColor,
+            ].join(' ')}
+            aria-current={active ? 'page' : undefined}
+          >
+            {item.label}
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+
+function Navigation() {
+  const location = useLocation();
+  const { center, activeStyle = 'bold-larger' } = siteConfig.navigation;
+
+  const isHeroPage =
+    location.pathname === '/' || location.pathname === '/photos';
+  const linkColor = isHeroPage ? 'text-white' : 'text-[var(--color-text)]';
+
+  const isActive = (path) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(path);
+  };
+
+  return (
     <header
       className="absolute top-0 inset-x-0 z-30 h-20 flex items-center justify-center pointer-events-none"
     >
@@ -116,98 +260,24 @@ function Navigation() {
         className="w-full max-w-container mx-auto px-4 md:px-6 flex items-center justify-center pointer-events-auto"
         role="navigation"
         aria-label="Main navigation"
-        onMouseLeave={() => setHoveredPath(null)}
       >
-        <div
-          ref={containerRef}
-          className="relative flex items-center justify-center gap-12 md:gap-16"
-        >
-          {/* Layer 1 — sliding pill background. */}
-          <div
-            aria-hidden="true"
-            className={`absolute pointer-events-none ${pillBg}`}
-            style={{
-              left: 0,
-              top: 0,
-              width: pillRect ? pillRect.w : 0,
-              height: pillRect ? pillRect.h : 0,
-              transform: pillRect
-                ? `translate(${pillRect.x}px, ${pillRect.y}px)`
-                : 'translate(0, 0)',
-              opacity: pillRect ? 1 : 0,
-              transition: armed
-                ? `transform ${PILL_TRANSITION}, width ${PILL_TRANSITION}, height ${PILL_TRANSITION}, opacity 150ms linear`
-                : 'none',
-            }}
+        {activeStyle === 'pill' ? (
+          <NavPill
+            center={center}
+            isActive={isActive}
+            isHeroPage={isHeroPage}
           />
-
-          {/* Layer 2 — default-color, interactive links. */}
-          {center.map((item) => {
-            const active = isActive(item.path);
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                ref={(el) => {
-                  if (el) linkRefs.current[item.path] = el;
-                  else delete linkRefs.current[item.path];
-                }}
-                onMouseEnter={() => setHoveredPath(item.path)}
-                onFocus={() => setHoveredPath(item.path)}
-                onBlur={() => setHoveredPath(null)}
-                className={[
-                  'relative inline-block font-header font-medium tracking-[0.08em]',
-                  active ? 'text-[18px]' : 'text-[16px]',
-                  linkColor,
-                ].join(' ')}
-                aria-current={active ? 'page' : undefined}
-              >
-                <span
-                  data-nav-chip
-                  className="px-2 py-0.5 box-decoration-clone"
-                >
-                  {item.label}
-                </span>
-              </Link>
-            );
-          })}
-
-          {/* Layer 3 — inverted-color clone, clipped to the pill. Mirrors
-              the layout of layer 2 exactly so letters line up pixel-for-
-              pixel under the pill. */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 pointer-events-none flex items-center justify-center gap-12 md:gap-16"
-            style={{
-              clipPath,
-              WebkitClipPath: clipPath,
-              transition: armed
-                ? `clip-path ${PILL_TRANSITION}, -webkit-clip-path ${PILL_TRANSITION}`
-                : 'none',
-            }}
-          >
-            {center.map((item) => {
-              const active = isActive(item.path);
-              return (
-                <span
-                  key={item.path}
-                  className={[
-                    'inline-block font-header font-medium tracking-[0.08em]',
-                    active ? 'text-[18px]' : 'text-[16px]',
-                    invertedColor,
-                  ].join(' ')}
-                >
-                  <span className="px-2 py-0.5 box-decoration-clone">
-                    {item.label}
-                  </span>
-                </span>
-              );
-            })}
-          </div>
-        </div>
+        ) : (
+          <NavBoldLarger
+            center={center}
+            isActive={isActive}
+            linkColor={linkColor}
+          />
+        )}
       </nav>
     </header>
   );
 }
+
 
 export default Navigation;

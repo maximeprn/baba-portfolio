@@ -210,12 +210,12 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
     return null;
   }
 
-  const prevPhoto = canNavigate
-    ? photos[(currentIndex - 1 + photos.length) % photos.length]
-    : null;
-  const nextPhoto = canNavigate
-    ? photos[(currentIndex + 1) % photos.length]
-    : null;
+  const prevIdx = canNavigate
+    ? (currentIndex - 1 + photos.length) % photos.length
+    : currentIndex;
+  const nextIdx = canNavigate
+    ? (currentIndex + 1) % photos.length
+    : currentIndex;
 
   // Track: 3 slides side-by-side, offset by -viewportWidth so the middle
   // (current) slide is centered at rest. Single-photo case: 1 slide, no
@@ -225,7 +225,23 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
   const trackTransition =
     phase === 'dragging' || phase === 'snapping' ? 'none' : SWIPE_TRANSITION;
 
-  const slides = canNavigate ? [prevPhoto, currentPhoto, nextPhoto] : [currentPhoto];
+  const slides = canNavigate
+    ? [
+        { photo: photos[prevIdx], photoIndex: prevIdx, slot: 0 },
+        { photo: currentPhoto, photoIndex: currentIndex, slot: 1 },
+        { photo: photos[nextIdx], photoIndex: nextIdx, slot: 2 },
+      ]
+    : [{ photo: currentPhoto, photoIndex: currentIndex, slot: 1 }];
+
+  // Key by photo index when possible — after a commit, the just-decoded
+  // sibling slide (e.g. slot 2 holding photo C) physically moves to slot 1
+  // via React's keyed reconciliation, instead of slot 1's existing <img>
+  // having its src swapped from B → C. That's what causes the post-swipe
+  // flash: changing src in place forces the browser to re-decode and the
+  // old bitmap is visible for one frame.
+  // photos.length === 2 collides (prev and next both wrap to the other
+  // photo), so fall back to slot keys in that degenerate case.
+  const keyByPhotoIndex = photos.length >= 3;
 
   const overlay = (
     <div
@@ -257,18 +273,20 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
         }}
         onTransitionEnd={handleTrackTransitionEnd}
       >
-        {slides.map((photo, i) => (
+        {slides.map(({ photo, photoIndex, slot }) => (
           <div
-            // Key by slot index, not src: keeps DOM nodes stable across
-            // index swaps so React reuses the <img> elements (avoids a
-            // re-decode flash on the post-snap render).
-            key={i}
+            key={keyByPhotoIndex ? `idx-${photoIndex}` : `slot-${slot}`}
             className="flex-shrink-0 h-full flex items-center justify-center"
             style={{ width: viewportWidth }}
           >
             <img
               src={photo.src}
               alt={photo.alt || ''}
+              // decoding="sync" forces the browser to finish decoding before
+              // the next paint — belt-and-braces against any one-frame stale
+              // bitmap on the post-commit snap. Cost is negligible here
+              // because the gallery preloads these images.
+              decoding="sync"
               onClick={(e) => e.stopPropagation()}
               draggable={false}
               className="block object-contain select-none"

@@ -58,7 +58,7 @@ function FeaturedPhotoCard({
   const firstRectsRef      = useRef(new Map()); // photoIdx → DOMRect
   const prevPhaseRef       = useRef(phase);
 
-  const { scrollTo, getScrollPosition } = useSmoothScrollContext();
+  const { scrollTo, getScrollPosition, isDesktop } = useSmoothScrollContext();
   const { id, title, description, year, client, category } = project;
   const isImageLeft = imagePosition === 'left';
 
@@ -245,9 +245,10 @@ function FeaturedPhotoCard({
     const currentScroll = getScrollPosition();
     const targetScroll = Math.max(0, articleTop + currentScroll);
 
-    const rafId = requestAnimationFrame(() => {
-      scrollTo(targetScroll, { ease: 0.05 });
+    let cancelled = false;
 
+    const startMorph = () => {
+      if (cancelled) return;
       article.style.transition = OPEN_TRANSITION;
       article.style.height = `${targetHeight}px`;
 
@@ -266,10 +267,34 @@ function FeaturedPhotoCard({
         cell.style.transition = `opacity ${CELL_FADE_DURATION_MS}ms ${EASE} ${stagger}ms`;
         cell.style.opacity = '1';
       });
+    };
+
+    if (!isDesktop) {
+      // Mobile — serialize: scroll first, then run the morph + height
+      // transition. Native smooth-scroll race-conditions with the doc
+      // growing under it, so we wait for the scroll to settle before
+      // kicking off the rest. The FLIP transform is doc-relative
+      // (translates from the gallery cell's NATURAL position), so it
+      // tracks the page during the scroll without re-measurement —
+      // re-snapshotting Last rects post-scroll would cause a visible
+      // jump.
+      scrollTo(targetScroll).then(() => {
+        if (cancelled) return;
+        requestAnimationFrame(startMorph);
+      });
+      return () => { cancelled = true; };
+    }
+
+    const rafId = requestAnimationFrame(() => {
+      scrollTo(targetScroll, { ease: 0.05 });
+      startMorph();
     });
 
-    return () => cancelAnimationFrame(rafId);
-  }, [phase, getScrollPosition, scrollTo]);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(rafId);
+    };
+  }, [phase, getScrollPosition, scrollTo, isDesktop]);
 
   const handleClose = useCallback((e) => {
     if (e) e.stopPropagation();
@@ -294,7 +319,9 @@ function FeaturedPhotoCard({
     setPhase('animating-close');
   }, [phase]);
 
-  // Drive the close animation.
+  // Drive the close animation: gallery opacity fade + height shutter +
+  // scroll-up so the now-collapsed card lands at viewport top (instead
+  // of leaving the user wherever they were inside the gallery).
   useLayoutEffect(() => {
     if (phase !== 'animating-close') return;
     const article = articleRef.current;
@@ -309,13 +336,18 @@ function FeaturedPhotoCard({
     article.getBoundingClientRect();
 
     const targetHeight = collapsedHeightRef.current || 0;
+
+    const articleAbsoluteTop =
+      article.getBoundingClientRect().top + getScrollPosition();
+    scrollTo(Math.max(0, articleAbsoluteTop), isDesktop ? { ease: 0.05 } : undefined);
+
     const rafId = requestAnimationFrame(() => {
       article.style.transition = CLOSE_TRANSITION;
       article.style.height = `${targetHeight}px`;
     });
 
     return () => cancelAnimationFrame(rafId);
-  }, [phase]);
+  }, [phase, getScrollPosition, scrollTo, isDesktop]);
 
   const handleTransitionEnd = useCallback((e) => {
     if (e.target !== articleRef.current || e.propertyName !== 'height') return;

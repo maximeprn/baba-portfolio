@@ -155,15 +155,20 @@ function Photos() {
             <div className="h-32" aria-hidden="true" />
             <TitleSection title="Other Projects" />
             {otherProjects.map((project, idx) => (
-              <CollapsedPhotoCard
-                key={project.id}
-                project={project}
-                index={idx}
-                onPhotoClick={handlePhotoClick}
-                onWillExpand={handleWillExpand}
-                onDidCollapse={handleDidCollapse}
-                closeSignal={closeSignals[project.id] || 0}
-              />
+              // Mobile-only spacing: the band stacks title + meta and used
+              // to feel cramped between adjacent projects. mb-6 gives a
+              // visible gap; on desktop the band is a tight 36px row so
+              // we keep its zero-margin rhythm.
+              <div key={project.id} className="w-full mb-6 md:mb-0 last:mb-0">
+                <CollapsedPhotoCard
+                  project={project}
+                  index={idx}
+                  onPhotoClick={handlePhotoClick}
+                  onWillExpand={handleWillExpand}
+                  onDidCollapse={handleDidCollapse}
+                  closeSignal={closeSignals[project.id] || 0}
+                />
+              </div>
             ))}
           </>
         )}

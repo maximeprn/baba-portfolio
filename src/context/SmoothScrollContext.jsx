@@ -24,12 +24,16 @@ export function useSmoothScrollContext() {
   if (!context) {
     // Return fallback for when smooth scroll is not available
     return {
-      scrollTo: (pos, instant) => window.scrollTo({ top: pos, behavior: instant ? 'instant' : 'smooth' }),
+      scrollTo: (pos, instant) => {
+        window.scrollTo({ top: pos, behavior: instant ? 'instant' : 'smooth' });
+        return Promise.resolve();
+      },
       scrollToElement: (el, options) => el?.scrollIntoView({ behavior: options?.instant ? 'instant' : 'smooth', block: options?.block || 'start' }),
       getScrollPosition: () => window.scrollY,
       addScrollListener: () => () => {},
       setScrollLocked: () => {},
       scrollY: 0,
+      isDesktop: typeof window !== 'undefined' ? window.innerWidth >= 1024 : true,
     };
   }
   return context;
@@ -245,8 +249,12 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
   }, [updateScroll]);
 
 
-  // Method to programmatically scroll to a position
-  // Options: instant (boolean), ease (number) for custom scroll speed
+  // Method to programmatically scroll to a position.
+  // Options: instant (boolean), ease (number) for custom scroll speed.
+  // Returns a Promise that resolves when the scroll has settled at the
+  // target — used by the photo cards to serialize "scroll, then expand"
+  // on mobile where running both in parallel race-conditions with the
+  // browser's native smooth-scroll.
   const scrollTo = useCallback((position, instantOrOptions = false) => {
     const options = typeof instantOrOptions === 'boolean'
       ? { instant: instantOrOptions }
@@ -255,15 +263,36 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
 
     // On mobile/tablet, use native scroll
     if (!isDesktop) {
-      window.scrollTo({
-        top: position,
-        behavior: instant ? 'instant' : 'smooth'
+      const targetY = Math.max(0, position);
+      if (instant) {
+        window.scrollTo({ top: targetY, behavior: 'instant' });
+        return Promise.resolve();
+      }
+      // Already at (or extremely close to) target → no work, resolve now.
+      if (Math.abs(window.scrollY - targetY) < 2) {
+        window.scrollTo({ top: targetY, behavior: 'smooth' });
+        return Promise.resolve();
+      }
+      return new Promise((resolve) => {
+        let settled = false;
+        const settle = () => {
+          if (settled) return;
+          settled = true;
+          window.removeEventListener('scrollend', settle);
+          clearTimeout(timer);
+          resolve();
+        };
+        // `scrollend` fires on Safari 17+, Chrome 114+. Older browsers
+        // get caught by the timeout fallback (1.2s is longer than any
+        // realistic native smooth-scroll on a phone).
+        window.addEventListener('scrollend', settle, { once: true });
+        const timer = setTimeout(settle, 1200);
+        window.scrollTo({ top: targetY, behavior: 'smooth' });
       });
-      return;
     }
 
     const content = contentRef.current;
-    if (!content) return;
+    if (!content) return Promise.resolve();
 
     const data = scrollDataRef.current;
     const maxScroll = content.scrollHeight - window.innerHeight;
@@ -278,18 +307,30 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
       // a stale anchor until the next user-driven scroll.
       setScrollY(targetPos);
       scrollListenersRef.current.forEach((listener) => listener(targetPos));
-    } else {
-      // Temporarily override ease if a custom value is provided
-      if (ease) {
-        data.ease = ease;
-        data._restoreEase = smoothness;
-      }
-      data.target = targetPos;
-      if (!data.isScrolling) {
-        data.isScrolling = true;
-        data.rafId = requestAnimationFrame(updateScroll);
-      }
+      return Promise.resolve();
     }
+
+    // Temporarily override ease if a custom value is provided
+    if (ease) {
+      data.ease = ease;
+      data._restoreEase = smoothness;
+    }
+    data.target = targetPos;
+    if (!data.isScrolling) {
+      data.isScrolling = true;
+      data.rafId = requestAnimationFrame(updateScroll);
+    }
+    // Desktop lerp: resolve when current is within 1px of target.
+    return new Promise((resolve) => {
+      const settle = () => {
+        if (Math.abs(scrollDataRef.current.current - targetPos) < 1) {
+          resolve();
+        } else {
+          requestAnimationFrame(settle);
+        }
+      };
+      requestAnimationFrame(settle);
+    });
   }, [isDesktop, smoothness, updateScroll]);
 
 
@@ -478,6 +519,7 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
     addScrollListener,
     setScrollLocked,
     scrollY,
+    isDesktop,
   };
 
 

@@ -51,7 +51,7 @@ function CollapsedFilmCard({
   const pendingCloseRef = useRef(false);
   const lastCloseSignalRef = useRef(closeSignal);
   const prevPhaseRef = useRef(phase);
-  const { scrollTo, getScrollPosition } = useSmoothScrollContext();
+  const { scrollTo, getScrollPosition, isDesktop } = useSmoothScrollContext();
   const { title, description, year, category } = film;
   const collapsedVariant = COLLAPSED_VARIANTS[index % COLLAPSED_VARIANTS.length];
 
@@ -126,45 +126,55 @@ function CollapsedFilmCard({
 
     setPhase('animating');
 
+    // Compute scroll target: top of card at viewport y=0, accounting
+    // for siblings above us that will collapse in the next tick (their
+    // delta will pull us up after we measure). Since `onWillExpand`
+    // above doesn't flushSync, sibling DOM hasn't shrunk yet — we read
+    // it manually via [data-cfc-eh] markers.
+    let siblingDelta = 0;
+    const containerTop = container.getBoundingClientRect().top;
+    document.querySelectorAll('[data-cfc-eh]').forEach((el) => {
+      if (el === container) return;
+      const expH = parseFloat(el.dataset.cfcEh || '0');
+      const colH = parseFloat(el.dataset.cfcCh || '0');
+      const siblingTop = el.getBoundingClientRect().top;
+      if (siblingTop < containerTop) {
+        siblingDelta += expH - colH;
+      }
+    });
+    const currentScroll = getScrollPosition();
+    const containerAbsoluteTop = containerTop + currentScroll;
+    const targetScroll = Math.max(0, containerAbsoluteTop - siblingDelta);
+
+    const startHeightTransition = () => {
+      container.style.transition = OPEN_TRANSITION;
+      container.style.height = `${targetHeight}px`;
+    };
+
+    if (!isDesktop) {
+      // Mobile — serialize. Native smooth-scroll race-conditions with
+      // the doc growing under it, so wait for the scroll to settle
+      // before kicking off the height transition.
+      scrollTo(targetScroll).then(() => {
+        requestAnimationFrame(startHeightTransition);
+      });
+      return;
+    }
+
+    // Desktop — snap-trick: temporarily expand to grow the doc so the
+    // smooth-scroll's clamp doesn't chop the target.
     requestAnimationFrame(() => {
-      // 1. Set target height without transition so page height updates for scroll calc
       container.style.transition = 'none';
       container.style.height = `${targetHeight}px`;
       container.getBoundingClientRect();
 
-      // 2. Compute scroll target to center the video element on screen.
-      // Account for sibling cards that are currently in a non-collapsed phase and positioned
-      // above us — they're about to (or have already started to) shrink, which will pull our
-      // video up by their delta after their close animation completes.
-      const videoEl = content.querySelector('video')?.parentElement;
-      if (videoEl) {
-        let siblingDelta = 0;
-        const containerTop = container.getBoundingClientRect().top;
-        document.querySelectorAll('[data-cfc-eh]').forEach((el) => {
-          if (el === container) return;
-          const expH = parseFloat(el.dataset.cfcEh || '0');
-          const colH = parseFloat(el.dataset.cfcCh || '0');
-          const siblingTop = el.getBoundingClientRect().top;
-          if (siblingTop < containerTop) {
-            siblingDelta += expH - colH;
-          }
-        });
+      scrollTo(targetScroll, { ease: 0.05 });
 
-        const currentScroll = getScrollPosition();
-        const videoRect = videoEl.getBoundingClientRect();
-        const videoAbsoluteTop = videoRect.top + currentScroll;
-        const targetScroll =
-          videoAbsoluteTop - siblingDelta - (window.innerHeight / 2) + (videoRect.height / 2);
-        scrollTo(targetScroll, { ease: 0.05 });
-      }
-
-      // 3. Snap back to collapsed, then animate to target (no paint between — single rAF)
       container.style.height = `${collapsedHeight}px`;
       container.getBoundingClientRect();
-      container.style.transition = OPEN_TRANSITION;
-      container.style.height = `${targetHeight}px`;
+      startHeightTransition();
     });
-  }, [phase, scrollTo, getScrollPosition, onWillExpand, film.id]);
+  }, [phase, scrollTo, getScrollPosition, onWillExpand, film.id, isDesktop]);
 
   const handleClose = useCallback((e) => {
     if (e) e.stopPropagation();
@@ -188,13 +198,19 @@ function CollapsedFilmCard({
     container.style.height = `${expandedHeight}px`;
     container.getBoundingClientRect();
 
+    // Scroll the now-collapsed card top to viewport y=0 so the user
+    // doesn't end up stranded mid-gallery after a deep scroll.
+    const containerAbsoluteTop =
+      container.getBoundingClientRect().top + getScrollPosition();
+    scrollTo(Math.max(0, containerAbsoluteTop), isDesktop ? { ease: 0.05 } : undefined);
+
     setPhase('closing');
 
     requestAnimationFrame(() => {
       container.style.transition = CLOSE_TRANSITION;
       container.style.height = `${targetHeight}px`;
     });
-  }, [phase]);
+  }, [phase, getScrollPosition, scrollTo, isDesktop]);
 
   const handleArticleClick = useCallback((e) => {
     if (phase === 'collapsed') {

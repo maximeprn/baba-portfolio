@@ -29,10 +29,13 @@ const GALLERY_FADE_OUT_MS  = 200;
 const OVERLAY_TRANSITION_MS = 500;
 const OVERLAY_REVEAL_DELAY_MS = Math.max(0, CLOSE_DURATION_MS - OVERLAY_TRANSITION_MS);
 
+// md:-prefixed classes so the staggered horizontal offset only kicks in
+// on desktop (where it's a stylistic rhythm). On mobile the band is
+// stacked, the offset is meaningless and just pushed text out of place.
 const COLLAPSED_VARIANTS = [
-  { titlePl: '1.5rem', metaPr: '0.5rem' },
-  { titlePl: '0.5rem', metaPr: '2rem'   },
-  { titlePl: '2rem',   metaPr: '1rem'   },
+  { titlePl: 'md:pl-6', metaPr: 'md:pr-2' },
+  { titlePl: 'md:pl-2', metaPr: 'md:pr-8' },
+  { titlePl: 'md:pl-8', metaPr: 'md:pr-4' },
 ];
 
 function reducedMotion() {
@@ -59,7 +62,7 @@ function CollapsedPhotoCard({
   const lastCloseSignalRef = useRef(closeSignal);
   const prevPhaseRef       = useRef(phase);
 
-  const { scrollTo, getScrollPosition } = useSmoothScrollContext();
+  const { scrollTo, getScrollPosition, isDesktop } = useSmoothScrollContext();
   const { id, title, description, year, client, category } = project;
   const variant = COLLAPSED_VARIANTS[index % COLLAPSED_VARIANTS.length];
   const firstSentence = (description.match(/^[^.!?]+[.!?]/)?.[0] || description).trim();
@@ -155,69 +158,68 @@ function CollapsedPhotoCard({
     // Continues in the 'animating' useLayoutEffect below.
   }, [phase, onWillExpand, id, getScrollPosition, scrollTo]);
 
-  // After the swap to 'animating' commits: measure target height, smooth-
-  // scroll so the expanded article CENTER lands at the viewport center
-  // (mirroring CollapsedFilmCard's video-centering), and play the height
-  // transition. Uses the same snap-trick as CollapsedFilmCard so the
-  // smooth-scroll clamp doesn't chop our centered target back to the
-  // doc-with-article-collapsed maxScroll.
+  // After the swap to 'animating' commits: top-align the article so its
+  // top lands at viewport y=0 (the gallery's pinned header sits there)
+  // and play the height transition.
+  //
+  // Desktop uses the snap-trick (expand → scrollTo with valid maxScroll
+  // → snap collapsed → transition) so smooth-scroll's clamp doesn't
+  // chop the target. Mobile native smooth-scroll race-conditions with
+  // the doc-height changes mid-trick (see issue: "back-and-forth
+  // scroll"), so we serialize: scroll to target first, await
+  // scroll-end, THEN start the height transition.
   useLayoutEffect(() => {
     if (phase !== 'animating') return;
     const article = articleRef.current;
     if (!article) return;
 
     const collapsedHeight = collapsedHeightRef.current;
-
-    // Pin to collapsed (handleOpen already did this — redundant safe).
     article.style.transition = 'none';
     article.style.height = `${collapsedHeight}px`;
-
-    // Capture the natural post-expand height. `article.scrollHeight`
-    // reflects the gallery wrap's full in-flow layout regardless of the
-    // pinned height; clip-path doesn't affect it either.
     const targetHeight = article.scrollHeight;
 
+    let cancelled = false;
+
+    const startHeightTransition = () => {
+      if (cancelled) return;
+      article.style.transition = OPEN_TRANSITION;
+      article.style.height = `${targetHeight}px`;
+    };
+
+    if (!isDesktop) {
+      // Mobile — serialize.
+      const articleAbsoluteTop = article.getBoundingClientRect().top + getScrollPosition();
+      const targetScroll = Math.max(0, articleAbsoluteTop);
+      scrollTo(targetScroll).then(() => {
+        if (cancelled) return;
+        // One rAF so the browser commits the post-scroll layout before
+        // we kick off the height transition.
+        requestAnimationFrame(startHeightTransition);
+      });
+      return () => { cancelled = true; };
+    }
+
+    // Desktop — snap-trick: temporarily expand to grow the doc, scrollTo
+    // with the valid (post-expand) maxScroll, snap back, then transition.
     const rafId = requestAnimationFrame(() => {
-      // Step 1 — temporarily expand the article (no transition) so the
-      // document grows to its post-expand size BEFORE we call scrollTo.
-      // Without this, smooth-scroll's internal clamp
-      // (`Math.min(position, content.scrollHeight − innerHeight)`)
-      // chops our centered target back to the doc-with-article-collapsed
-      // maxScroll. On the photos page Other Projects sits past the hero
-      // + 5 featured cards, so the chop drops the target right back to
-      // ~"article top at viewport y=0" — which is exactly the behavior
-      // we were trying to upgrade.
       article.style.transition = 'none';
       article.style.height = `${targetHeight}px`;
       article.getBoundingClientRect();
 
-      // Step 2 — compute centering target with the doc at its post-
-      // expand size. Same formula as CollapsedFilmCard.handleOpen's
-      // video-centering, applied to the whole article (the photo
-      // analogue of the films' video tile). flushSync in handleOpen
-      // already collapsed any expanded sibling, so no sibling-delta
-      // correction is needed.
-      const articleTop = article.getBoundingClientRect().top;
-      const currentScroll = getScrollPosition();
-      const articleAbsoluteTop = articleTop + currentScroll;
-      const targetScroll = Math.max(
-        0,
-        articleAbsoluteTop - (window.innerHeight / 2) + (targetHeight / 2),
-      );
+      const articleAbsoluteTop = article.getBoundingClientRect().top + getScrollPosition();
+      const targetScroll = Math.max(0, articleAbsoluteTop);
       scrollTo(targetScroll, { ease: 0.05 });
 
-      // Step 3 — snap back to collapsed and start the height transition.
-      // No paint happens between Steps 1 and 3 (single rAF) — the user
-      // only sees the smooth interpolation from collapsedHeight up to
-      // targetHeight, not the brief expanded-then-collapsed flash.
       article.style.height = `${collapsedHeight}px`;
       article.getBoundingClientRect();
-      article.style.transition = OPEN_TRANSITION;
-      article.style.height = `${targetHeight}px`;
+      startHeightTransition();
     });
 
-    return () => cancelAnimationFrame(rafId);
-  }, [phase, getScrollPosition, scrollTo]);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(rafId);
+    };
+  }, [phase, getScrollPosition, scrollTo, isDesktop]);
 
   const handleClose = useCallback((e) => {
     if (e) e.stopPropagation();
@@ -241,7 +243,9 @@ function CollapsedPhotoCard({
     setPhase('closing');
   }, [phase]);
 
-  // Drive the close animation: gallery opacity fade + height shutter.
+  // Drive the close animation: gallery opacity fade + height shutter +
+  // scroll-up so the now-collapsed card lands at viewport top (instead
+  // of leaving the user wherever they were inside the gallery).
   useLayoutEffect(() => {
     if (phase !== 'closing') return;
     const article = articleRef.current;
@@ -258,13 +262,21 @@ function CollapsedPhotoCard({
     const targetHeight =
       collapsedHeightRef.current || (window.innerWidth >= 768 ? 36 : 0);
 
+    // Scroll the collapsed card's top to viewport y=0 in parallel with
+    // the height collapse. Browser clamps to maxScroll if the article
+    // sits too close to doc end after close — that's fine; the user
+    // lands "as close to article-top as the doc allows".
+    const articleAbsoluteTop =
+      article.getBoundingClientRect().top + getScrollPosition();
+    scrollTo(Math.max(0, articleAbsoluteTop), isDesktop ? { ease: 0.05 } : undefined);
+
     const rafId = requestAnimationFrame(() => {
       article.style.transition = CLOSE_TRANSITION;
       article.style.height = `${targetHeight}px`;
     });
 
     return () => cancelAnimationFrame(rafId);
-  }, [phase]);
+  }, [phase, getScrollPosition, scrollTo, isDesktop]);
 
   const handleTransitionEnd = useCallback((e) => {
     if (e.target !== articleRef.current || e.propertyName !== 'height') return;
@@ -356,10 +368,7 @@ function CollapsedPhotoCard({
           }}
         >
           <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 px-4 py-2 md:py-0 md:h-9">
-            <p
-              className="flex-1 font-header font-medium tracking-[1.8px] uppercase"
-              style={{ paddingLeft: variant.titlePl }}
-            >
+            <p className={`flex-1 font-header font-medium tracking-[1.8px] uppercase ${variant.titlePl}`}>
               <span className="inline-block px-2 py-0.5 text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 {title}
               </span>
@@ -369,10 +378,7 @@ function CollapsedPhotoCard({
                 {firstSentence}
               </span>
             </p>
-            <p
-              className="flex-1 font-header font-medium tracking-[1.5px] text-right uppercase whitespace-pre-wrap"
-              style={{ paddingRight: variant.metaPr }}
-            >
+            <p className={`flex-1 font-header font-medium tracking-[1.5px] md:text-right uppercase whitespace-pre-wrap ${variant.metaPr}`}>
               <span className="inline-block px-2 py-0.5 text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 {year}  •  {client}  •  {category}
               </span>

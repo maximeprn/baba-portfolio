@@ -1,220 +1,89 @@
 /**
- * ============================================================================
  * SITE CONFIGURATION
- * ============================================================================
  *
- * This file contains all site-wide settings and content.
- * In the future, this data can come from a CMS instead.
+ * Site-wide values consumed by components. Most fields now stream from the
+ * Sanity CMS via `src/sanity/loader.js`; a few (tagline, navigation
+ * structure, contact location) remain hardcoded here for Stage 1 of the CMS
+ * migration and will be promoted in future stages.
  *
- * WHAT'S HERE:
- * - Artist information (name, bio, tagline)
- * - Contact information
- * - Social media links
- * - Navigation items
- * - SEO metadata
- *
- * TO UPDATE CONTENT:
- * Simply change the values in this file. The entire site will update.
- *
- * ============================================================================
+ * The exported `siteConfig` keeps the legacy nested shape so existing
+ * component imports (Footer, Navigation, HeroSection, etc.) work unchanged.
  */
 
 import { shortVideo } from './videoShorts';
+import {
+  siteSettings as cmsSiteSettings,
+  showreel as cmsShowreel,
+  getActiveSocialLinks as cmsGetActiveSocialLinks,
+} from '../sanity/loader';
 
 export const siteConfig = {
-  // -------------------------------------------------------------------------
-  // ARTIST INFORMATION
-  // -------------------------------------------------------------------------
-  // Basic info about the artist displayed across the site
-
   artist: {
-    // Full name - displayed in hero section and footer
-    name: 'Basile Deschamps',
-
-    // First name only - used where space is limited
-    firstName: 'Basile',
-
-    // Last name only - used where space is limited
-    lastName: 'Deschamps',
-
-    // Tagline - displayed above the name in hero section
+    name: cmsSiteSettings.artistName,
+    firstName: cmsSiteSettings.artistFirstName,
+    lastName: cmsSiteSettings.artistLastName,
+    // Not yet in CMS — promoted in a future stage if Basile wants to change it.
     tagline: 'Reinventing the Frame',
-
-    // Short bio - displayed on About page and footer
     shortBio: 'Sports photographer and filmmaker exploring the poetry of athletic movement',
-
-    // Profession/title
     title: 'Sports Photographer & Filmmaker',
   },
 
-
-  // -------------------------------------------------------------------------
-  // CONTACT INFORMATION
-  // -------------------------------------------------------------------------
-  // How people can reach out
-
+  // Stage 1: contact info now lives inside the hero overlay items in the CMS.
+  // These fields are retained here so any leftover references don't crash;
+  // they're not the source of truth for what's displayed on the site.
   contact: {
-    // Email address for contact form and display
     email: 'basiledeschamps3@gmail.com',
-
-    // Phone number (optional - set to null if not wanted)
     phone: null,
-
-    // Physical location (city, country)
     location: 'Paris, France',
   },
 
-
-  // -------------------------------------------------------------------------
-  // SOCIAL MEDIA LINKS
-  // -------------------------------------------------------------------------
-  // Social platforms - set to null to hide a platform
-
   social: {
-    // Instagram profile URL
-    instagram: 'https://www.instagram.com/basile.deschamps/',
-
-    // Vimeo profile for film work
-    vimeo: 'https://vimeo.com/user37669788',
-
-    // LinkedIn (optional)
-    linkedin: null,
-
-    // Twitter/X (optional)
-    twitter: null,
-
-    // Behance (optional)
-    behance: null,
+    instagram: cmsSiteSettings.socialInstagram,
+    vimeo: cmsSiteSettings.socialVimeo,
+    linkedin: cmsSiteSettings.socialLinkedin,
+    twitter: cmsSiteSettings.socialTwitter,
+    behance: cmsSiteSettings.socialBehance,
   },
 
-
-  // -------------------------------------------------------------------------
-  // NAVIGATION
-  // -------------------------------------------------------------------------
-  // Main navigation menu items
-
   navigation: {
-    // Active link visual style:
-    //   'pill'        — sliding inverted-chip highlight (boxed style).
-    //                    Defaults to the active page; follows hover.
-    //   'bold-larger' — active link is rendered slightly larger and
-    //                    with heavier font weight; no background.
-    // Toggleable from a future CMS / admin panel: surface this single
-    // string and the nav switches behavior at next render.
-    activeStyle: 'bold-larger',
-
-    // Items displayed on the left side of the nav
+    activeStyle: cmsSiteSettings.navActiveStyle,
+    linkSize: cmsSiteSettings.navLinkSize,
+    activeLinkSize: cmsSiteSettings.navLinkActiveSize,
     left: [],
-
-    // Items displayed in the center of the nav (main sections)
     center: [
-      {
-        label: 'Photos',
-        path: '/photos',
-      },
-      {
-        label: 'Films',
-        path: '/',
-      },
+      { label: 'Photos', path: '/photos' },
+      { label: 'Films', path: '/' },
     ],
-
-    // Items displayed on the right side of the nav
     right: [],
   },
 
-
-  // -------------------------------------------------------------------------
-  // SEO & METADATA
-  // -------------------------------------------------------------------------
-  // Information for search engines and social sharing
-
   seo: {
-    // Default page title (shown in browser tab)
-    title: 'Basile Deschamps | Film & Photography',
-
-    // Meta description (shown in search results)
-    description: 'Portfolio of Basile Deschamps - Visual artist specializing in film direction and photography. Reinventing the frame.',
-
-    // Keywords for search engines
-    keywords: ['film director', 'photographer', 'visual artist', 'Paris', 'commercial', 'documentary'],
-
-    // Open Graph image for social sharing (URL to an image)
-    ogImage: '/images/og-image.jpg',
-
-    // Site URL (update when deployed)
-    siteUrl: 'https://basiledeschamps.com',
+    title: cmsSiteSettings.seoTitle,
+    description: cmsSiteSettings.seoDescription,
+    keywords: cmsSiteSettings.seoKeywords,
+    ogImage: cmsSiteSettings.ogImageUrl,
+    siteUrl: cmsSiteSettings.siteUrl,
   },
-
-
-  // -------------------------------------------------------------------------
-  // SHOWREEL
-  // -------------------------------------------------------------------------
-  // Main showreel video for hero section
 
   showreel: {
-    vimeoUrl: 'https://player.vimeo.com/video/989542038',
-    // Resolved through ./videoShorts so the autoplaying hero background
+    vimeoUrl: cmsShowreel.vimeoUrl,
+    // Pass through the videoShorts mapper so the autoplaying hero background
     // streams the shortened teaser when one exists in public/videos/.
-    videoFile: shortVideo('/videos/Showreel 2021.mp4'),
+    videoFile: shortVideo(cmsShowreel.videoFile),
   },
-
-
-  // -------------------------------------------------------------------------
-  // FOOTER
-  // -------------------------------------------------------------------------
-  // Footer content
 
   footer: {
-    // Copyright text (year is added automatically)
-    copyright: 'Basile Deschamps. All rights reserved.',
-
-    // Show social links in footer
-    showSocial: true,
-
-    // Additional footer links (optional)
-    links: [
-      // { label: 'Privacy Policy', path: '/privacy' },
-      // { label: 'Terms', path: '/terms' },
-    ],
+    copyright: cmsSiteSettings.footerCopyright,
+    showSocial: cmsSiteSettings.footerShowSocial,
+    links: [],
   },
 };
 
+export const getActiveSocialLinks = cmsGetActiveSocialLinks;
 
-// -------------------------------------------------------------------------
-// HELPER FUNCTIONS
-// -------------------------------------------------------------------------
-// These functions make it easier to use the config throughout the app
-
-/**
- * Get all social media links that are not null
- * @returns {Array} Array of social media objects with name and url
- */
-export const getActiveSocialLinks = () => {
-  const { social } = siteConfig;
-
-  // Filter out null values and format for display
-  return Object.entries(social)
-    .filter(([_, url]) => url !== null)
-    .map(([name, url]) => ({
-      name: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize first letter
-      url,
-    }));
-};
-
-
-/**
- * Get all navigation items flattened into a single array
- * @returns {Array} All navigation items
- */
 export const getAllNavItems = () => {
-  const { navigation } = siteConfig;
-  return [
-    ...navigation.left,
-    ...navigation.center,
-    ...navigation.right,
-  ];
+  const { left, center, right } = siteConfig.navigation;
+  return [...left, ...center, ...right];
 };
 
-
-// Export as default for convenience
 export default siteConfig;

@@ -1,45 +1,25 @@
 /**
- * ============================================================================
- * APP COMPONENT - Main Application Router
- * ============================================================================
+ * App — top-level router.
  *
- * This is the root component of the application.
- * It defines all the routes (URLs) and which page components to show for each.
+ * Two route trees:
+ *   - /admin/*  → Sanity Studio (lazy-loaded, no site Layout)
+ *   - /*        → Public site, wrapped in Layout (Navigation + Footer)
  *
- * WHAT THIS FILE DOES:
- * - Wraps everything in a Layout component (navigation + footer)
- * - Defines URL routes and their corresponding page components
- * - Uses React Router for client-side navigation
- *
- * ROUTES:
- * /              → Films page (homepage, film detail via modal overlay)
- * /photos        → Photo projects listing (featured cards expand inline; no per-project route)
- * /about         → About page
- * /contact       → Contact page
- *
- * ============================================================================
+ * The Studio is split out so its ~3MB bundle doesn't load on the public site.
  */
 
-// Import routing components from React Router
-// Routes: Container for all Route definitions
-// Route: Defines a single URL path and its component
+import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
-// Import the Layout component that wraps all pages
-// This provides consistent navigation and footer across the site
 import Layout from './components/layout/Layout';
-
-// Import all page components
-// Each page is a separate component in the /pages folder
 import Films from './pages/Films';
 import Photos from './pages/Photos';
-import About from './pages/About';
-import Contact from './pages/Contact';
+
+// Sanity Studio is heavy — code-split via React.lazy so the public bundle
+// doesn't pay the cost.
+const StudioPage = lazy(() => import('./pages/Studio'));
 
 
-/**
- * Simple 404 page for unknown routes.
- */
 function NotFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-6">
@@ -53,57 +33,33 @@ function NotFound() {
 }
 
 
-/**
- * App Component
- *
- * The main application component that sets up routing.
- * This component is rendered by main.jsx inside BrowserRouter.
- *
- * @returns {JSX.Element} The complete application with routing
- */
-function App() {
+function PublicSite() {
   return (
-    // Layout wraps all pages - provides Navigation and Footer
-    // Every page will have the same header and footer
     <Layout>
-      {/*
-        Routes component - container for all route definitions
-        Only ONE route will match and render at a time
-      */}
       <Routes>
-        {/*
-          Each Route defines:
-          - path: The URL pattern to match
-          - element: The React component to render when path matches
-
-          The order doesn't matter for exact paths, but more specific
-          paths should come before catch-all paths
-        */}
-
-        {/* Homepage - Films listing
-            path="/" matches the root URL (e.g., www.basiledeschamps.com/)
-            This is the landing page showing all film projects */}
-        <Route path="/" element={<Films />} />
-
-        {/* Photos listing page
-            Featured projects expand inline into artistic galleries; no /photos/:slug route */}
-        <Route path="/photos" element={<Photos />} />
-
-        {/* About page
-            Static page with artist biography and information */}
-        <Route path="/about" element={<About />} />
-
-        {/* Contact page
-            Contains contact form and contact information */}
-        <Route path="/contact" element={<Contact />} />
-
-        {/* Catch-all: any URL that doesn't match above shows 404 */}
+        <Route index element={<Films />} />
+        <Route path="photos" element={<Photos />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>
   );
 }
 
-// Export the App component as the default export
-// This is imported in main.jsx
+
+function App() {
+  return (
+    <Routes>
+      <Route
+        path="/admin/*"
+        element={
+          <Suspense fallback={null}>
+            <StudioPage />
+          </Suspense>
+        }
+      />
+      <Route path="/*" element={<PublicSite />} />
+    </Routes>
+  );
+}
+
 export default App;

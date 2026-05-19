@@ -21,7 +21,7 @@ import {
   getFeaturedProjects,
   getNonFeaturedProjects,
   photoProjects,
-} from '../data/photoProjects';
+} from '../sanity/loader';
 
 function Photos() {
   const featuredProjects = getFeaturedProjects();

@@ -68,7 +68,7 @@ scripts/
 
 ```
 Publish in Studio
-  → Sanity webhook (planned: → Vercel deploy hook)
+  → Sanity webhook → Vercel deploy hook
   → vercel-build.sh runs scripts/fetch-cms-content.mjs
   → src/data/cms.json updated
   → Vite bundles cms.json into the static build
@@ -76,14 +76,39 @@ Publish in Studio
 
 `src/data/cms.json` is **committed** so the build never fails when Sanity is unreachable. The fetcher overwrites it on every build; if Sanity is down, the build continues with the last good snapshot.
 
-### Schema (Stage 1)
+### Sanity webhook config (CRITICAL — read before adding new content types)
 
-Three singletons:
-- **`siteSettings`** — artist name, SEO, social URLs, footer copyright, nav style + link sizes
-- **`heroOverlay`** — array of floating text items (bio, clients, phone, email…) with per-item anchor/offsets/size/link
-- **`showreel`** — Vimeo URL + hero video file path
+The Sanity webhook lives at [Sanity Manage → API → Webhooks](https://www.sanity.io/manage/project/e9pgmdfm/api/webhooks). It must be configured exactly as below — getting any of this wrong burns Vercel build minutes.
 
-Field reference: see `sanity/schemas/*.js` for canonical definitions. Singletons are enforced via `sanity/desk/structure.js` + action filters in `sanity.config.js`.
+| Field | Value |
+|---|---|
+| Dataset | `production` |
+| Trigger events | `Create`, `Update`, `Delete` |
+| **Drafts** toggle | ☐ **UNCHECKED** — drafts auto-save on every keystroke; checking this floods Vercel |
+| **Versions** toggle | ☐ **UNCHECKED** — applies to releases / scheduled docs we don't use |
+| Filter (GROQ) | `_type in [<list of every singleton type>]` |
+| HTTP method | POST |
+| URL | Vercel project deploy hook URL |
+
+**The GROQ filter is mandatory.** Without it, every asset upload — every image you drop into the Studio — creates a `sanity.imageAsset` document mutation, which fires the webhook, which triggers a Vercel rebuild. Uploading 100 photos at once = 100 rebuilds. The filter excludes `sanity.imageAsset` (and any other Sanity-internal type) by listing only the singleton types we care about.
+
+**When adding a new singleton type:** update the GROQ filter in the Sanity webhook UI to include the new `_type`. Forgetting this means publishing the new type silently does nothing in prod (because the webhook ignores it).
+
+Current filter (matches every schema type defined in [sanity/schemas/index.js](sanity/schemas/index.js)):
+```groq
+_type in ["siteSettings", "heroOverlay", "showreel", "heroPhotos", "photoProject"]
+```
+
+### Schema
+
+Four singletons + one collection:
+- **`siteSettings`** (singleton) — artist name, SEO, social URLs, footer copyright, nav style + link sizes
+- **`heroOverlay`** (singleton) — array of floating text items (bio, clients, phone, email…) with per-item anchor/offsets/size/link
+- **`showreel`** (singleton) — Vimeo URL + hero video file path
+- **`heroPhotos`** (singleton) — array of uploaded images for the Photos page slideshow
+- **`photoProject`** (collection) — one document per photo project. Fields grouped into "Content" (title, slug, description, year, client, category, photos, featured, displayOrder) and "Layout (advanced)" (previewPattern, previewPhotoIndices, imagePosition) so Basile sees the editable content fields by default and can drill into layout knobs when needed.
+
+Field reference: see `sanity/schemas/*.js` for canonical definitions. Singletons are enforced via `sanity/desk/structure.js` + action filters in `sanity.config.js`. The `photoProject` list view is sorted by `displayOrder` ascending.
 
 ### Hero overlay model
 

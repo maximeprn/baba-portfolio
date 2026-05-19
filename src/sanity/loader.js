@@ -13,6 +13,7 @@
 
 import cmsData from '../data/cms.json';
 import { heroPhotos as LEGACY_HERO_PHOTOS } from '../data/heroPhotos';
+import { photoProjects as LEGACY_PHOTO_PROJECTS } from '../data/photoProjects';
 
 // ---------------------------------------------------------------------------
 // Fallbacks (the values previously hardcoded in siteConfig.js / HeroSection.jsx)
@@ -125,6 +126,25 @@ export const heroPhotos = (() => {
   }
   return LEGACY_HERO_PHOTOS;
 })();
+
+/**
+ * Photo projects for /photos.
+ *
+ * The CMS fetcher writes `photoProjects` as an array of objects already in
+ * the legacy shape (id, slug, title, description, year, client, category,
+ * featured, photos[{src, alt, aspectRatio}], preview, imagePosition?).
+ * If the CMS array is empty (e.g. dataset not yet migrated), fall back to
+ * the legacy `src/data/photoProjects.js` data so the page never goes blank.
+ */
+export const photoProjects = (() => {
+  const fromCms = cmsData?.photoProjects;
+  if (Array.isArray(fromCms) && fromCms.length > 0) return fromCms;
+  return LEGACY_PHOTO_PROJECTS;
+})();
+
+export const getFeaturedProjects = () => photoProjects.filter((p) => p.featured);
+export const getNonFeaturedProjects = () => photoProjects.filter((p) => !p.featured);
+export const getProjectBySlug = (slug) => photoProjects.find((p) => p.slug === slug);
 
 /**
  * Returns the social links that are non-null, formatted for display.

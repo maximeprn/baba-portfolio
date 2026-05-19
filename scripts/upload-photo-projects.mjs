@@ -95,6 +95,12 @@ async function migrateProject(project, index, total) {
     });
   }
 
+  // orderRank is what @sanity/orderable-document-list uses to sort the
+  // drag-to-reorder list. Lexicographically-comparable string; zero-padded
+  // numbers based on the legacy id give us a sensible initial order.
+  const rank = project.id ?? index + 1;
+  const orderRank = String(rank).padStart(8, '0');
+
   const doc = {
     _id: docId,
     _type: 'photoProject',
@@ -105,7 +111,7 @@ async function migrateProject(project, index, total) {
     client: project.client ?? '',
     category: project.category ?? 'Editorial',
     featured: !!project.featured,
-    displayOrder: project.id ?? index + 1,
+    orderRank,
     photos: photoFields,
   };
 

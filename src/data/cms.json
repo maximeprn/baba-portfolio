@@ -1589,7 +1589,1016 @@
       }
     ]
   },
-  "photoProjects": [],
+  "photoProjects": [
+    {
+      "id": "photoProject-acid-surfing",
+      "slug": "acid-surfing",
+      "title": "Acid Surfing",
+      "description": "Acid Surfing — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Acid Surfing",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/97b67e28de9828b5627db64b9606ac137b19a9ef-1080x1350.jpg",
+          "alt": "Acid Surfing — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/05db3c011c2fe18193f72faa0263c3c6df4990b5-1080x1350.jpg",
+          "alt": "Acid Surfing — 2",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/25533151cafbf143ce55cee7fa22017d259e907d-1080x1350.jpg",
+          "alt": "Acid Surfing — 3",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/8753ff557e2c5099d604ee48dea7777297bfd954-1080x1350.jpg",
+          "alt": "Acid Surfing — 4",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ce1794a459affb39686ce0de13fdc9e0b5cd27df-1080x1350.jpg",
+          "alt": "Acid Surfing — 5",
+          "aspectRatio": 0.8
+        }
+      ],
+      "preview": {
+        "pattern": 5,
+        "photos": [
+          0,
+          2
+        ]
+      }
+    },
+    {
+      "id": "photoProject-adidas",
+      "slug": "adidas",
+      "title": "Adidas",
+      "description": "Adidas — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Adidas",
+      "category": "Editorial",
+      "featured": true,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ec68356d2975d4fec28e6b13ae0e9ccecedee2d2-1080x903.jpg",
+          "alt": "Adidas — 1",
+          "aspectRatio": 1.196013289036545
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/fe29d57298d872138be9cac7d0cd158316b2f2d1-1080x903.jpg",
+          "alt": "Adidas — 2",
+          "aspectRatio": 1.196013289036545
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/0f8f236029fd462251dd314158c43602a8780446-1080x903.jpg",
+          "alt": "Adidas — 3",
+          "aspectRatio": 1.196013289036545
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6eefbcbad554ad331b7b9a0dfa91a993f0bc352f-1080x903.jpg",
+          "alt": "Adidas — 4",
+          "aspectRatio": 1.196013289036545
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/d4f0afa396c2bb27d50f6dbae4cbf520799e3e7c-1080x903.jpg",
+          "alt": "Adidas — 5",
+          "aspectRatio": 1.196013289036545
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/eaffd94617e0d7c6b1b692be2e286ed92198c9f2-1080x903.jpg",
+          "alt": "Adidas — 6",
+          "aspectRatio": 1.196013289036545
+        }
+      ],
+      "preview": {
+        "pattern": 6,
+        "photos": [
+          0,
+          3,
+          5
+        ]
+      }
+    },
+    {
+      "id": "photoProject-asics-running",
+      "slug": "asics-running",
+      "title": "Asics Running",
+      "description": "Asics Running — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Asics Running",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/802db06c22c447fc15812d3a4d2bbcba7db6eb37-1080x1350.jpg",
+          "alt": "Asics Running — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/c162ffb6f30061b87a922a42ef9a5debcf4adf82-1080x1080.jpg",
+          "alt": "Asics Running — 2",
+          "aspectRatio": 1
+        }
+      ],
+      "preview": {
+        "pattern": 7,
+        "photos": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "id": "photoProject-balthasar-de-pury",
+      "slug": "balthasar-de-pury",
+      "title": "Balthasar de Pury",
+      "description": "Balthasar de Pury — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Balthasar de Pury",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/4bb5b1cfb3dc83451db71f8ba7894ff59ae1c555-1036x671.jpg",
+          "alt": "Balthasar de Pury — 1",
+          "aspectRatio": 1.5439642324888228
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/7248c2fb3be8654410a4764a10a5375162a70ba1-1036x671.jpg",
+          "alt": "Balthasar de Pury — 2",
+          "aspectRatio": 1.5439642324888228
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/d0613e27bcf55cc849712a205286f8443cacddb9-1080x700.jpg",
+          "alt": "Balthasar de Pury — 3",
+          "aspectRatio": 1.542857142857143
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/fccb4fcadeea774b3ca903bf49df3f0f565a6459-1036x671.jpg",
+          "alt": "Balthasar de Pury — 4",
+          "aspectRatio": 1.5439642324888228
+        }
+      ],
+      "preview": {
+        "pattern": 8,
+        "photos": [
+          0,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "id": "photoProject-bascule",
+      "slug": "bascule",
+      "title": "Bascule",
+      "description": "Bascule — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Bascule",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/af17b169eaa79de44cabd1d16c50112f2e824f07-1080x810.jpg",
+          "alt": "Bascule — 1",
+          "aspectRatio": 1.3333333333333333
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/c385ecb19ed998fd0be0ca8c5b31864c881a1012-1080x810.jpg",
+          "alt": "Bascule — 2",
+          "aspectRatio": 1.3333333333333333
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/33f634a52b2c33ce3eea4ccbf5019edbe86cf9fc-1080x810.jpg",
+          "alt": "Bascule — 3",
+          "aspectRatio": 1.3333333333333333
+        }
+      ],
+      "preview": {
+        "pattern": 9,
+        "photos": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "photoProject-charlie-watch",
+      "slug": "charlie-watch",
+      "title": "Charlie Watch",
+      "description": "Charlie Watch — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Charlie Watch",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/94c074e41f8f6f8ea4cfb8ecc9da6e8d2934b0b8-1080x1350.jpg",
+          "alt": "Charlie Watch — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f179015f208075c9bef4c3d96a760ac1745d39f1-1080x1351.jpg",
+          "alt": "Charlie Watch — 2",
+          "aspectRatio": 0.7994078460399704
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/e64b28617f8fcba5b6a84cff6879123edcc81f39-1080x1350.jpg",
+          "alt": "Charlie Watch — 3",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/be3be7330bcf4f3448668daa274d92746a6dce58-1080x1350.jpg",
+          "alt": "Charlie Watch — 4",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/7fb7a6924a798b2beae8fd5d704f66b06e05c1f5-1080x1350.jpg",
+          "alt": "Charlie Watch — 5",
+          "aspectRatio": 0.8
+        }
+      ],
+      "preview": {
+        "pattern": 0,
+        "photos": [
+          0,
+          2,
+          4
+        ]
+      }
+    },
+    {
+      "id": "photoProject-digital-travel",
+      "slug": "digital-travel",
+      "title": "Digital Travel",
+      "description": "Digital Travel — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Digital Travel",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/d4eb12bc119d2bd6c9168abf8385512d94064f0b-1080x1384.jpg",
+          "alt": "Digital Travel — 1",
+          "aspectRatio": 0.7803468208092486
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/fd1b8b0845104cf71ce9a503790319d14995b449-1080x1384.jpg",
+          "alt": "Digital Travel — 2",
+          "aspectRatio": 0.7803468208092486
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/72fcc7f0866aa3361c3648ddf600cd3c83910b43-1080x1384.jpg",
+          "alt": "Digital Travel — 3",
+          "aspectRatio": 0.7803468208092486
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/56fd8be0ff97492b7055f579d88a6b0965b15cfc-1080x1384.jpg",
+          "alt": "Digital Travel — 4",
+          "aspectRatio": 0.7803468208092486
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/5f73e23ec0198216fe6f7a2d78f19004afaa3a8d-1080x1384.jpg",
+          "alt": "Digital Travel — 5",
+          "aspectRatio": 0.7803468208092486
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/3be86a3b967d16c42014aed5c71ba59690d16805-1080x1384.jpg",
+          "alt": "Digital Travel — 6",
+          "aspectRatio": 0.7803468208092486
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f849564e7dc25f1f3d782bbaf7a7b34f2f6cca29-1080x1384.jpg",
+          "alt": "Digital Travel — 7",
+          "aspectRatio": 0.7803468208092486
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/2393048cd8d944c60c082f4d9a55c803b192abea-1080x1384.jpg",
+          "alt": "Digital Travel — 8",
+          "aspectRatio": 0.7803468208092486
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/08f12700ac0b4db1e8ffcfbda9c0bbb89f4644e5-1080x1384.jpg",
+          "alt": "Digital Travel — 9",
+          "aspectRatio": 0.7803468208092486
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f877499303f13fbcdbf6e06663bbf10965122a02-1080x1384.jpg",
+          "alt": "Digital Travel — 10",
+          "aspectRatio": 0.7803468208092486
+        }
+      ],
+      "preview": {
+        "pattern": 0,
+        "photos": [
+          0,
+          5,
+          9
+        ]
+      }
+    },
+    {
+      "id": "photoProject-fusalp",
+      "slug": "fusalp",
+      "title": "Fusalp",
+      "description": "Fusalp — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Fusalp",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/7b603ae2895228979e1b17dd01f58a20c0d7863f-1080x1207.jpg",
+          "alt": "Fusalp — 1",
+          "aspectRatio": 0.8947804473902237
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/5ad63eff971b3ac2674113f11edd1b5cc4b9fc52-1080x1206.jpg",
+          "alt": "Fusalp — 2",
+          "aspectRatio": 0.8955223880597015
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/9d5f0930e87887b1906de43dbc3892d150414bc1-1080x1207.jpg",
+          "alt": "Fusalp — 3",
+          "aspectRatio": 0.8947804473902237
+        }
+      ],
+      "preview": {
+        "pattern": 2,
+        "photos": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "photoProject-judo",
+      "slug": "judo",
+      "title": "Judo",
+      "description": "Judo — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Judo",
+      "category": "Editorial",
+      "featured": true,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f0b597883d15367fdbdbae12bf243e1545fe5add-1080x1359.jpg",
+          "alt": "Judo — 1",
+          "aspectRatio": 0.7947019867549668
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/977f4d96de87f220441a49138d43dd747ac74250-1080x1358.jpg",
+          "alt": "Judo — 2",
+          "aspectRatio": 0.7952871870397643
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/4a8d57aacca69cf687274d27f219c04781aba39e-1080x1358.jpg",
+          "alt": "Judo — 3",
+          "aspectRatio": 0.7952871870397643
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/1f3a019be2961bbca7cd643b90e3049bc5c9919c-1080x1359.jpg",
+          "alt": "Judo — 4",
+          "aspectRatio": 0.7947019867549668
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ee5d50195c6c846e174382681ddcb8d212e4bc8c-1080x1358.jpg",
+          "alt": "Judo — 5",
+          "aspectRatio": 0.7952871870397643
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/d2a12f92eb79cf73096a180f434f4d7ac9f16548-1080x1359.jpg",
+          "alt": "Judo — 6",
+          "aspectRatio": 0.7947019867549668
+        }
+      ],
+      "preview": {
+        "pattern": 11,
+        "photos": [
+          0,
+          3
+        ]
+      }
+    },
+    {
+      "id": "photoProject-les-others",
+      "slug": "les-others",
+      "title": "Les Others",
+      "description": "Les Others — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Les Others",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/836f2d81fe74a4f49fde0510008b433ba2f37efe-1080x1350.jpg",
+          "alt": "Les Others — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/72f42d96477b9530bf88e80756cfc9109b829793-1080x1350.jpg",
+          "alt": "Les Others — 2",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/43f20a14ce4db16ec87ad36fbaff92b3439c7387-720x900.jpg",
+          "alt": "Les Others — 3",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/c6c155381e4386905a2e9300d9b6e00a109baa8d-1080x1350.jpg",
+          "alt": "Les Others — 4",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/5580eab8140946d20f94d15a742c3ba3c580c007-1080x1350.jpg",
+          "alt": "Les Others — 5",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/56fcfd323c160369968f17a9b17c6894173382f9-1080x1350.jpg",
+          "alt": "Les Others — 6",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/305ff3f20aac84d087b082da90aa28a608f22a9b-1007x813.jpg",
+          "alt": "Les Others — 7",
+          "aspectRatio": 1.2386223862238623
+        }
+      ],
+      "preview": {
+        "pattern": 1,
+        "photos": [
+          0,
+          3
+        ]
+      }
+    },
+    {
+      "id": "photoProject-lorette-cole-duprat",
+      "slug": "lorette-cole-duprat",
+      "title": "Lorette Colé Duprat",
+      "description": "Lorette Colé Duprat — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Lorette Colé Duprat",
+      "category": "Editorial",
+      "featured": true,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6af61c3c349b63eddd2a4aa5f697a63158f351d3-1080x1346.jpg",
+          "alt": "Lorette Colé Duprat — 1",
+          "aspectRatio": 0.8023774145616642
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/2df9d38c804d64d41876807aeb13387e383f71c0-1080x1350.jpg",
+          "alt": "Lorette Colé Duprat — 2",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/47e105f928e0b80b8b5c2e4b24ec7db577bb31db-1080x1346.jpg",
+          "alt": "Lorette Colé Duprat — 3",
+          "aspectRatio": 0.8023774145616642
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/022694ad27bc4b00c9c357384594e47433c19d6e-1080x1080.jpg",
+          "alt": "Lorette Colé Duprat — 4",
+          "aspectRatio": 1
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/16bf42f6fd68e658acb5d752cbb5e1909a06ecf6-1080x1080.jpg",
+          "alt": "Lorette Colé Duprat — 5",
+          "aspectRatio": 1
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/98434e10c004e38c99316156bd74d82c08364d5a-1080x1350.jpg",
+          "alt": "Lorette Colé Duprat — 6",
+          "aspectRatio": 0.8
+        }
+      ],
+      "preview": {
+        "pattern": 12,
+        "photos": [
+          3,
+          0
+        ]
+      }
+    },
+    {
+      "id": "photoProject-lorne",
+      "slug": "lorne",
+      "title": "Lorne",
+      "description": "Lorne — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Lorne",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/9c9450df772aed0ea4600dd189b70885588b13ed-809x809.jpg",
+          "alt": "Lorne — 1",
+          "aspectRatio": 1
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6ee8a6bc2e1814c5590fa500652321b4ae322351-799x799.jpg",
+          "alt": "Lorne — 2",
+          "aspectRatio": 1
+        }
+      ],
+      "preview": {
+        "pattern": 1,
+        "photos": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "id": "photoProject-moscot-nyc",
+      "slug": "moscot-nyc",
+      "title": "Moscot NYC",
+      "description": "Moscot NYC — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Moscot NYC",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/767a85f0308a6328d4f7c058c2823c9da0cfdd09-1080x1080.jpg",
+          "alt": "Moscot NYC — 1",
+          "aspectRatio": 1
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/959b80b9620b293b202e90266c22dfc3a7de8f24-1080x1080.jpg",
+          "alt": "Moscot NYC — 2",
+          "aspectRatio": 1
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/89018e829bb506c4681ceb291b61d88c0ac6ea7f-1080x1080.jpg",
+          "alt": "Moscot NYC — 3",
+          "aspectRatio": 1
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/a0b795c207c94b05f687569a01089267ca457335-1080x1080.jpg",
+          "alt": "Moscot NYC — 4",
+          "aspectRatio": 1
+        }
+      ],
+      "preview": {
+        "pattern": 7,
+        "photos": [
+          0,
+          2
+        ]
+      }
+    },
+    {
+      "id": "photoProject-nuatelier",
+      "slug": "nuatelier",
+      "title": "Nu Atelier",
+      "description": "Nu Atelier — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Nu Atelier",
+      "category": "Editorial",
+      "featured": true,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f877132750d0a959b146768329198fb6a4df2a3b-1080x1346.jpg",
+          "alt": "Nu Atelier — 1",
+          "aspectRatio": 0.8023774145616642
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/abdf4ba860b621ae0a2de65a53d2195bca5c7319-1080x1349.jpg",
+          "alt": "Nu Atelier — 2",
+          "aspectRatio": 0.8005930318754633
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/167f00b4c91303f4d26d10d315940a1b30450c7c-1080x1346.jpg",
+          "alt": "Nu Atelier — 3",
+          "aspectRatio": 0.8023774145616642
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/065ec807a6652103d82953a0a9f2a4ecfa3164af-1080x1344.jpg",
+          "alt": "Nu Atelier — 4",
+          "aspectRatio": 0.8035714285714286
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/489d90ba948f5ca8543fd9dccdf4dced6638e1fc-1080x1350.jpg",
+          "alt": "Nu Atelier — 5",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/df91788a60b10782115928af26a3a38b074a1b24-1080x1344.jpg",
+          "alt": "Nu Atelier — 6",
+          "aspectRatio": 0.8035714285714286
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/59db66f17a2e0381c18316d2924c63a2bd341f95-1080x1349.jpg",
+          "alt": "Nu Atelier — 7",
+          "aspectRatio": 0.8005930318754633
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/dfcf826ed9367e18ccb4aed4a182932f09023f62-1080x1344.jpg",
+          "alt": "Nu Atelier — 8",
+          "aspectRatio": 0.8035714285714286
+        }
+      ],
+      "preview": {
+        "pattern": 13,
+        "photos": [
+          0,
+          4
+        ]
+      }
+    },
+    {
+      "id": "photoProject-oakley-x-joliefoulee",
+      "slug": "oakley-x-joliefoulee",
+      "title": "Oakley x Jolie Foulée",
+      "description": "Oakley x Jolie Foulée — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Oakley x Jolie Foulée",
+      "category": "Editorial",
+      "featured": true,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6f21067e64b8f66569a41d9fa10fe762e148fc5f-1080x1350.jpg",
+          "alt": "Oakley x Jolie Foulée — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/8f0919ae8b6ab393c88f81f6d0ac562a2f8bca55-1080x1350.jpg",
+          "alt": "Oakley x Jolie Foulée — 2",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6dc38df755e92c80ea99709bc72dfb1fddb7a224-1080x1350.jpg",
+          "alt": "Oakley x Jolie Foulée — 3",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/98d27398ff452489229ccc6972bec4e662487ba1-1080x1350.jpg",
+          "alt": "Oakley x Jolie Foulée — 4",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/59da316900db252de90d996cabd90a1bf91c22ff-1080x1350.jpg",
+          "alt": "Oakley x Jolie Foulée — 5",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/c2b1943590d02745a47e29bdaf40623f83a0b0ce-1080x1350.jpg",
+          "alt": "Oakley x Jolie Foulée — 6",
+          "aspectRatio": 0.8
+        }
+      ],
+      "preview": {
+        "pattern": 9,
+        "photos": [
+          0,
+          3,
+          5
+        ]
+      }
+    },
+    {
+      "id": "photoProject-pag",
+      "slug": "pag",
+      "title": "Pag",
+      "description": "Pag — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Pag",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/3c8871203b79070aea6b368b8f141a749b214958-1080x1350.jpg",
+          "alt": "Pag — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/fb70b6881a4e405ae827539c7930cddbe6fa21f1-591x591.jpg",
+          "alt": "Pag — 2",
+          "aspectRatio": 1
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/3c79f71dbd8bbd77e142b70dafd43fbc86ca68ed-1080x1350.jpg",
+          "alt": "Pag — 3",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/b95945b353a9512d4a8cd8889c4007cea57c3f29-1080x1080.jpg",
+          "alt": "Pag — 4",
+          "aspectRatio": 1
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/8832b538ad3e92316cd9cbca02ae18d40456e20b-1080x1079.jpg",
+          "alt": "Pag — 5",
+          "aspectRatio": 1.0009267840593141
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/4d2c62cb35473898962c88dd74fa2f3e8dd56036-1080x1350.jpg",
+          "alt": "Pag — 6",
+          "aspectRatio": 0.8
+        }
+      ],
+      "preview": {
+        "pattern": 0,
+        "photos": [
+          0,
+          3,
+          5
+        ]
+      }
+    },
+    {
+      "id": "photoProject-rimowa",
+      "slug": "rimowa",
+      "title": "Rimowa",
+      "description": "Rimowa — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Rimowa",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6186e4a4887994d628a8952ac86ff863e93cb4a2-1080x1350.jpg",
+          "alt": "Rimowa — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/455e42e68e8bfb11f914686fad3b34b5189dbe79-1080x1081.jpg",
+          "alt": "Rimowa — 2",
+          "aspectRatio": 0.9990749306197965
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/140527c1a7cbf0f221b77ec7d9b0e491b874a45b-1080x1080.jpg",
+          "alt": "Rimowa — 3",
+          "aspectRatio": 1
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ecd0cd07495c2ab7e0a9261dda80281c5e067003-1080x1080.jpg",
+          "alt": "Rimowa — 4",
+          "aspectRatio": 1
+        }
+      ],
+      "preview": {
+        "pattern": 1,
+        "photos": [
+          0,
+          2
+        ]
+      }
+    },
+    {
+      "id": "photoProject-saucony",
+      "slug": "saucony",
+      "title": "Saucony",
+      "description": "Saucony — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Saucony",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ca4d10e1a6c0152f4027f950a25327bc7935c9f7-1080x1350.jpg",
+          "alt": "Saucony — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/2a2d0f3a9c5befaff5269941751b297c8fd48851-1080x1350.jpg",
+          "alt": "Saucony — 2",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/a4836566ea731ce876e43804ee0dc08ea45b8e66-1080x1350.jpg",
+          "alt": "Saucony — 3",
+          "aspectRatio": 0.8
+        }
+      ],
+      "preview": {
+        "pattern": 2,
+        "photos": [
+          0,
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "photoProject-simond",
+      "slug": "simond",
+      "title": "Simond",
+      "description": "Simond — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Simond",
+      "category": "Editorial",
+      "featured": true,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/4398bfc777720186bc351dd709c27cbb3ce5bc4c-1080x1350.jpg",
+          "alt": "Simond — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/a51e0903d059d210dbed2930a3b85de5c0d6fd26-1080x1350.jpg",
+          "alt": "Simond — 2",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/41e2040d8af668abcf4ee8a8aa4639976da28afd-1080x1350.jpg",
+          "alt": "Simond — 3",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/a6ea7c3ac219010430c78f1146d9d6713b63255f-1080x1350.jpg",
+          "alt": "Simond — 4",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/362635a8290dfd6d9fdb741f51cd61a8b7477c2e-1080x1350.jpg",
+          "alt": "Simond — 5",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/11cddc457d0675e7713ba4ce54f348e685135cd7-1080x1350.jpg",
+          "alt": "Simond — 6",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/02b45854628492b85012888c64dfdb1fb8760856-1080x1350.jpg",
+          "alt": "Simond — 7",
+          "aspectRatio": 0.8
+        }
+      ],
+      "preview": {
+        "pattern": 14,
+        "photos": [
+          3,
+          0
+        ]
+      }
+    },
+    {
+      "id": "photoProject-tedax-max",
+      "slug": "tedax-max",
+      "title": "Tedax Max",
+      "description": "Tedax Max — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Tedax Max",
+      "category": "Editorial",
+      "featured": true,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f274070e7873cf71d28c052dfa22b446ada74d21-1080x1350.jpg",
+          "alt": "Tedax Max — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/699521c7cdaee86e9058fe2d037d74bb1054fbf5-1080x1350.jpg",
+          "alt": "Tedax Max — 2",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/dbc5a4b6a67da82aecad9ffc7cbb144ca8c053c0-1080x1350.jpg",
+          "alt": "Tedax Max — 3",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/84cb7cc7ee9aca51df586851f0be10b62f54eb76-1080x1350.jpg",
+          "alt": "Tedax Max — 4",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/406314b4c2a331ec34741690fa22a297e674a3c8-1080x1350.jpg",
+          "alt": "Tedax Max — 5",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/26701b43e3af4fd7b8d2babd4540dd83d59ef50d-1080x1350.jpg",
+          "alt": "Tedax Max — 6",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/41d5ee7a64799c50a8e46ca3d1c29562f2343c34-1080x1350.jpg",
+          "alt": "Tedax Max — 7",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/0f600bee452f11313c3d9c02cd7fa44f84228ee0-1080x1350.jpg",
+          "alt": "Tedax Max — 8",
+          "aspectRatio": 0.8
+        }
+      ],
+      "preview": {
+        "pattern": 15,
+        "photos": [
+          0,
+          4
+        ]
+      }
+    },
+    {
+      "id": "photoProject-veja",
+      "slug": "veja",
+      "title": "Veja",
+      "description": "Veja — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Veja",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/63b98a0d4ba7238b146c6eaba32e6d00c023ae98-1080x1350.jpg",
+          "alt": "Veja — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ca026d690f5ba64e84d91dce98167b8484565add-1080x1350.jpg",
+          "alt": "Veja — 2",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/0f412700cab6d49fe279fda5cad3bd724d4e7056-1080x1350.jpg",
+          "alt": "Veja — 3",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6e29d49aed28de03c1612524e0f150f8e73afa41-1080x1349.jpg",
+          "alt": "Veja — 4",
+          "aspectRatio": 0.8005930318754633
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/88dfc4e011c3876137ae3835cbe4caf594d27735-1080x1350.jpg",
+          "alt": "Veja — 5",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/4cfb0c62e1503343bf7cedc7b8ba52f6c70e83c9-1080x1350.jpg",
+          "alt": "Veja — 6",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/5ed0cfc0f0ff661510fafdd55a884e533fd69414-1080x1350.jpg",
+          "alt": "Veja — 7",
+          "aspectRatio": 0.8
+        }
+      ],
+      "preview": {
+        "pattern": 5,
+        "photos": [
+          0,
+          3
+        ]
+      }
+    },
+    {
+      "id": "photoProject-vejarunning-1",
+      "slug": "vejarunning-1",
+      "title": "Veja Running #1",
+      "description": "Veja Running #1 — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Veja Running #1",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/97924051bfd63560baecef1e16bd1f07d54033b6-1080x1350.jpg",
+          "alt": "Veja Running #1 — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/34bf29b7b2b5ca37b6c8ddd65cf5e7aa7b2a09bd-1080x1350.jpg",
+          "alt": "Veja Running #1 — 2",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/82d1fa3c0108c60c2d8c54ac9edf1ace3fc4dccf-1080x1350.jpg",
+          "alt": "Veja Running #1 — 3",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/8733c1667db88efbeafa954821fd607a92837ddc-1080x1350.jpg",
+          "alt": "Veja Running #1 — 4",
+          "aspectRatio": 0.8
+        }
+      ],
+      "preview": {
+        "pattern": 6,
+        "photos": [
+          0,
+          2,
+          3
+        ]
+      }
+    }
+  ],
   "showreel": {
     "_createdAt": "2026-05-19T16:05:45Z",
     "_id": "showreel",
@@ -1636,5 +2645,5 @@
     "socialTwitter": null,
     "socialVimeo": "https://vimeo.com/user37669788"
   },
-  "_fetchedAt": "2026-05-19T18:40:52.423Z"
+  "_fetchedAt": "2026-05-19T19:16:53.426Z"
 }

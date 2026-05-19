@@ -19,6 +19,8 @@
  * ============================================================================
  */
 
+import { shortVideo } from './videoShorts';
+
 export const siteConfig = {
   // -------------------------------------------------------------------------
   // ARTIST INFORMATION
@@ -92,33 +94,32 @@ export const siteConfig = {
   // Main navigation menu items
 
   navigation: {
+    // Active link visual style:
+    //   'pill'        — sliding inverted-chip highlight (boxed style).
+    //                    Defaults to the active page; follows hover.
+    //   'bold-larger' — active link is rendered slightly larger and
+    //                    with heavier font weight; no background.
+    // Toggleable from a future CMS / admin panel: surface this single
+    // string and the nav switches behavior at next render.
+    activeStyle: 'bold-larger',
+
     // Items displayed on the left side of the nav
-    left: [
-      {
-        label: 'ABOUT',
-        path: '/about',
-      },
-    ],
+    left: [],
 
     // Items displayed in the center of the nav (main sections)
     center: [
       {
-        label: 'PHOTOS',
+        label: 'Photos',
         path: '/photos',
       },
       {
-        label: 'FILMS',
+        label: 'Films',
         path: '/',
       },
     ],
 
     // Items displayed on the right side of the nav
-    right: [
-      {
-        label: 'CONTACT',
-        path: '/contact',
-      },
-    ],
+    right: [],
   },
 
 
@@ -152,7 +153,9 @@ export const siteConfig = {
 
   showreel: {
     vimeoUrl: 'https://player.vimeo.com/video/989542038',
-    videoFile: '/videos/Showreel 2021.mp4',
+    // Resolved through ./videoShorts so the autoplaying hero background
+    // streams the shortened teaser when one exists in public/videos/.
+    videoFile: shortVideo('/videos/Showreel 2021.mp4'),
   },
 
 

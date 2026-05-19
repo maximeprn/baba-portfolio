@@ -56,3 +56,7 @@ yarn-error.log*
 # ==================================
 # Original video files - too large for git
 content/
+
+# Playwright test artifacts
+playwright-report/
+test-results/

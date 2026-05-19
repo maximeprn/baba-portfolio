@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 import HeroSection from '../components/ui/HeroSection';
@@ -29,6 +29,25 @@ function ShowreelOverlay({ vimeoUrl, onClose }) {
 function Films() {
   const [showShowreel, setShowShowreel] = useState(false);
   const [selectedFilm, setSelectedFilm] = useState(null);
+
+  // Single-expanded enforcement for collapsed cards.
+  // expandedCollapsedId: id of the card currently expanded (null if none).
+  // closeSignals: per-card counter; incrementing it tells that card to auto-close.
+  const [expandedCollapsedId, setExpandedCollapsedId] = useState(null);
+  const [closeSignals, setCloseSignals] = useState({});
+
+  const handleCollapsedWillExpand = useCallback((id) => {
+    setExpandedCollapsedId((prev) => {
+      if (prev !== null && prev !== id) {
+        setCloseSignals((sigs) => ({ ...sigs, [prev]: (sigs[prev] || 0) + 1 }));
+      }
+      return id;
+    });
+  }, []);
+
+  const handleCollapsedDidCollapse = useCallback((id) => {
+    setExpandedCollapsedId((prev) => (prev === id ? null : prev));
+  }, []);
 
   // Cascading video load: hero → featured → collapsed
   const [loadPhase, setLoadPhase] = useState('hero');
@@ -83,19 +102,21 @@ function Films() {
         <meta property="og:type" content="website" />
       </Helmet>
 
-      {/* HERO SECTION */}
+      {/* HERO SECTION — full-bleed */}
       <HeroSection onVideoClick={() => setShowShowreel(true)} onReady={handleHeroReady} />
 
-      <div className="h-20 md:h-0" aria-hidden="true" />
+      {/* POST-HERO CONTENT — re-applies the md:px-[100px] gutter that Layout
+          drops on hero pages, so TitleSection's -mx-[100px] escape still works
+          and the cards have the same gutter as on every other page. */}
+      <div className="flex flex-col items-center w-full md:px-[100px]">
+        <div className="h-10 md:h-0" aria-hidden="true" />
 
-      {/* CURATED WORKS — hidden for now, may reintroduce later */}
-      {/* <TitleSection title="Curated Works" borderTop /> */}
+        {/* CURATED WORKS — hidden for now, may reintroduce later */}
+        {/* <TitleSection title="Curated Works" borderTop /> */}
 
-      {films.filter(f => !f.collapsed).map((film, index) => (
-        <React.Fragment key={film.id}>
-          <hr className="border-t border-black self-stretch -mx-4 md:-mx-[100px]" />
-          {film.featured ? (
-            <div className="py-5 w-full">
+        {films.filter(f => !f.collapsed).map((film, index) => (
+          <div key={film.id} className="py-2.5 w-full">
+            {film.featured ? (
               <FeaturedFilmCard
                 film={film}
                 index={index}
@@ -103,37 +124,35 @@ function Films() {
                 shouldLoad={loadPhase !== 'hero'}
                 onVideoReady={handleFeaturedVideoReady}
               />
-            </div>
-          ) : (
-            <div className="py-5 w-full">
+            ) : (
               <FilmCard
                 film={film}
+                index={index}
                 onFilmClick={handleFilmClick}
               />
-            </div>
-          )}
-        </React.Fragment>
-      ))}
+            )}
+          </div>
+        ))}
 
-      {/* OTHER PROJECTS */}
-      <TitleSection title="Other Projects" />
+        {/* OTHER PROJECTS */}
+        <div className="h-32" aria-hidden="true" />
+        <TitleSection title="Other Projects" />
 
-      {films.filter(f => f.collapsed).map((film, index) => (
-        <React.Fragment key={film.id}>
-          <hr className="border-t border-black self-stretch -mx-4 md:-mx-[100px]" />
+        {films.filter(f => f.collapsed).map((film, index) => (
           <CollapsedFilmCard
+            key={film.id}
             film={film}
             index={index}
             onFilmClick={handleFilmClick}
             shouldLoad={loadPhase === 'collapsed'}
+            onWillExpand={handleCollapsedWillExpand}
+            onDidCollapse={handleCollapsedDidCollapse}
+            closeSignal={closeSignals[film.id] || 0}
           />
-        </React.Fragment>
-      ))}
+        ))}
 
-      {/* Bottom border after last collapsed card */}
-      <hr className="border-t border-black self-stretch -mx-4 md:-mx-[100px]" />
-
-      <div className="h-20" aria-hidden="true" />
+        <div className="h-20" aria-hidden="true" />
+      </div>
 
       {/* SHOWREEL OVERLAY */}
       {showShowreel && (

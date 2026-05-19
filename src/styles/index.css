@@ -276,15 +276,12 @@
     margin: 0;
   }
 
-  /* Links - default styling */
+  /* Links - default styling. No global hover color: components opt in with
+     Tailwind hover utilities (e.g. Footer uses hover:text-muted). A global
+     a:hover rule clashes with hero links that need a fixed white color. */
   a {
     color: inherit; /* Inherit text color from parent */
     text-decoration: none; /* No underline by default */
-    transition: color var(--transition-fast);
-  }
-
-  a:hover {
-    color: var(--color-accent);
   }
 
   /* Images - responsive by default */
@@ -460,6 +457,42 @@
   @media (min-width: 1536px) {
     .film-card > div {
       gap: 2.5rem;
+    }
+  }
+
+  /* Per-element spacing variants for film cards. CSS variables are set on the
+     <article> by the component and read here. Per-card variation is desktop-only;
+     below lg we apply a uniform baseline so subtitle and description don't
+     collapse against each other. Defaults inside the media query match Variant A
+     so a missing var still renders correctly. */
+  .ffc-subtitle {
+    margin-bottom: 1.5rem; /* base spacing under the year/client/category line */
+  }
+
+  @media (min-width: 1024px) {
+    .ffc-title {
+      padding-left: var(--ffc-title-pl, 2rem);
+      padding-right: var(--ffc-title-pr, 0.5rem);
+      margin-bottom: var(--ffc-title-mb, 3rem);
+    }
+    .ffc-subtitle {
+      padding-left: var(--ffc-subtitle-pl, 2.5rem);
+      padding-right: var(--ffc-subtitle-pr, 1rem);
+      margin-bottom: var(--ffc-subtitle-mb, 4rem);
+    }
+    .ffc-desc {
+      padding-left: var(--ffc-desc-pl, 1rem);
+      padding-right: var(--ffc-desc-pr, 2rem);
+    }
+
+    .fc-title {
+      padding-left: var(--fc-title-pl, 2rem);
+      padding-right: var(--fc-title-pr, 0.5rem);
+      margin-bottom: var(--fc-title-mb, 3rem);
+    }
+    .fc-desc {
+      padding-left: var(--fc-desc-pl, 1rem);
+      padding-right: var(--fc-desc-pr, 2rem);
     }
   }
 }

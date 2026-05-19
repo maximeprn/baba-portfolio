@@ -6,7 +6,15 @@
  *
  * Video files live in /public/videos/
  * Poster images live in /public/posters/ (some films still need posters)
+ *
+ * `videoFile` is post-processed below to swap in the shortened teaser cut
+ * (`* - short.mp4`) when one exists in `public/videos/`. The original
+ * filename stays verbatim in each entry so this file remains a faithful
+ * record of the source asset; the runtime swap is a single `.map()` at the
+ * bottom of the array, sourced from `./videoShorts`.
  */
+
+import { shortVideo } from './videoShorts';
 
 export const films = [
   {
@@ -394,7 +402,10 @@ export const films = [
     collapsed: true,
     aspectRatio: 1.78,
   },
-];
+].map((film) => ({
+  ...film,
+  videoFile: shortVideo(film.videoFile),
+}));
 
 
 // HELPER FUNCTIONS

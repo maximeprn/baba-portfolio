@@ -24,11 +24,16 @@ export function useSmoothScrollContext() {
   if (!context) {
     // Return fallback for when smooth scroll is not available
     return {
-      scrollTo: (pos, instant) => window.scrollTo({ top: pos, behavior: instant ? 'instant' : 'smooth' }),
+      scrollTo: (pos, instant) => {
+        window.scrollTo({ top: pos, behavior: instant ? 'instant' : 'smooth' });
+        return Promise.resolve();
+      },
       scrollToElement: (el, options) => el?.scrollIntoView({ behavior: options?.instant ? 'instant' : 'smooth', block: options?.block || 'start' }),
       getScrollPosition: () => window.scrollY,
       addScrollListener: () => () => {},
+      setScrollLocked: () => {},
       scrollY: 0,
+      isDesktop: typeof window !== 'undefined' ? window.innerWidth >= 1024 : true,
     };
   }
   return context;
@@ -69,6 +74,13 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
   // Scroll position state that triggers re-renders for subscribers
   const [scrollY, setScrollY] = useState(0);
   const scrollListenersRef = useRef(new Set());
+
+  // Hard lock — when set, wheel/key/touch handlers bail out so an overlay
+  // (e.g. Lightbox) can disable page scroll without unmounting the provider.
+  const isLockedRef = useRef(false);
+  const setScrollLocked = useCallback((locked) => {
+    isLockedRef.current = !!locked;
+  }, []);
 
   // Listen for resize to toggle smooth scroll
   useEffect(() => {
@@ -130,6 +142,7 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
 
   // Handle wheel events
   const handleWheel = useCallback((e) => {
+    if (isLockedRef.current) return;
     const content = contentRef.current;
     if (!content) return;
 
@@ -156,6 +169,7 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
 
   // Handle keyboard navigation
   const handleKeyDown = useCallback((e) => {
+    if (isLockedRef.current) return;
     const content = contentRef.current;
     if (!content) return;
 
@@ -235,8 +249,12 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
   }, [updateScroll]);
 
 
-  // Method to programmatically scroll to a position
-  // Options: instant (boolean), ease (number) for custom scroll speed
+  // Method to programmatically scroll to a position.
+  // Options: instant (boolean), ease (number) for custom scroll speed.
+  // Returns a Promise that resolves when the scroll has settled at the
+  // target — used by the photo cards to serialize "scroll, then expand"
+  // on mobile where running both in parallel race-conditions with the
+  // browser's native smooth-scroll.
   const scrollTo = useCallback((position, instantOrOptions = false) => {
     const options = typeof instantOrOptions === 'boolean'
       ? { instant: instantOrOptions }
@@ -245,15 +263,36 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
 
     // On mobile/tablet, use native scroll
     if (!isDesktop) {
-      window.scrollTo({
-        top: position,
-        behavior: instant ? 'instant' : 'smooth'
+      const targetY = Math.max(0, position);
+      if (instant) {
+        window.scrollTo({ top: targetY, behavior: 'instant' });
+        return Promise.resolve();
+      }
+      // Already at (or extremely close to) target → no work, resolve now.
+      if (Math.abs(window.scrollY - targetY) < 2) {
+        window.scrollTo({ top: targetY, behavior: 'smooth' });
+        return Promise.resolve();
+      }
+      return new Promise((resolve) => {
+        let settled = false;
+        const settle = () => {
+          if (settled) return;
+          settled = true;
+          window.removeEventListener('scrollend', settle);
+          clearTimeout(timer);
+          resolve();
+        };
+        // `scrollend` fires on Safari 17+, Chrome 114+. Older browsers
+        // get caught by the timeout fallback (1.2s is longer than any
+        // realistic native smooth-scroll on a phone).
+        window.addEventListener('scrollend', settle, { once: true });
+        const timer = setTimeout(settle, 1200);
+        window.scrollTo({ top: targetY, behavior: 'smooth' });
       });
-      return;
     }
 
     const content = contentRef.current;
-    if (!content) return;
+    if (!content) return Promise.resolve();
 
     const data = scrollDataRef.current;
     const maxScroll = content.scrollHeight - window.innerHeight;
@@ -263,18 +302,35 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
       data.current = targetPos;
       data.target = targetPos;
       content.style.transform = `translateY(${-targetPos}px)`;
-    } else {
-      // Temporarily override ease if a custom value is provided
-      if (ease) {
-        data.ease = ease;
-        data._restoreEase = smoothness;
-      }
-      data.target = targetPos;
-      if (!data.isScrolling) {
-        data.isScrolling = true;
-        data.rafId = requestAnimationFrame(updateScroll);
-      }
+      // Notify scroll-aware components (e.g. the FeaturedPhotoCard header
+      // pin) that scroll changed instantly — otherwise they'd keep using
+      // a stale anchor until the next user-driven scroll.
+      setScrollY(targetPos);
+      scrollListenersRef.current.forEach((listener) => listener(targetPos));
+      return Promise.resolve();
     }
+
+    // Temporarily override ease if a custom value is provided
+    if (ease) {
+      data.ease = ease;
+      data._restoreEase = smoothness;
+    }
+    data.target = targetPos;
+    if (!data.isScrolling) {
+      data.isScrolling = true;
+      data.rafId = requestAnimationFrame(updateScroll);
+    }
+    // Desktop lerp: resolve when current is within 1px of target.
+    return new Promise((resolve) => {
+      const settle = () => {
+        if (Math.abs(scrollDataRef.current.current - targetPos) < 1) {
+          resolve();
+        } else {
+          requestAnimationFrame(settle);
+        }
+      };
+      requestAnimationFrame(settle);
+    });
   }, [isDesktop, smoothness, updateScroll]);
 
 
@@ -343,6 +399,13 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
 
     // On mobile/tablet, use native scroll
     if (!isDesktop) {
+      // Carry the smooth-scroll position across the desktop→mobile
+      // breakpoint. Without this, removing the contentRef's transform
+      // hands the page back to the body's native scroll, whose
+      // scrollTop was 0 (body never scrolled while smooth-scroll was
+      // active) — so the user would jump straight to the top.
+      const carryOver = scrollDataRef.current.current;
+
       // Reset any smooth scroll styles
       document.body.style.overflow = '';
       document.body.style.height = '';
@@ -352,6 +415,14 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
       content.style.width = '';
       content.style.willChange = '';
       content.style.transform = '';
+
+      // Restore the carried-over scroll position synchronously, before
+      // the next paint, so there's no visible jump to the top.
+      if (carryOver > 0) {
+        window.scrollTo(0, carryOver);
+        setScrollY(carryOver);
+        scrollListenersRef.current.forEach((listener) => listener(carryOver));
+      }
 
       // Track native scroll for scrollY state
       const handleNativeScroll = () => {
@@ -365,7 +436,14 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
       };
     }
 
-    // Desktop: use custom smooth scroll
+    // Desktop: use custom smooth scroll.
+    // Carry the native scroll position across the mobile→desktop
+    // breakpoint. After we set body to overflow:hidden + the contentRef
+    // to position:fixed, the body's scrollTop becomes irrelevant and
+    // the content visually resets to the top — unless we re-apply the
+    // saved position as a transform.
+    const carryOver = window.scrollY;
+
     // Set up body styles
     document.body.style.overflow = 'hidden';
     document.body.style.height = '100vh';
@@ -376,6 +454,18 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
     content.style.left = '0';
     content.style.width = '100%';
     content.style.willChange = 'transform';
+
+    // Restore the carried-over position into the smooth-scroll state +
+    // apply the transform synchronously so the user stays at the same
+    // scroll level as before the breakpoint flip.
+    if (carryOver > 0) {
+      const data = scrollDataRef.current;
+      data.current = carryOver;
+      data.target = carryOver;
+      content.style.transform = `translateY(${-carryOver}px)`;
+      setScrollY(carryOver);
+      scrollListenersRef.current.forEach((listener) => listener(carryOver));
+    }
 
     // Add event listeners (wheel only on desktop, no touch events needed)
     window.addEventListener('wheel', handleWheel, { passive: false });
@@ -427,7 +517,9 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
     scrollToElement,
     getScrollPosition,
     addScrollListener,
+    setScrollLocked,
     scrollY,
+    isDesktop,
   };
 
 

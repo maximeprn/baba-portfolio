@@ -13,8 +13,7 @@
  *
  * ROUTES:
  * /              → Films page (homepage, film detail via modal overlay)
- * /photos        → Photo projects listing
- * /photos/:slug  → Individual photo project gallery
+ * /photos        → Photo projects listing (featured cards expand inline; no per-project route)
  * /about         → About page
  * /contact       → Contact page
  *
@@ -34,7 +33,6 @@ import Layout from './components/layout/Layout';
 // Each page is a separate component in the /pages folder
 import Films from './pages/Films';
 import Photos from './pages/Photos';
-import PhotoProject from './pages/PhotoProject';
 import About from './pages/About';
 import Contact from './pages/Contact';
 
@@ -88,13 +86,8 @@ function App() {
         <Route path="/" element={<Films />} />
 
         {/* Photos listing page
-            Shows all photo projects as a grid of cards */}
+            Featured projects expand inline into artistic galleries; no /photos/:slug route */}
         <Route path="/photos" element={<Photos />} />
-
-        {/* Photo Project Gallery
-            Similar to film detail, :slug captures the project name
-            Shows the full gallery for a specific photo project */}
-        <Route path="/photos/:slug" element={<PhotoProject />} />
 
         {/* About page
             Static page with artist biography and information */}

@@ -63,3 +63,4 @@ src/
 - Contact page is a simple link page (email + social links), no form
 - Film detail uses modal overlay (FilmModal), not a separate route
 - Photo images must be in `public/photos/` — paths in photoProjects.js use `/photos/...`
+- **Playwright tests on `/` and `/photos`** must use `locator.dispatchEvent('click')` instead of `.click()` for elements below the fold. The desktop smooth-scroll system sets `body { overflow: hidden }` and translates the content via CSS transform, so Playwright's actionability check (and even `force: true`) reports "Element is outside of the viewport." `dispatchEvent` fires the React onClick directly without the actionability check. See `tests/e2e/featured-photo-cards.spec.js` for an example.

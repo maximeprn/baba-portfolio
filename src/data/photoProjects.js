@@ -1,251 +1,436 @@
 /**
- * ============================================================================
  * PHOTO PROJECTS DATA
- * ============================================================================
+ * ===================
+ * Auto-scaffolded from /public/img/BABA PHOTOS/ filenames.
+ * Aspect ratios measured at scaffold time via macOS `sips` — never crop.
  *
- * This file contains all photography project data.
- * Projects are collections of related photos (series, campaigns, etc.)
+ * Re-scaffold: `node scripts/scaffold-photo-projects.mjs`
  *
- * TO ADD A NEW PROJECT:
- * 1. Copy an existing project object
- * 2. Update all fields with new information
- * 3. Add photos to /photos/project-slug/
- * 4. List all photo filenames in the 'photos' array
- *
- * STRUCTURE:
- * - Each project has basic info (title, description, cover)
- * - Each project has an array of photos
- * - Photos can have captions and metadata
- *
- * ============================================================================
+ * Hand-edit after scaffolding:
+ *   - title, description, year, client, category — placeholder values
+ *   - featured: true|false — flip the curated subset (top 5 by photo count
+ *     are featured by default)
+ *   - imagePosition: 'left' | 'right' — optional per-project override
+ *     (default alternates left/right by index in the featured array, computed
+ *     at render time in Photos.jsx)
+ *   - preview.photos — which photos (by index into project.photos[]) to render
+ *     in the compact-card collage
+ *   - preview.pattern — which layout (0..9) from PhotoCardPreview's PATTERNS array
+ *     to use; pattern's slot count must equal preview.photos.length (2 or 3)
  */
 
 export const photoProjects = [
   {
-    // Unique identifier
     id: 1,
-
-    // URL slug - used in browser URL (/photos/project-name)
-    slug: 'summer-campaign-2024',
-
-    // Project title
-    title: 'Summer Campaign 2024',
-
-    // Short description shown on project card
-    description: 'A vibrant summer campaign exploring light and color in urban environments.',
-
-    // Cover image - shown on the projects listing page
-    // This should be one of the best images from the project
-    coverImage: '/photos/summer-campaign-2024/cover.jpg',
-
-    // Year the project was completed
+    slug: 'acid-surfing',
+    title: "Acid Surfing",
+    description: "Acid Surfing — placeholder description, replace with editorial copy.",
     year: 2024,
-
-    // Client name (null for personal work)
-    client: 'Fashion Brand',
-
-    // Project category
-    category: 'Commercial',
-
-    // Location where photos were taken
-    location: 'Paris, France',
-
-    // Array of photos in this project
-    // Each photo object contains image path and optional metadata
+    client: "Acid Surfing",
+    category: 'Editorial',
     photos: [
-      {
-        // Unique ID within this project
-        id: 1,
-        // Path to the full-size image
-        src: '/photos/summer-campaign-2024/photo-01.jpg',
-        // Alt text for accessibility (describe the image)
-        alt: 'Model in yellow dress against blue wall',
-        // Optional caption shown in lightbox
-        caption: null,
-        // Aspect ratio for layout (width/height)
-        // Common ratios: 1.5 (3:2), 1.33 (4:3), 0.67 (2:3 portrait)
-        aspectRatio: 1.5,
-      },
-      {
-        id: 2,
-        src: '/photos/summer-campaign-2024/photo-02.jpg',
-        alt: 'Close-up portrait with natural lighting',
-        caption: null,
-        aspectRatio: 0.67, // Portrait orientation
-      },
-      {
-        id: 3,
-        src: '/photos/summer-campaign-2024/photo-03.jpg',
-        alt: 'Wide shot of urban street scene',
-        caption: null,
-        aspectRatio: 1.5,
-      },
-      {
-        id: 4,
-        src: '/photos/summer-campaign-2024/photo-04.jpg',
-        alt: 'Detail shot of accessories',
-        caption: null,
-        aspectRatio: 1,
-      },
-      {
-        id: 5,
-        src: '/photos/summer-campaign-2024/photo-05.jpg',
-        alt: 'Full body shot in motion',
-        caption: null,
-        aspectRatio: 0.67,
-      },
-      // Add more photos as needed...
+      { src: '/img/BABA%20PHOTOS/AcidSurfing1.jpeg', alt: "Acid Surfing — 1", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/AcidSurfing2.jpeg', alt: "Acid Surfing — 2", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/AcidSurfing3.jpeg', alt: "Acid Surfing — 3", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/AcidSurfing4.jpeg', alt: "Acid Surfing — 4", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/AcidSurfing5.jpeg', alt: "Acid Surfing — 5", aspectRatio: 0.8 },
     ],
-
-    // Whether this is a featured project (shown more prominently)
-    featured: true,
-  },
-
-  {
-    id: 2,
-    slug: 'portraits-series',
-    title: 'Portraits Series',
-    description: 'An intimate collection of portrait photography exploring identity and expression.',
-    coverImage: '/photos/portraits-series/cover.jpg',
-    year: 2023,
-    client: null, // Personal project
-    category: 'Personal',
-    location: 'Various',
-    photos: [
-      {
-        id: 1,
-        src: '/photos/portraits-series/photo-01.jpg',
-        alt: 'Portrait in natural light',
-        caption: null,
-        aspectRatio: 0.67,
-      },
-      {
-        id: 2,
-        src: '/photos/portraits-series/photo-02.jpg',
-        alt: 'Studio portrait with dramatic lighting',
-        caption: null,
-        aspectRatio: 0.67,
-      },
-      {
-        id: 3,
-        src: '/photos/portraits-series/photo-03.jpg',
-        alt: 'Environmental portrait',
-        caption: null,
-        aspectRatio: 1.5,
-      },
-      // Add more photos...
-    ],
-    featured: true,
-  },
-
-  {
-    id: 3,
-    slug: 'documentary-work',
-    title: 'Documentary Work',
-    description: 'Behind-the-scenes and documentary photography from various film productions.',
-    coverImage: '/photos/documentary-work/cover.jpg',
-    year: 2023,
-    client: null,
-    category: 'Documentary',
-    location: 'Various',
-    photos: [
-      {
-        id: 1,
-        src: '/photos/documentary-work/photo-01.jpg',
-        alt: 'Film crew on set',
-        caption: null,
-        aspectRatio: 1.5,
-      },
-      {
-        id: 2,
-        src: '/photos/documentary-work/photo-02.jpg',
-        alt: 'Director reviewing footage',
-        caption: null,
-        aspectRatio: 1.5,
-      },
-      // Add more photos...
-    ],
+    preview: { pattern: 5, photos: [0, 2] },
     featured: false,
   },
-
-  // Add more projects following the same structure...
+  {
+    id: 2,
+    slug: 'adidas',
+    title: "Adidas",
+    description: "Adidas — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Adidas",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/Adidas%206.jpeg', alt: "Adidas — 1", aspectRatio: 1.196 },
+      { src: '/img/BABA%20PHOTOS/Adidas.jpeg', alt: "Adidas — 2", aspectRatio: 1.196 },
+      { src: '/img/BABA%20PHOTOS/Adidas1.jpeg', alt: "Adidas — 3", aspectRatio: 1.196 },
+      { src: '/img/BABA%20PHOTOS/Adidas2.jpeg', alt: "Adidas — 4", aspectRatio: 1.196 },
+      { src: '/img/BABA%20PHOTOS/Adidas3.jpeg', alt: "Adidas — 5", aspectRatio: 1.196 },
+      { src: '/img/BABA%20PHOTOS/Adidas5.jpeg', alt: "Adidas — 6", aspectRatio: 1.196 },
+    ],
+    preview: { pattern: 6, photos: [0, 3, 5] },
+    featured: false,
+  },
+  {
+    id: 3,
+    slug: 'asics-running',
+    title: "Asics Running",
+    description: "Asics Running — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Asics Running",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/asicsrunning.jpeg', alt: "Asics Running — 1", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/asicsrunning1.jpeg', alt: "Asics Running — 2", aspectRatio: 1 },
+    ],
+    preview: { pattern: 7, photos: [0, 1] },
+    featured: false,
+  },
+  {
+    id: 4,
+    slug: 'balthasar-de-pury',
+    title: "Balthasar de Pury",
+    description: "Balthasar de Pury — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Balthasar de Pury",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/balthasardepury.jpeg', alt: "Balthasar de Pury — 1", aspectRatio: 1.544 },
+      { src: '/img/BABA%20PHOTOS/balthasardepury1.jpeg', alt: "Balthasar de Pury — 2", aspectRatio: 1.544 },
+      { src: '/img/BABA%20PHOTOS/balthasardepury2.jpeg', alt: "Balthasar de Pury — 3", aspectRatio: 1.5429 },
+      { src: '/img/BABA%20PHOTOS/balthasardepury3.jpeg', alt: "Balthasar de Pury — 4", aspectRatio: 1.544 },
+    ],
+    preview: { pattern: 8, photos: [0, 2, 3] },
+    featured: false,
+  },
+  {
+    id: 5,
+    slug: 'bascule',
+    title: "Bascule",
+    description: "Bascule — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Bascule",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/Bascule.jpeg', alt: "Bascule — 1", aspectRatio: 1.3333 },
+      { src: '/img/BABA%20PHOTOS/Bascule1.jpeg', alt: "Bascule — 2", aspectRatio: 1.3333 },
+      { src: '/img/BABA%20PHOTOS/Bascule2.jpeg', alt: "Bascule — 3", aspectRatio: 1.3333 },
+    ],
+    preview: { pattern: 9, photos: [0, 1, 2] },
+    featured: false,
+  },
+  {
+    id: 6,
+    slug: 'charlie-watch',
+    title: "Charlie Watch",
+    description: "Charlie Watch — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Charlie Watch",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/charliewatch1.jpeg', alt: "Charlie Watch — 1", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/charliewatch2.jpeg', alt: "Charlie Watch — 2", aspectRatio: 0.7994 },
+      { src: '/img/BABA%20PHOTOS/charliewatch3.jpeg', alt: "Charlie Watch — 3", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/charliewatch4.jpeg', alt: "Charlie Watch — 4", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/charliewatch5.jpeg', alt: "Charlie Watch — 5", aspectRatio: 0.8 },
+    ],
+    preview: { pattern: 0, photos: [0, 2, 4] },
+    featured: false,
+  },
+  {
+    id: 7,
+    slug: 'digital-travel',
+    title: "Digital Travel",
+    description: "Digital Travel — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Digital Travel",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/DigitalTravel1.jpeg', alt: "Digital Travel — 1", aspectRatio: 0.7803 },
+      { src: '/img/BABA%20PHOTOS/DigitalTravel2.jpeg', alt: "Digital Travel — 2", aspectRatio: 0.7803 },
+      { src: '/img/BABA%20PHOTOS/DigitalTravel3.jpeg', alt: "Digital Travel — 3", aspectRatio: 0.7803 },
+      { src: '/img/BABA%20PHOTOS/DigitalTravel4.jpeg', alt: "Digital Travel — 4", aspectRatio: 0.7803 },
+      { src: '/img/BABA%20PHOTOS/DigitalTravel5.jpeg', alt: "Digital Travel — 5", aspectRatio: 0.7803 },
+      { src: '/img/BABA%20PHOTOS/DigitalTravel6.jpeg', alt: "Digital Travel — 6", aspectRatio: 0.7803 },
+      { src: '/img/BABA%20PHOTOS/DigitalTravel7.jpeg', alt: "Digital Travel — 7", aspectRatio: 0.7803 },
+      { src: '/img/BABA%20PHOTOS/DigitalTravel8.jpeg', alt: "Digital Travel — 8", aspectRatio: 0.7803 },
+      { src: '/img/BABA%20PHOTOS/DigitalTravel9.jpeg', alt: "Digital Travel — 9", aspectRatio: 0.7803 },
+      { src: '/img/BABA%20PHOTOS/DigitalTravel10.jpeg', alt: "Digital Travel — 10", aspectRatio: 0.7803 },
+    ],
+    preview: { pattern: 0, photos: [0, 5, 9] },
+    featured: false,
+  },
+  {
+    id: 8,
+    slug: 'fusalp',
+    title: "Fusalp",
+    description: "Fusalp — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Fusalp",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/fusalp.jpeg', alt: "Fusalp — 1", aspectRatio: 0.8948 },
+      { src: '/img/BABA%20PHOTOS/fusalp1.jpeg', alt: "Fusalp — 2", aspectRatio: 0.8955 },
+      { src: '/img/BABA%20PHOTOS/fusalp2.jpeg', alt: "Fusalp — 3", aspectRatio: 0.8948 },
+    ],
+    preview: { pattern: 2, photos: [0, 1, 2] },
+    featured: false,
+  },
+  {
+    id: 9,
+    slug: 'judo',
+    title: "Judo",
+    description: "Judo — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Judo",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/Judo1.jpeg', alt: "Judo — 1", aspectRatio: 0.7947 },
+      { src: '/img/BABA%20PHOTOS/Judo2.jpeg', alt: "Judo — 2", aspectRatio: 0.7953 },
+      { src: '/img/BABA%20PHOTOS/Judo3.jpeg', alt: "Judo — 3", aspectRatio: 0.7953 },
+      { src: '/img/BABA%20PHOTOS/Judo4.jpeg', alt: "Judo — 4", aspectRatio: 0.7947 },
+      { src: '/img/BABA%20PHOTOS/Judo5.jpeg', alt: "Judo — 5", aspectRatio: 0.7953 },
+      { src: '/img/BABA%20PHOTOS/Judo6.jpeg', alt: "Judo — 6", aspectRatio: 0.7947 },
+    ],
+    // Big-LEFT top + small-RIGHT lower; collapses to one full-bleed image below 1350px.
+    preview: { pattern: 11, photos: [0, 3], mobilePattern: 10, mobilePhotos: [0], maxHeight: '60vh', mobileBreakpoint: 1349 },
+    featured: true,
+  },
+  {
+    id: 10,
+    slug: 'les-others',
+    title: "Les Others",
+    description: "Les Others — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Les Others",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/Les%20Others.jpeg', alt: "Les Others — 1", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Les%20Others1.jpeg', alt: "Les Others — 2", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Les%20Others2.jpeg', alt: "Les Others — 3", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Les%20Others3.jpeg', alt: "Les Others — 4", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Les%20Others4.jpeg', alt: "Les Others — 5", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Les%20Others5.jpeg', alt: "Les Others — 6", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Les%20Others6.jpeg', alt: "Les Others — 7", aspectRatio: 1.2386 },
+    ],
+    preview: { pattern: 1, photos: [0, 3] },
+    featured: false,
+  },
+  {
+    id: 11,
+    slug: 'lorette-cole-duprat',
+    title: "Lorette Colé Duprat",
+    description: "Lorette Colé Duprat — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Lorette Colé Duprat",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/Lorette%20Col%C3%A9%20Duprat%201.jpeg', alt: "Lorette Colé Duprat — 1", aspectRatio: 0.8024 },
+      { src: '/img/BABA%20PHOTOS/Lorette%20Col%C3%A9%20Duprat%205.jpeg', alt: "Lorette Colé Duprat — 2", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Lorette%20Col%C3%A9%20Duprat.jpeg', alt: "Lorette Colé Duprat — 3", aspectRatio: 0.8024 },
+      { src: '/img/BABA%20PHOTOS/Lorette%20Col%C3%A9%20Duprat2.jpeg', alt: "Lorette Colé Duprat — 4", aspectRatio: 1 },
+      { src: '/img/BABA%20PHOTOS/Lorette%20Col%C3%A9%20Duprat3.jpeg', alt: "Lorette Colé Duprat — 5", aspectRatio: 1 },
+      { src: '/img/BABA%20PHOTOS/Lorette%20Col%C3%A9%20Duprat6.jpeg', alt: "Lorette Colé Duprat — 6", aspectRatio: 0.8 },
+    ],
+    // Small-LEFT top + big-RIGHT bottom; collapses to one full-bleed image below 1350px.
+    preview: { pattern: 12, photos: [3, 0], mobilePattern: 10, mobilePhotos: [0], maxHeight: '60vh', mobileBreakpoint: 1349 },
+    featured: true,
+  },
+  {
+    id: 12,
+    slug: 'lorne',
+    title: "Lorne",
+    description: "Lorne — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Lorne",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/Lorne.jpeg', alt: "Lorne — 1", aspectRatio: 1 },
+      { src: '/img/BABA%20PHOTOS/Lorne1.jpeg', alt: "Lorne — 2", aspectRatio: 1 },
+    ],
+    preview: { pattern: 1, photos: [0, 1] },
+    featured: false,
+  },
+  {
+    id: 13,
+    slug: 'moscot-nyc',
+    title: "Moscot NYC",
+    description: "Moscot NYC — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Moscot NYC",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/Moscot%20NYC.jpeg', alt: "Moscot NYC — 1", aspectRatio: 1 },
+      { src: '/img/BABA%20PHOTOS/Moscot%20NYC1.jpeg', alt: "Moscot NYC — 2", aspectRatio: 1 },
+      { src: '/img/BABA%20PHOTOS/Moscot%20NYC3.jpeg', alt: "Moscot NYC — 3", aspectRatio: 1 },
+      { src: '/img/BABA%20PHOTOS/Moscot%20NYC5.jpeg', alt: "Moscot NYC — 4", aspectRatio: 1 },
+    ],
+    preview: { pattern: 7, photos: [0, 2] },
+    featured: false,
+  },
+  {
+    id: 14,
+    slug: 'nuatelier',
+    title: "Nu Atelier",
+    description: "Nu Atelier — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Nu Atelier",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/nuatelier%208.jpeg', alt: "Nu Atelier — 1", aspectRatio: 0.8024 },
+      { src: '/img/BABA%20PHOTOS/nuatelier.jpeg', alt: "Nu Atelier — 2", aspectRatio: 0.8006 },
+      { src: '/img/BABA%20PHOTOS/nuatelier1.jpeg', alt: "Nu Atelier — 3", aspectRatio: 0.8024 },
+      { src: '/img/BABA%20PHOTOS/nuatelier2.jpeg', alt: "Nu Atelier — 4", aspectRatio: 0.8036 },
+      { src: '/img/BABA%20PHOTOS/nuatelier3.jpeg', alt: "Nu Atelier — 5", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/nuatelier4.jpeg', alt: "Nu Atelier — 6", aspectRatio: 0.8036 },
+      { src: '/img/BABA%20PHOTOS/nuatelier5.jpeg', alt: "Nu Atelier — 7", aspectRatio: 0.8006 },
+      { src: '/img/BABA%20PHOTOS/nuatelier6.jpeg', alt: "Nu Atelier — 8", aspectRatio: 0.8036 },
+    ],
+    // Big-LEFT bottom + small-RIGHT top; collapses to one full-bleed image below 1350px.
+    preview: { pattern: 13, photos: [0, 4], mobilePattern: 10, mobilePhotos: [0], maxHeight: '60vh', mobileBreakpoint: 1349 },
+    featured: true,
+  },
+  {
+    id: 15,
+    slug: 'oakley-x-joliefoulee',
+    title: "Oakley x Jolie Foulée",
+    description: "Oakley x Jolie Foulée — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Oakley x Jolie Foulée",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/Oakley%20x%20joliefoulee%201.jpeg', alt: "Oakley x Jolie Foulée — 1", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Oakley%20x%20joliefoulee%202.jpeg', alt: "Oakley x Jolie Foulée — 2", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Oakley%20x%20joliefoulee%203.jpeg', alt: "Oakley x Jolie Foulée — 3", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Oakley%20x%20joliefoulee%205.jpeg', alt: "Oakley x Jolie Foulée — 4", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Oakley%20x%20joliefoulee%207.jpeg', alt: "Oakley x Jolie Foulée — 5", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Oakley%20x%20joliefoulee.jpeg', alt: "Oakley x Jolie Foulée — 6", aspectRatio: 0.8 },
+    ],
+    preview: { pattern: 9, photos: [0, 3, 5] },
+    featured: false,
+  },
+  {
+    id: 16,
+    slug: 'pag',
+    title: "Pag",
+    description: "Pag — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Pag",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/Pag.jpeg', alt: "Pag — 1", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Pag1.jpeg', alt: "Pag — 2", aspectRatio: 1 },
+      { src: '/img/BABA%20PHOTOS/Pag2.jpeg', alt: "Pag — 3", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Pag3.jpeg', alt: "Pag — 4", aspectRatio: 1 },
+      { src: '/img/BABA%20PHOTOS/Pag4.jpeg', alt: "Pag — 5", aspectRatio: 1.0009 },
+      { src: '/img/BABA%20PHOTOS/Pag5.jpeg', alt: "Pag — 6", aspectRatio: 0.8 },
+    ],
+    preview: { pattern: 0, photos: [0, 3, 5] },
+    featured: false,
+  },
+  {
+    id: 17,
+    slug: 'rimowa',
+    title: "Rimowa",
+    description: "Rimowa — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Rimowa",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/Rimowa.jpeg', alt: "Rimowa — 1", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Rimowa2.jpeg', alt: "Rimowa — 2", aspectRatio: 0.9991 },
+      { src: '/img/BABA%20PHOTOS/Rimowa3.jpeg', alt: "Rimowa — 3", aspectRatio: 1 },
+      { src: '/img/BABA%20PHOTOS/Rimowa5.jpeg', alt: "Rimowa — 4", aspectRatio: 1 },
+    ],
+    preview: { pattern: 1, photos: [0, 2] },
+    featured: false,
+  },
+  {
+    id: 18,
+    slug: 'saucony',
+    title: "Saucony",
+    description: "Saucony — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Saucony",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/Saucony.jpeg', alt: "Saucony — 1", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Saucony1.jpeg', alt: "Saucony — 2", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Saucony2.jpeg', alt: "Saucony — 3", aspectRatio: 0.8 },
+    ],
+    preview: { pattern: 2, photos: [0, 1, 2] },
+    featured: false,
+  },
+  {
+    id: 19,
+    slug: 'simond',
+    title: "Simond",
+    description: "Simond — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Simond",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/simond.jpeg', alt: "Simond — 1", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/simond1.jpeg', alt: "Simond — 2", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/simond2.jpeg', alt: "Simond — 3", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/simond3.jpeg', alt: "Simond — 4", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/simond4.jpeg', alt: "Simond — 5", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/simond5.jpeg', alt: "Simond — 6", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/simond6.jpeg', alt: "Simond — 7", aspectRatio: 0.8 },
+    ],
+    // Small-LEFT middle + big-RIGHT top; collapses to one full-bleed image below 1350px.
+    preview: { pattern: 14, photos: [3, 0], mobilePattern: 10, mobilePhotos: [0], maxHeight: '60vh', mobileBreakpoint: 1349 },
+    featured: true,
+  },
+  {
+    id: 20,
+    slug: 'tedax-max',
+    title: "Tedax Max",
+    description: "Tedax Max — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Tedax Max",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/TedaxMax%201.jpeg', alt: "Tedax Max — 1", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/TedaxMax1.jpeg', alt: "Tedax Max — 2", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/TedaxMax2.jpeg', alt: "Tedax Max — 3", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/TedaxMax3.jpeg', alt: "Tedax Max — 4", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/TedaxMax4.jpeg', alt: "Tedax Max — 5", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/TedaxMax5.jpeg', alt: "Tedax Max — 6", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/TedaxMax6.jpeg', alt: "Tedax Max — 7", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/TedaxMax7.jpeg', alt: "Tedax Max — 8", aspectRatio: 0.8 },
+    ],
+    // Big-LEFT middle + small-RIGHT lower; collapses to one full-bleed image below 1350px.
+    preview: { pattern: 15, photos: [0, 4], mobilePattern: 10, mobilePhotos: [0], maxHeight: '60vh', mobileBreakpoint: 1349 },
+    featured: true,
+  },
+  {
+    id: 21,
+    slug: 'veja',
+    title: "Veja",
+    description: "Veja — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Veja",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/Veja%207.jpeg', alt: "Veja — 1", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Veja.jpeg', alt: "Veja — 2", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Veja1.jpeg', alt: "Veja — 3", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Veja2.jpeg', alt: "Veja — 4", aspectRatio: 0.8006 },
+      { src: '/img/BABA%20PHOTOS/Veja3.jpeg', alt: "Veja — 5", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/veja5.jpeg', alt: "Veja — 6", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/Veja6.jpeg', alt: "Veja — 7", aspectRatio: 0.8 },
+    ],
+    preview: { pattern: 5, photos: [0, 3] },
+    featured: false,
+  },
+  {
+    id: 22,
+    slug: 'vejarunning-1',
+    title: "Veja Running #1",
+    description: "Veja Running #1 — placeholder description, replace with editorial copy.",
+    year: 2024,
+    client: "Veja Running #1",
+    category: 'Editorial',
+    photos: [
+      { src: '/img/BABA%20PHOTOS/vejarunning%20%231%20.jpeg', alt: "Veja Running #1 — 1", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/vejarunning%20%231%201.jpeg', alt: "Veja Running #1 — 2", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/vejarunning%20%231%202.jpeg', alt: "Veja Running #1 — 3", aspectRatio: 0.8 },
+      { src: '/img/BABA%20PHOTOS/vejarunning%20%231%203.jpeg', alt: "Veja Running #1 — 4", aspectRatio: 0.8 },
+    ],
+    preview: { pattern: 6, photos: [0, 2, 3] },
+    featured: false,
+  },
 ];
 
+export const getFeaturedProjects = () => photoProjects.filter((p) => p.featured);
+export const getNonFeaturedProjects = () => photoProjects.filter((p) => !p.featured);
+export const getProjectBySlug = (slug) => photoProjects.find((p) => p.slug === slug);
 
-// -------------------------------------------------------------------------
-// HELPER FUNCTIONS
-// -------------------------------------------------------------------------
-
-/**
- * Get a single project by its slug
- * Used on the project detail page
- *
- * @param {string} slug - The URL slug of the project
- * @returns {Object|undefined} The project object or undefined
- */
-export const getProjectBySlug = (slug) => {
-  return photoProjects.find((project) => project.slug === slug);
-};
-
-
-/**
- * Get all featured projects
- * Used for highlighting on the photos landing page
- *
- * @returns {Array} Array of featured project objects
- */
-export const getFeaturedProjects = () => {
-  return photoProjects.filter((project) => project.featured);
-};
-
-
-/**
- * Get projects by category
- *
- * @param {string} category - The category to filter by
- * @returns {Array} Array of projects in that category
- */
-export const getProjectsByCategory = (category) => {
-  return photoProjects.filter((project) => project.category === category);
-};
-
-
-/**
- * Get all unique categories
- *
- * @returns {Array} Array of unique category strings
- */
-export const getAllPhotoCategories = () => {
-  const categories = photoProjects.map((project) => project.category);
-  return [...new Set(categories)];
-};
-
-
-/**
- * Get a specific photo from a project
- *
- * @param {string} projectSlug - The project slug
- * @param {number} photoId - The photo ID within the project
- * @returns {Object|undefined} The photo object
- */
-export const getPhotoById = (projectSlug, photoId) => {
-  const project = getProjectBySlug(projectSlug);
-  if (!project) return undefined;
-  return project.photos.find((photo) => photo.id === photoId);
-};
-
-
-/**
- * Get total photo count for a project
- *
- * @param {string} projectSlug - The project slug
- * @returns {number} Number of photos in the project
- */
-export const getPhotoCount = (projectSlug) => {
-  const project = getProjectBySlug(projectSlug);
-  return project ? project.photos.length : 0;
-};
-
-
-// Export as default
 export default photoProjects;

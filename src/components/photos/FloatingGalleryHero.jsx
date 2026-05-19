@@ -1,16 +1,14 @@
 /**
- * Photos Hero — Flashing photo slideshow with 60px inset.
+ * Photos Hero — full-bleed flashing photo slideshow.
  * Cycles through all portfolio photos with instant hard-cut transitions
  * at randomized intervals (0.5–2s). Shuffled order, no repeats until all shown.
  *
- * Dual-layer text overlay: black text on white background, white text on image.
- * The white text lives inside the image wrapper (overflow:hidden clips it to image bounds).
+ * Text overlay (bio + contact) is shared with the Films hero — see HeroBioOverlay.
  */
 
-import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
-import { siteConfig } from '../../data/siteConfig';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { heroPhotos } from '../../data/heroPhotos';
-import { MobileHeroNameOverlay } from '../ui/HeroSection';
+import { HeroBioOverlay } from '../ui/HeroSection';
 
 // Fisher-Yates shuffle (returns new array)
 function shuffle(arr) {
@@ -27,34 +25,7 @@ function randomInterval() {
   return 500 + Math.random() * 1500;
 }
 
-// Check if the bottom region of an image is predominantly light (where text sits).
-// Returns true if >35% of pixels in the bottom 10% are bright (>180).
-function isImageBottomLight(img) {
-  try {
-    const canvas = document.createElement('canvas');
-    const sampleW = Math.min(img.naturalWidth, 200);
-    const sampleH = Math.min(img.naturalHeight, 200);
-    canvas.width = sampleW;
-    canvas.height = sampleH;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, sampleW, sampleH);
-    // Sample bottom 10% — where the text overlay actually sits
-    const regionY = Math.floor(sampleH * 0.9);
-    const regionH = sampleH - regionY;
-    const data = ctx.getImageData(0, regionY, sampleW, regionH).data;
-    const pixelCount = data.length / 4;
-    let lightPixels = 0;
-    for (let i = 0; i < data.length; i += 4) {
-      const brightness = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-      if (brightness > 180) lightPixels++;
-    }
-    return lightPixels / pixelCount > 0.35;
-  } catch {
-    return false;
-  }
-}
-
-// Preload an image — resolves with src, natural dimensions, and brightness info
+// Preload an image — resolves with src + natural dimensions.
 function preloadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -63,13 +34,15 @@ function preloadImage(src) {
         src,
         naturalWidth: img.naturalWidth,
         naturalHeight: img.naturalHeight,
-        isLight: isImageBottomLight(img),
       });
     };
     img.onerror = () => reject(src);
     img.src = src;
   });
 }
+
+// Number of upcoming photos to warm in the browser cache after each advance.
+const PRELOAD_AHEAD = 10;
 
 /**
  * Hook: usePhotoSlideshow
@@ -79,16 +52,27 @@ function usePhotoSlideshow() {
   const queueRef = useRef([]);
   const indexRef = useRef(0);
   const cancelRef = useRef(false);
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches
+  );
   const [currentPhoto, setCurrentPhoto] = useState(() => {
     const initial = shuffle(heroPhotos);
     queueRef.current = initial;
-    return { src: initial[0] || '', naturalWidth: 0, naturalHeight: 0, isLight: false };
+    return { src: initial[0] || '', naturalWidth: 0, naturalHeight: 0 };
   });
 
   const prefersReducedMotion =
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Track viewport width so the landscape-skip filter stays correct after resize/rotation.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mql = window.matchMedia('(max-width: 767px)');
+    const onChange = (e) => setIsMobile(e.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
 
   const nextIndex = useCallback(() => {
     let idx = indexRef.current + 1;
@@ -98,6 +82,19 @@ function usePhotoSlideshow() {
     }
     indexRef.current = idx;
     return idx;
+  }, []);
+
+  // Warm the browser cache for the next N photos in the queue.
+  const warmUpNext = useCallback((count) => {
+    const queue = queueRef.current;
+    if (!queue.length) return;
+    const start = indexRef.current + 1;
+    for (let i = 0; i < count; i++) {
+      const src = queue[(start + i) % queue.length];
+      if (!src) continue;
+      const img = new Image();
+      img.src = src;
+    }
   }, []);
 
   const advance = useCallback(async () => {
@@ -113,32 +110,32 @@ function usePhotoSlideshow() {
           attempts++;
           continue;
         }
-        if (!cancelRef.current) setCurrentPhoto(result);
+        if (!cancelRef.current) {
+          setCurrentPhoto(result);
+          warmUpNext(PRELOAD_AHEAD);
+        }
         return;
       } catch {
         attempts++;
       }
     }
-  }, [nextIndex, isMobile]);
+  }, [nextIndex, isMobile, warmUpNext]);
 
   useEffect(() => {
     if (prefersReducedMotion || heroPhotos.length <= 1) return;
     cancelRef.current = false;
 
-    // Batch-preload all images upfront (they're light)
-    queueRef.current.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
-
-    // Load the first suitable image
+    // Load the first suitable image, then warm the next 10.
     (async () => {
       for (const src of queueRef.current) {
         if (cancelRef.current) return;
         try {
           const result = await preloadImage(src);
           if (isMobile && result.naturalWidth > result.naturalHeight) continue;
-          if (!cancelRef.current) setCurrentPhoto(result);
+          if (!cancelRef.current) {
+            setCurrentPhoto(result);
+            warmUpNext(PRELOAD_AHEAD);
+          }
           return;
         } catch { /* skip */ }
       }
@@ -157,211 +154,46 @@ function usePhotoSlideshow() {
       cancelRef.current = true;
       clearTimeout(timer);
     };
-  }, [advance, prefersReducedMotion]);
+  }, [advance, prefersReducedMotion, isMobile, warmUpNext]);
 
   return currentPhoto;
 }
 
-/**
- * NameOverlay — Reusable text overlay (BASILE DESCHAMPS + tagline).
- * Rendered twice: once black (on white bg), once white (clipped to image).
- */
-function NameOverlay({ color, containerRef, contentRef, scale, style }) {
-  const { firstName, lastName, tagline } = siteConfig.artist;
-  const taglineWords = tagline.split(' ').concat(['', '', '']);
-  const textClass = color === 'white' ? 'text-white' : 'text-black';
-
-  return (
-    <div
-      ref={containerRef}
-      className="absolute bottom-0 left-0 right-0 overflow-hidden pb-4 pointer-events-none"
-      style={style}
-    >
-      <div
-        ref={contentRef}
-        className="flex items-end justify-center w-fit mx-auto"
-        style={{
-          gap: '3.6cqw',
-          transform: `scale(${scale})`,
-          transformOrigin: 'bottom center',
-        }}
-        aria-label={color === 'black' ? 'Artist name' : undefined}
-        aria-hidden={color === 'white' ? 'true' : undefined}
-      >
-        <div className="flex flex-col items-end">
-          <div className="w-full flex justify-end pr-1">
-            <span
-              className={`font-header ${textClass} whitespace-nowrap`}
-              style={{ fontSize: '1.4cqw' }}
-            >
-              {taglineWords[0]?.toUpperCase()}
-            </span>
-          </div>
-          <span
-            className={`font-header font-bold ${textClass} whitespace-nowrap leading-none`}
-            style={{ fontSize: '9cqw' }}
-          >
-            {firstName.toUpperCase()}
-          </span>
-        </div>
-        <div className="flex flex-col items-start">
-          <div className="w-full flex justify-between px-1">
-            <span
-              className={`font-header ${textClass} whitespace-nowrap`}
-              style={{ fontSize: '1.4cqw' }}
-            >
-              {taglineWords[1]?.toUpperCase()}
-            </span>
-            <span
-              className={`font-header ${textClass} whitespace-nowrap`}
-              style={{ fontSize: '1.4cqw' }}
-            >
-              {taglineWords[2]?.toUpperCase()}
-            </span>
-          </div>
-          <span
-            className={`font-header font-bold ${textClass} whitespace-nowrap leading-none`}
-            style={{ fontSize: '9cqw' }}
-          >
-            {lastName.toUpperCase()}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function FloatingGalleryHero() {
-  const outerRef = useRef(null);
-  const blackOverlayRef = useRef(null);
-  const blackContentRef = useRef(null);
-  const [scale, setScale] = useState(1);
-  const [outerSize, setOuterSize] = useState({ width: 0, height: 0 });
   const currentPhoto = usePhotoSlideshow();
 
-  // Track outer container size
-  useEffect(() => {
-    const outer = outerRef.current;
-    if (!outer) return;
-    const update = () => {
-      setOuterSize({ width: outer.clientWidth, height: outer.clientHeight });
-    };
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(outer);
-    return () => ro.disconnect();
-  }, []);
-
-  // Text scale: measure black overlay to auto-fit width
-  useEffect(() => {
-    const container = blackOverlayRef.current;
-    const content = blackContentRef.current;
-    if (!container || !content) return;
-
-    const update = () => {
-      const cw = container.clientWidth;
-      const tw = content.scrollWidth;
-      setScale(tw > cw ? cw / tw : 1);
-    };
-
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(container);
-    return () => ro.disconnect();
-  }, []);
-
-  // Compute image wrapper size + offsets for white text alignment
-  const { wrapperW, wrapperH, horizontalOffset, verticalOffset } = useMemo(() => {
-    const { naturalWidth, naturalHeight } = currentPhoto;
-    if (!naturalWidth || !naturalHeight || !outerSize.width || !outerSize.height) {
-      return { wrapperW: 0, wrapperH: 0, horizontalOffset: 0, verticalOffset: 0 };
-    }
-
-    const imageAspect = naturalWidth / naturalHeight;
-    const containerAspect = outerSize.width / outerSize.height;
-
-    let renderedW, renderedH;
-    if (imageAspect > containerAspect) {
-      renderedW = outerSize.width;
-      renderedH = outerSize.width / imageAspect;
-    } else {
-      renderedH = outerSize.height;
-      renderedW = outerSize.height * imageAspect;
-    }
-
-    return {
-      wrapperW: Math.round(renderedW),
-      wrapperH: Math.round(renderedH),
-      horizontalOffset: (outerSize.width - Math.round(renderedW)) / 2,
-      verticalOffset: (outerSize.height - Math.round(renderedH)) / 2,
-    };
-  }, [currentPhoto, outerSize]);
-
   return (
-    <section className="relative w-full md:w-[calc(100%+200px)]" aria-label="Photo gallery hero">
-      {/* Desktop: Sticky contained photo with 60px inset */}
-      <div className="hidden md:block relative w-full" style={{ height: 'calc(100svh - 5rem + 150px)' }}>
-        <div className="sticky top-0 h-[calc(100svh-5rem)] w-full px-[60px] py-[20px]">
-          <div
-            ref={outerRef}
-            className="relative w-full h-full overflow-hidden flex items-center justify-center bg-white"
-            style={{ containerType: 'inline-size' }}
-          >
-            {/* Layer 1: Black text (visible on white background) */}
-            <NameOverlay
-              color="black"
-              containerRef={blackOverlayRef}
-              contentRef={blackContentRef}
-              scale={scale}
-              style={{ zIndex: 10 }}
+    <section className="relative w-full" aria-label="Photo gallery hero">
+      {/* Desktop: Sticky full-bleed photo. The +150px keeps the documented
+          scroll-to-reveal allowance below the hero (see memory: hero-150px-intentional). */}
+      <div className="hidden md:block relative w-full" style={{ height: 'calc(100svh + 150px)' }}>
+        <div className="sticky top-0 h-[100svh] w-full">
+          <div className="relative w-full h-full overflow-hidden bg-black">
+            <img
+              src={currentPhoto.src}
+              alt="Photography portfolio"
+              className="absolute inset-0 w-full h-full object-cover"
             />
-
-            {/* Image wrapper: shrink-wrapped to rendered image, clips white text */}
-            {wrapperW > 0 && wrapperH > 0 && (
-              <div
-                className="relative overflow-hidden flex-shrink-0"
-                style={{
-                  width: wrapperW,
-                  height: wrapperH,
-                  zIndex: 20,
-                }}
-              >
-                <img
-                  src={currentPhoto.src}
-                  alt="Photography portfolio"
-                  className="w-full h-full block"
-                />
-
-                {/* Layer 2: Text clipped to image bounds — white on dark photos, black on light */}
-                <NameOverlay
-                  color={currentPhoto.isLight ? 'black' : 'white'}
-                  containerRef={null}
-                  contentRef={null}
-                  scale={scale}
-                  style={{
-                    zIndex: 30,
-                    bottom: -verticalOffset,
-                    left: -horizontalOffset,
-                    width: outerSize.width,
-                  }}
-                />
-              </div>
-            )}
+            <HeroBioOverlay />
           </div>
         </div>
       </div>
 
-      {/* Mobile: Fullscreen photo with name overlay (same layout as Films hero) */}
-      <div
-        className="md:hidden relative h-[calc(100svh-5rem)] w-full overflow-hidden bg-white"
-        style={{ containerType: 'inline-size' }}
-      >
-        <img
-          src={currentPhoto.src}
-          alt="Photography portfolio"
-          className="w-full h-full object-cover"
-        />
-        <MobileHeroNameOverlay />
+      {/* Mobile/Tablet: Sticky full-bleed photo — mirrors the desktop pattern so
+          the bio + contact overlay pins through the 150px scroll-reveal window
+          (see memory: hero-150px-intentional). Native sticky → no jitter. */}
+      <div className="md:hidden relative w-full" style={{ height: 'calc(100svh + 150px)' }}>
+        <div className="sticky top-0 h-[100svh] w-full">
+          <div className="relative w-full h-full overflow-hidden bg-black">
+            <img
+              src={currentPhoto.src}
+              alt="Photography portfolio"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <HeroBioOverlay />
+          </div>
+        </div>
       </div>
 
       <h1 className="sr-only">Photos</h1>

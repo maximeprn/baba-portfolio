@@ -30,6 +30,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { Link, useLocation } from 'react-router-dom';
 
 import { siteConfig } from '../../data/siteConfig';
+import { fluidScale } from '../../utils/fluidScale';
 
 
 const PILL_TRANSITION = 'cubic-bezier(0.4, 0, 0.2, 1) 320ms';
@@ -45,7 +46,7 @@ const PILL_TRANSITION = 'cubic-bezier(0.4, 0, 0.2, 1) 320ms';
  *      so the letters that sit under the pill always read in the
  *      opposite color — no matter where the pill is mid-slide.
  */
-function NavPill({ center, isActive, isHeroPage }) {
+function NavPill({ center, isActive, isHeroPage, linkSize, activeLinkSize }) {
   const containerRef = useRef(null);
   const linkRefs = useRef({});
   const [hoveredPath, setHoveredPath] = useState(null);
@@ -155,9 +156,9 @@ function NavPill({ center, isActive, isHeroPage }) {
             onBlur={() => setHoveredPath(null)}
             className={[
               'relative inline-block font-header font-medium tracking-[0.08em]',
-              active ? 'text-[18px]' : 'text-[16px]',
               linkColor,
             ].join(' ')}
+            style={{ fontSize: fluidScale(active ? activeLinkSize : linkSize) }}
             aria-current={active ? 'page' : undefined}
           >
             <span
@@ -191,9 +192,9 @@ function NavPill({ center, isActive, isHeroPage }) {
               key={item.path}
               className={[
                 'inline-block font-header font-medium tracking-[0.08em]',
-                active ? 'text-[18px]' : 'text-[16px]',
                 invertedColor,
               ].join(' ')}
+              style={{ fontSize: fluidScale(active ? activeLinkSize : linkSize) }}
             >
               <span className="px-2 py-0.5 box-decoration-clone">
                 {item.label}
@@ -212,7 +213,7 @@ function NavPill({ center, isActive, isHeroPage }) {
  * font weight. No background, no measurements, no animations beyond a
  * subtle hover dim on inactive links.
  */
-function NavBoldLarger({ center, isActive, linkColor }) {
+function NavBoldLarger({ center, isActive, linkColor, linkSize, activeLinkSize }) {
   return (
     <div className="flex items-center justify-center gap-12 md:gap-16">
       {center.map((item) => {
@@ -223,11 +224,10 @@ function NavBoldLarger({ center, isActive, linkColor }) {
             to={item.path}
             className={[
               'inline-block font-header tracking-[0.08em] transition-opacity duration-150',
-              active
-                ? 'text-[20px] font-semibold'
-                : 'text-[16px] font-medium hover:opacity-70',
+              active ? 'font-semibold' : 'font-medium hover:opacity-70',
               linkColor,
             ].join(' ')}
+            style={{ fontSize: fluidScale(active ? activeLinkSize : linkSize) }}
             aria-current={active ? 'page' : undefined}
           >
             {item.label}
@@ -241,7 +241,12 @@ function NavBoldLarger({ center, isActive, linkColor }) {
 
 function Navigation() {
   const location = useLocation();
-  const { center, activeStyle = 'bold-larger' } = siteConfig.navigation;
+  const {
+    center,
+    activeStyle = 'bold-larger',
+    linkSize = 16,
+    activeLinkSize = 18,
+  } = siteConfig.navigation;
 
   const isHeroPage =
     location.pathname === '/' || location.pathname === '/photos';
@@ -266,12 +271,16 @@ function Navigation() {
             center={center}
             isActive={isActive}
             isHeroPage={isHeroPage}
+            linkSize={linkSize}
+            activeLinkSize={activeLinkSize}
           />
         ) : (
           <NavBoldLarger
             center={center}
             isActive={isActive}
             linkColor={linkColor}
+            linkSize={linkSize}
+            activeLinkSize={activeLinkSize}
           />
         )}
       </nav>

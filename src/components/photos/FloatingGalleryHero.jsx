@@ -7,7 +7,7 @@
  */
 
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { heroPhotos } from '../../data/heroPhotos';
+import { heroPhotos } from '../../sanity/loader';
 import { HeroBioOverlay } from '../ui/HeroSection';
 
 // Fisher-Yates shuffle (returns new array)

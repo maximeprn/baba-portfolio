@@ -1,7 +1,7 @@
 # BABA — Basile Deschamps Portfolio
 
 Portfolio website for visual artist Basile Deschamps (film & photography).
-React + Vite + Tailwind CSS, deployed on Vercel.
+React + Vite + Tailwind CSS, deployed on Vercel. Content lives in **Sanity CMS** (project `e9pgmdfm`).
 
 ## Setup
 
@@ -15,36 +15,98 @@ npm run dev
 ## Commands
 
 - `npm run dev` — Start dev server (localhost:5173, auto-opens browser)
-- `npm run build` — Production build to `dist/`
+- `npm run build` — Production build to `dist/` (runs `cms:fetch` first via `prebuild`)
 - `npm run preview` — Preview production build locally
 - `npm run lint` — ESLint check (zero warnings policy)
 - `npx playwright test` — Run E2E tests
+- `npm run cms:fetch` — Pull latest published content from Sanity → `src/data/cms.json`
+- `npm run cms:watch` — Live-reload local dev when Sanity content changes (run alongside `npm run dev`)
+- `npm run cms:seed` — Seed/reset CMS singletons (needs `SANITY_WRITE_TOKEN`)
+- `npm run studio:deploy` — Deploy a hosted backup studio to `basiledeschamps.sanity.studio`
 
 ## Architecture
 
 ```
 src/
-├── App.jsx              # Router: / (Films), /photos, /photos/:slug, /about, /contact, /* (404)
+├── App.jsx              # Router: /admin/* (Studio, lazy) + /* (public site)
 ├── main.jsx             # Entry point, wraps app in BrowserRouter
 ├── components/
 │   ├── films/           # FilmCard, FeaturedFilmCard, FilmModal
 │   ├── photos/          # ProjectCard, PhotoGrid, FloatingGalleryHero
 │   ├── layout/          # Navigation, Layout, Footer
 │   └── ui/              # HeroSection, PersistentHeroText, Divider, Lightbox
-├── data/                # Content data files (films.js, photoProjects.js, siteConfig.js)
-├── context/             # SmoothScrollContext (shared scroll position, smooth scroll on desktop)
-├── pages/               # Route page components
-└── styles/              # index.css (CSS variables, font-face declarations)
+├── data/
+│   ├── siteConfig.js    # Legacy-shape wrapper around CMS data (used by components)
+│   ├── cms.json         # Last build-time snapshot of CMS content (tracked in git)
+│   ├── films.js         # Portfolio films (Stage 5 — not yet CMS-driven)
+│   └── photoProjects.js # Portfolio photos (Stage 4 — not yet CMS-driven)
+├── sanity/
+│   ├── client.js        # @sanity/client (read-only)
+│   └── loader.js        # Imports cms.json, exposes typed accessors + fallbacks
+├── pages/               # Films, Photos, Studio
+└── utils/
+    └── fluidScale.js    # Shared clamp() helper for fluid typography
+
+sanity/
+├── schemas/             # siteSettings, heroOverlay, showreel
+└── desk/structure.js    # Pinned singleton document IDs
+
+scripts/
+├── fetch-cms-content.mjs  # Build-time CMS fetch (runs before vite build)
+├── watch-cms.mjs          # Dev-time WebSocket subscription to refetch on publish
+├── seed-cms.mjs           # Idempotent seed of the three singletons
+└── upload-videos-to-blob.mjs  # Vercel Blob upload for hero/film videos
 ```
+
+## CMS
+
+**Sanity project:** `e9pgmdfm`, dataset `production`.
+**Studio:** embedded at `/admin` (Sanity Studio v4 React component). Hosted backup at `basiledeschamps.sanity.studio` after `npm run studio:deploy`.
+**Auth:** Google OAuth via Sanity. Editors invited from the [project dashboard](https://www.sanity.io/manage/project/e9pgmdfm).
+
+### Build-time content pipeline
+
+```
+Publish in Studio
+  → Sanity webhook (planned: → Vercel deploy hook)
+  → vercel-build.sh runs scripts/fetch-cms-content.mjs
+  → src/data/cms.json updated
+  → Vite bundles cms.json into the static build
+```
+
+`src/data/cms.json` is **committed** so the build never fails when Sanity is unreachable. The fetcher overwrites it on every build; if Sanity is down, the build continues with the last good snapshot.
+
+### Schema (Stage 1)
+
+Three singletons:
+- **`siteSettings`** — artist name, SEO, social URLs, footer copyright, nav style + link sizes
+- **`heroOverlay`** — array of floating text items (bio, clients, phone, email…) with per-item anchor/offsets/size/link
+- **`showreel`** — Vimeo URL + hero video file path
+
+Field reference: see `sanity/schemas/*.js` for canonical definitions. Singletons are enforced via `sanity/desk/structure.js` + action filters in `sanity.config.js`.
+
+### Hero overlay model
+
+Each `heroOverlay.items[]` entry is an absolute-positioned text/link block. The renderer ([src/components/ui/HeroSection.jsx](src/components/ui/HeroSection.jsx)) supports:
+
+- **Anchor** — 9 options (`top-left`, `bottom-right`, etc.) sets which corner offsets are measured from.
+- **Offset X / Y** — pixels from the anchor side.
+- **Max width** — caps the item's width so long text wraps instead of overflowing.
+- **Stack with adjacent siblings** — adjacent flagged items at the same anchor merge into one flex-row-wrap container. Items go inline when there's room, wrap to vertical when not. The first flagged item's anchor + offsets define the stack position; later items inherit.
+- **Stack row gap** — vertical gap between rows once a stack wraps. Defaults to 24 px (deliberately bigger than line-height so paragraph separation stays visible on mobile).
+
+### Fluid typography
+
+`src/utils/fluidScale.js` exposes a single `fluidScale(basePx, { mobileRatio = 0.85 })` helper. Used for both nav link sizes and hero overlay text. Pattern: `clamp(base × mobileRatio, base/10 vw, base)` — desktop ceiling at the CMS-set value, mobile floor at 85%.
 
 ## Key Files
 
-- `src/data/siteConfig.js` — All site-wide content (artist info, nav, social links, SEO). Change content here, not in components.
-- `src/data/films.js` / `src/data/photoProjects.js` — Portfolio content data
-- `src/components/ui/HeroSection.jsx` — Fullscreen sticky video hero. Separate mobile/desktop rendering paths.
-- `src/components/films/FilmModal.jsx` — Shared fullscreen Vimeo overlay (used by both film detail and showreel)
-- `src/components/ui/PersistentHeroText.jsx` — Split-color artist name overlay (white on video, black on background)
-- `tailwind.config.js` — Custom design tokens all backed by CSS variables from `index.css`
+- `src/data/siteConfig.js` — Compatibility shim. Components still `import { siteConfig }` but the values stream from `src/sanity/loader.js`.
+- `src/data/films.js` / `src/data/photoProjects.js` — Static content (future Stage 4/5 will move to CMS).
+- `src/components/ui/HeroSection.jsx` — Fullscreen sticky video hero. Reads `heroOverlay.items[]` from CMS for the floating text overlay.
+- `src/components/films/FilmModal.jsx` — Shared fullscreen Vimeo overlay (used by both film detail and showreel).
+- `src/components/ui/PersistentHeroText.jsx` — Split-color artist name overlay (white on video, black on background).
+- `tailwind.config.js` — Custom design tokens all backed by CSS variables from `index.css`.
 
 ## Design System
 
@@ -56,11 +118,12 @@ src/
 ## Gotchas
 
 - Use Flexbox for all component layouts — never use `position: absolute` to place sibling elements (text, images, videos) side by side. Use `flex-row` / `flex-row-reverse` for left/right alternation and `gap` for guaranteed spacing.
-- Use `svh` units (not `vh`) for mobile viewport heights — avoids iOS address bar issues
-- Hero video (`/public/videos/hero-teaser.mp4`) is a large file; original content in `content/` is gitignored
-- Bottom-aligned elements use absolute positioning with `bottom-[10vh]` + `left-0 right-0 z-0`
-- Global `prefers-reduced-motion: reduce` in index.css disables all animations site-wide
-- Contact page is a simple link page (email + social links), no form
-- Film detail uses modal overlay (FilmModal), not a separate route
-- Photo images must be in `public/photos/` — paths in photoProjects.js use `/photos/...`
+- Use `svh` units (not `vh`) for mobile viewport heights — avoids iOS address bar issues.
+- Hero video (`/public/videos/hero-teaser.mp4`) is a large file; original content in `content/` is gitignored.
+- Bottom-aligned elements use absolute positioning with `bottom-[10vh]` + `left-0 right-0 z-0`.
+- Global `prefers-reduced-motion: reduce` in `index.css` disables all animations site-wide.
+- Film detail uses modal overlay (FilmModal), not a separate route.
+- Photo images must be in `public/photos/` — paths in `photoProjects.js` use `/photos/...`.
 - **Playwright tests on `/` and `/photos`** must use `locator.dispatchEvent('click')` instead of `.click()` for elements below the fold. The desktop smooth-scroll system sets `body { overflow: hidden }` and translates the content via CSS transform, so Playwright's actionability check (and even `force: true`) reports "Element is outside of the viewport." `dispatchEvent` fires the React onClick directly without the actionability check. See `tests/e2e/featured-photo-cards.spec.js` for an example.
+- The Sanity Studio bundle is huge (~5MB gzipped 1.7MB). It's code-split via `React.lazy` so the public site bundle stays small. Never `import 'sanity'` from a non-Studio file.
+- **`/about` and `/contact` routes were removed** in the CMS migration. Contact info now lives in the CMS hero overlay items.

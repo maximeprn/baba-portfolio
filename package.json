@@ -5,16 +5,28 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/fetch-cms-content.mjs",
     "build": "vite build",
     "vercel-build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "cms:seed": "node scripts/seed-cms.mjs",
+    "cms:fetch": "node scripts/fetch-cms-content.mjs",
+    "cms:watch": "node scripts/watch-cms.mjs",
+    "cms:upload-hero-photos": "node scripts/upload-hero-photos.mjs",
+    "studio:dev": "sanity dev",
+    "studio:deploy": "sanity deploy"
   },
   "dependencies": {
+    "@sanity/client": "^7.22.0",
+    "@sanity/image-url": "^1.2.0",
+    "@sanity/vision": "^4.22.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet-async": "^3.0.0",
-    "react-router-dom": "^6.22.0"
+    "react-router-dom": "^6.22.0",
+    "sanity": "^4.22.0",
+    "styled-components": "^6.4.2"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",

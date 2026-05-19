@@ -1,40 +1,283 @@
 import { useRef, useState, useEffect } from 'react';
 import { siteConfig } from '../../data/siteConfig';
+import { heroOverlay } from '../../sanity/loader';
+import { fluidScale } from '../../utils/fluidScale';
+
+// Desktop ceilings for overlay text. Mirrors the original Tailwind values
+// (text-[28px] / text-[25px]); each is run through `fluidScale` so the
+// effective size scales with viewport width — same approach as the nav.
+const OVERLAY_DESKTOP_SIZE = {
+  body: 28,
+  contact: 25,
+};
+
+// ---------------------------------------------------------------------------
+// Hero overlay rendering helpers
+// ---------------------------------------------------------------------------
 
 /**
- * HeroBioOverlay — Top-left bio + selected clients, bottom-left contact info.
- * Used by both Films and Photos heroes (desktop + mobile).
- *
- * Desktop: 28px / 25px text, nowrap (intentional — the long client list
- * overflows the right edge of the viewport on narrower screens).
- * Mobile: scaled down + allowed to wrap; contact stacks vertically.
+ * Resolve an anchor (e.g. 'top-left', 'bottom-right', 'middle-center') plus
+ * pixel offsets into a CSS positioning object.
  */
-function HeroBioOverlay() {
-  return (
-    <>
-      {/* TOP-LEFT: bio + selected clients */}
-      <div className="absolute top-[100px] left-8 right-8 md:right-auto z-10 flex flex-col items-start gap-3.5 text-white pointer-events-none font-header">
-        <p className="m-0 font-medium leading-tight tracking-[-0.01em] text-lg md:text-[28px] md:whitespace-nowrap">
-          Basile Deschamps is a film director and photographer based in Paris.
-        </p>
-        <p className="m-0 font-medium leading-tight tracking-[-0.01em] text-lg md:text-[28px] md:whitespace-nowrap">
-          Selected clients include Salomon, Parel Studios, Lorette Colé Duprat, On, Asics, Pag, Specialized, Veja.
-        </p>
-      </div>
+function anchorToStyle(anchor, offsetX = 0, offsetY = 0) {
+  const [v, h] = (anchor || 'top-left').split('-');
+  const style = {};
+  const transforms = [];
 
-      {/* BOTTOM-LEFT: contact */}
-      <div className="absolute bottom-10 left-8 z-10 flex flex-col md:flex-row gap-2 md:gap-6 text-white font-header font-medium tracking-[0.15em] pointer-events-none">
-        <span className="uppercase text-base md:text-[25px]">+33 (0)6 17 91 79 89</span>
-        <span className="text-base md:text-[25px]">basiledeschamps3@gmail.com</span>
-      </div>
-    </>
+  if (v === 'top') style.top = `${offsetY}px`;
+  else if (v === 'bottom') style.bottom = `${offsetY}px`;
+  else {
+    style.top = '50%';
+    transforms.push(`translateY(calc(-50% + ${offsetY}px))`);
+  }
+
+  if (h === 'left') style.left = `${offsetX}px`;
+  else if (h === 'right') style.right = `${offsetX}px`;
+  else {
+    style.left = '50%';
+    transforms.push(`translateX(calc(-50% + ${offsetX}px))`);
+  }
+
+  if (transforms.length) style.transform = transforms.join(' ');
+  return style;
+}
+
+/**
+ * The visual element of an overlay item — the <a> or <span> with text
+ * styling and (optional) link href. Does NOT include positioning;
+ * positioning is applied by the parent (single item or stack container).
+ */
+function HeroOverlayText({ item }) {
+  const { text, size, link, maxWidth } = item;
+
+  const sizeClass =
+    size === 'contact'
+      ? 'font-header font-medium tracking-[0.15em]'
+      : 'font-header font-medium leading-tight tracking-[-0.01em]';
+
+  // Phone numbers were uppercased in the original design; email was not.
+  const isPhone = link?.type === 'phone';
+  const upperClass = isPhone ? 'uppercase' : '';
+
+  const isInteractive = link?.type && link.type !== 'none' && link.value;
+  const pointerClass = isInteractive ? 'pointer-events-auto' : 'pointer-events-none';
+  const hoverClass = isInteractive ? 'hover:opacity-70 transition-opacity duration-150' : '';
+
+  const className = [
+    'block text-white whitespace-pre-line break-words',
+    sizeClass,
+    upperClass,
+    pointerClass,
+    hoverClass,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  // Fluid font-size from the shared scaler, plus the optional max-width cap.
+  const desktopPx = OVERLAY_DESKTOP_SIZE[size] ?? OVERLAY_DESKTOP_SIZE.body;
+  const style = { fontSize: fluidScale(desktopPx) };
+  if (typeof maxWidth === 'number' && maxWidth > 0) {
+    style.maxWidth = `${maxWidth}px`;
+  }
+
+  if (link?.type === 'email' && link.value) {
+    return (
+      <a href={`mailto:${link.value}`} className={className} style={style}>
+        {text}
+      </a>
+    );
+  }
+  if (link?.type === 'phone' && link.value) {
+    const sanitized = link.value.replace(/[^\d+]/g, '');
+    return (
+      <a href={`tel:${sanitized}`} className={className} style={style}>
+        {text}
+      </a>
+    );
+  }
+  if (link?.type === 'url' && link.value) {
+    return (
+      <a
+        href={link.value}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={className}
+        style={style}
+      >
+        {text}
+      </a>
+    );
+  }
+  return (
+    <span className={className} style={style}>
+      {text}
+    </span>
   );
 }
 
 /**
- * HeroSection — Contained sticky video with 60px inset from viewport edges.
- * Name text lives inside the video container so it never exceeds video bounds.
+ * A single absolutely-positioned overlay item. Used when an item is not
+ * part of a stacking group.
  */
+function HeroOverlayItem({ item }) {
+  const mobileClass = item.mobileVisible === false ? 'hidden md:block' : '';
+  const positionStyle = anchorToStyle(item.anchor, item.offsetX ?? 0, item.offsetY ?? 0);
+  return (
+    <div className={`absolute z-10 ${mobileClass}`.trim()} style={positionStyle}>
+      <HeroOverlayText item={item} />
+    </div>
+  );
+}
+
+/**
+ * A stack of overlay items. Positioned at the FIRST item's anchor + offsets.
+ *
+ * Renders as a flex-row container with `flex-wrap` so items sit inline
+ * side-by-side when there's enough horizontal room and wrap to new rows
+ * (i.e. stack vertically) when there isn't. Items are packed toward the
+ * anchor's horizontal side (left-aligned for left/center anchors,
+ * right-aligned for right anchors).
+ *
+ * The container is given the opposite-side padding (16px) so the available
+ * width is bounded — without that bound, flex-wrap has nothing to wrap
+ * against and items would just overflow the viewport.
+ */
+const STACK_VIEWPORT_PADDING = 16; // px gap from the opposite viewport edge
+
+function HeroOverlayStack({ items }) {
+  // Hide the entire stack when no item is mobile-visible. (Each item also
+  // honours its own mobileVisible flag inside.)
+  const anyMobileVisible = items.some((it) => it.mobileVisible !== false);
+  const stackMobileClass = anyMobileVisible ? '' : 'hidden md:flex';
+
+  const first = items[0];
+  const anchor = first.anchor || 'top-left';
+  const offsetX = first.offsetX ?? 0;
+  const offsetY = first.offsetY ?? 0;
+  const [v, h] = anchor.split('-');
+
+  const style = {};
+  const transforms = [];
+
+  // Vertical positioning is anchor-driven, same as a single item.
+  if (v === 'top') style.top = `${offsetY}px`;
+  else if (v === 'bottom') style.bottom = `${offsetY}px`;
+  else {
+    style.top = '50%';
+    transforms.push(`translateY(calc(-50% + ${offsetY}px))`);
+  }
+
+  // Horizontal positioning: in addition to the anchor edge, set the
+  // opposite side too, so the container has a bounded width that lets
+  // flex-wrap kick in when items can't fit on a single row.
+  if (h === 'left') {
+    style.left = `${offsetX}px`;
+    style.right = `${STACK_VIEWPORT_PADDING}px`;
+  } else if (h === 'right') {
+    style.right = `${offsetX}px`;
+    style.left = `${STACK_VIEWPORT_PADDING}px`;
+  } else {
+    // Center anchor: cap max-width so items can wrap, and shift the
+    // centered container by offsetX.
+    style.left = '50%';
+    style.maxWidth = `calc(100vw - ${STACK_VIEWPORT_PADDING * 2}px)`;
+    transforms.push(`translateX(calc(-50% + ${offsetX}px))`);
+  }
+
+  if (transforms.length) style.transform = transforms.join(' ');
+
+  // Vertical gap between rows is set by the first item's stackRowGap.
+  // (Horizontal gap stays a uniform 24px via gap-x-6.) Default is 24px —
+  // bigger than line-height so the row gap stays visually distinct from
+  // intra-paragraph line spacing once items wrap internally on mobile.
+  const rowGapPx = typeof first.stackRowGap === 'number' ? first.stackRowGap : 24;
+  style.rowGap = `${rowGapPx}px`;
+
+  // Pack items toward the anchor side so they read naturally:
+  //   left/center anchor → items hug the left edge of the container
+  //   right anchor       → items hug the right edge
+  const justifyClass = h === 'right' ? 'justify-end' : 'justify-start';
+
+  return (
+    <div
+      className={`absolute z-10 flex flex-row flex-wrap items-center gap-x-6 ${justifyClass} ${stackMobileClass}`.trim()}
+      style={style}
+    >
+      {items.map((item, i) => {
+        const itemMobileClass = item.mobileVisible === false ? 'hidden md:block' : '';
+        return (
+          <div key={item._key ?? `s-${i}`} className={itemMobileClass}>
+            <HeroOverlayText item={item} />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * HeroBioOverlay — top-level renderer for CMS-driven hero overlay items.
+ *
+ * Consecutive items with `stackWithSiblings = true` AND the SAME anchor
+ * are merged into a single vertical flex column anchored at the FIRST
+ * item's anchor + offsets. The chain breaks when:
+ *   - a non-flagged item appears, OR
+ *   - the anchor changes (e.g. top-left items don't merge with bottom-left).
+ *
+ * Shared by Films (HeroSection) and Photos (FloatingGalleryHero).
+ */
+function HeroBioOverlay() {
+  const items = heroOverlay?.items ?? [];
+  if (!items.length) return null;
+
+  const renderPlan = [];
+  let currentStack = null;
+
+  items.forEach((item) => {
+    if (item.stackWithSiblings) {
+      // Only continue an existing stack when this item shares its anchor.
+      // A different anchor → new stack so e.g. top-left and bottom-left
+      // groups stay distinct even when both are flagged.
+      const sameAnchor =
+        currentStack && (currentStack.items[0].anchor || 'top-left') === (item.anchor || 'top-left');
+      if (sameAnchor) {
+        currentStack.items.push(item);
+      } else {
+        currentStack = { type: 'stack', items: [item] };
+        renderPlan.push(currentStack);
+      }
+    } else {
+      currentStack = null;
+      renderPlan.push({ type: 'single', item });
+    }
+  });
+
+  return (
+    <>
+      {renderPlan.map((node, i) => {
+        if (node.type === 'stack') {
+          return (
+            <HeroOverlayStack
+              key={`stack-${node.anchor}-${i}`}
+              items={node.items}
+            />
+          );
+        }
+        return (
+          <HeroOverlayItem
+            key={node.item._key ?? `item-${i}`}
+            item={node.item}
+          />
+        );
+      })}
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// MuteButton + HeroSection
+// ---------------------------------------------------------------------------
+
 function MuteButton({ isMuted, onClick }) {
   return (
     <button

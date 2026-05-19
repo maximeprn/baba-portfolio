@@ -1,10 +1,16 @@
 /**
  * Map of full-length `/videos/*.mp4` paths to their shortened sibling files
- * (typically ~30 s teaser cuts) placed alongside the originals in
- * `public/videos/`. The autoplaying preview tiles in FeaturedFilmCard and
- * the HeroSection background prefer the short variant to spare bandwidth;
- * the original full version is still reached via the Vimeo modal, which
- * uses `videoUrl` (not `videoFile`).
+ * (typically ~30 s teaser cuts). The autoplaying preview tiles in
+ * FeaturedFilmCard and the HeroSection background prefer the short
+ * variant to spare bandwidth; the original full version is still reached
+ * via the Vimeo modal, which uses `videoUrl` (not `videoFile`).
+ *
+ * `shortVideo()` then runs the result through the Vercel Blob manifest
+ * (src/data/blobUrls.json, populated by scripts/upload-videos-to-blob.mjs)
+ * so prod + dev both stream from Blob — no Git LFS fetch needed at
+ * build time, no local mp4s needed at runtime. If the manifest is empty
+ * or missing an entry, the original `/videos/*.mp4` path is returned
+ * unchanged so files staged in `public/videos/` still work locally.
  *
  * Keys preserve the exact original filenames; values preserve the exact
  * filenames that exist on disk — including a few quirks the user-supplied
@@ -19,6 +25,9 @@
  * — `shortVideo()` falls through to the original path so the original
  * full video is served.
  */
+
+import blobUrls from './blobUrls.json';
+
 const VIDEO_SHORTS = {
   "/videos/ASSOS Feno Suit - Director's Cut.mp4":
     "/videos/ASSOS Feno Suit - Director's Cut - short.mp4",
@@ -51,7 +60,11 @@ const VIDEO_SHORTS = {
 };
 
 export function shortVideo(path) {
-  return VIDEO_SHORTS[path] ?? path;
+  const short = VIDEO_SHORTS[path] ?? path;
+  // Prefer the Vercel Blob URL when the manifest has it; fall back to
+  // the original /videos/... path so files staged in public/videos/
+  // still resolve during local dev before the manifest is populated.
+  return blobUrls[short] ?? short;
 }
 
 export default VIDEO_SHORTS;

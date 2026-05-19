@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "vercel-build": "git lfs install --local && git lfs pull && vite build",
+    "vercel-build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
@@ -20,6 +20,7 @@
     "@playwright/test": "^1.57.0",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
+    "@vercel/blob": "^2.3.3",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.17",
     "eslint": "^8.56.0",

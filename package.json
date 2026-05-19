@@ -14,6 +14,7 @@
     "cms:fetch": "node scripts/fetch-cms-content.mjs",
     "cms:watch": "node scripts/watch-cms.mjs",
     "cms:upload-hero-photos": "node scripts/upload-hero-photos.mjs",
+    "cms:upload-photo-projects": "node scripts/upload-photo-projects.mjs",
     "studio:dev": "sanity dev",
     "studio:deploy": "sanity deploy"
   },

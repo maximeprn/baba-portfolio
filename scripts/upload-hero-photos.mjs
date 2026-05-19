@@ -9,6 +9,11 @@
  * twice ends with the same state. Existing manual edits in the Studio
  * (added photos, captions) are lost — that's intentional for migration.
  *
+ * IMPORTANT — webhook noise: each asset upload creates a `sanity.imageAsset`
+ * document mutation. The Sanity → Vercel webhook MUST have a GROQ filter
+ * (`_type in [<our singletons>]`) so these don't each trigger a Vercel
+ * rebuild. See CLAUDE.md → "Sanity webhook config".
+ *
  * Usage:
  *   SANITY_WRITE_TOKEN=<token> node scripts/upload-hero-photos.mjs
  *

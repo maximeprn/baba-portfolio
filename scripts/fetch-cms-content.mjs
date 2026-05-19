@@ -38,12 +38,34 @@ const client = createClient({
 
 const builder = imageUrlBuilder(client);
 
-// Pull all singletons in a single network round-trip via GROQ projection.
+// Pull all singletons + the photo project collection in one round-trip.
+// For photoProjects, dereference the asset (`->{ ... }`) so we can read
+// metadata.dimensions to compute aspectRatio (no extra round-trip per photo).
 const QUERY = `{
   "siteSettings": *[_type == "siteSettings" && _id == "siteSettings"][0],
   "heroOverlay":  *[_type == "heroOverlay"  && _id == "heroOverlay"][0],
   "showreel":     *[_type == "showreel"     && _id == "showreel"][0],
-  "heroPhotos":   *[_type == "heroPhotos"   && _id == "heroPhotos"][0]
+  "heroPhotos":   *[_type == "heroPhotos"   && _id == "heroPhotos"][0],
+  "photoProjects": *[_type == "photoProject"] | order(displayOrder asc) {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    year,
+    client,
+    category,
+    featured,
+    displayOrder,
+    previewPattern,
+    previewPhotoIndices,
+    imagePosition,
+    "photos": photos[]{
+      "src": asset->url,
+      alt,
+      "width":  asset->metadata.dimensions.width,
+      "height": asset->metadata.dimensions.height
+    }
+  }
 }`;
 
 function resolveImage(imageField) {
@@ -51,12 +73,52 @@ function resolveImage(imageField) {
   return builder.image(imageField).url();
 }
 
+function flattenPhotoProject(project) {
+  // Compose the legacy shape the React components expect:
+  //   { id, slug, title, description, year, client, category, featured,
+  //     photos: [{ src, alt, aspectRatio }, ...],
+  //     preview: { pattern, photos: [indices] },
+  //     imagePosition? }
+  const photos = (project.photos ?? []).map((p) => ({
+    src: p.src,
+    alt: p.alt ?? '',
+    aspectRatio: p.width && p.height ? p.width / p.height : 1,
+  }));
+
+  const preview =
+    typeof project.previewPattern === 'number' &&
+    Array.isArray(project.previewPhotoIndices) &&
+    project.previewPhotoIndices.length > 0
+      ? { pattern: project.previewPattern, photos: project.previewPhotoIndices }
+      : null;
+
+  const out = {
+    id: project._id,
+    slug: project.slug,
+    title: project.title,
+    description: project.description ?? '',
+    year: project.year ?? null,
+    client: project.client ?? '',
+    category: project.category ?? '',
+    featured: !!project.featured,
+    displayOrder: project.displayOrder ?? 100,
+    photos,
+  };
+  if (preview) out.preview = preview;
+  if (project.imagePosition) out.imagePosition = project.imagePosition;
+  return out;
+}
+
 async function fetchCmsContent() {
   const data = await client.fetch(QUERY);
 
   if (
     !data ||
-    (!data.siteSettings && !data.heroOverlay && !data.showreel && !data.heroPhotos)
+    (!data.siteSettings &&
+      !data.heroOverlay &&
+      !data.showreel &&
+      !data.heroPhotos &&
+      !(Array.isArray(data.photoProjects) && data.photoProjects.length))
   ) {
     throw new Error('Sanity returned no documents — has content been seeded yet?');
   }
@@ -76,6 +138,11 @@ async function fetchCmsContent() {
     data.heroPhotos.photoUrls = data.heroPhotos.photos
       .map((img) => ({ url: resolveImage(img), alt: img.alt ?? '' }))
       .filter((it) => it.url);
+  }
+
+  // photoProjects → flatten to the legacy shape consumed by Photos.jsx.
+  if (Array.isArray(data.photoProjects)) {
+    data.photoProjects = data.photoProjects.map(flattenPhotoProject);
   }
 
   // Stamp the snapshot with a fetch timestamp for debugging.

@@ -1,4 +1,5 @@
 import { defineType, defineField } from 'sanity';
+import { orderRankField } from '@sanity/orderable-document-list';
 
 /**
  * Photo project — a single shoot or campaign Basile wants to showcase on
@@ -104,15 +105,11 @@ export const photoProject = defineType({
       initialValue: false,
       group: 'content',
     }),
-    defineField({
-      name: 'displayOrder',
-      title: 'Display order',
-      description:
-        'Lower numbers come first. Featured projects use this to control the order of the big cards; non-featured use it for the grid.',
-      type: 'number',
-      initialValue: 100,
-      group: 'content',
-    }),
+    // Order is now controlled by drag-and-drop in the Studio list view
+    // (via @sanity/orderable-document-list). The orderRank field below is
+    // managed by the plugin — hidden from the editor UI but persisted on
+    // every doc and used by the fetcher to sort projects.
+    orderRankField({ type: 'photoProject' }),
 
     // ----------- Layout (advanced) -----------
     defineField({
@@ -151,11 +148,6 @@ export const photoProject = defineType({
     }),
   ],
   orderings: [
-    {
-      name: 'displayOrder',
-      title: 'Display order',
-      by: [{ field: 'displayOrder', direction: 'asc' }],
-    },
     {
       name: 'titleAsc',
       title: 'Title (A → Z)',

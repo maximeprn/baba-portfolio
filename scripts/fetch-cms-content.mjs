@@ -46,7 +46,7 @@ const QUERY = `{
   "heroOverlay":  *[_type == "heroOverlay"  && _id == "heroOverlay"][0],
   "showreel":     *[_type == "showreel"     && _id == "showreel"][0],
   "heroPhotos":   *[_type == "heroPhotos"   && _id == "heroPhotos"][0],
-  "photoProjects": *[_type == "photoProject"] | order(displayOrder asc) {
+  "photoProjects": *[_type == "photoProject"] | order(orderRank asc) {
     _id,
     title,
     "slug": slug.current,
@@ -55,7 +55,6 @@ const QUERY = `{
     client,
     category,
     featured,
-    displayOrder,
     previewPattern,
     previewPhotoIndices,
     imagePosition,
@@ -101,7 +100,6 @@ function flattenPhotoProject(project) {
     client: project.client ?? '',
     category: project.category ?? '',
     featured: !!project.featured,
-    displayOrder: project.displayOrder ?? 100,
     photos,
   };
   if (preview) out.preview = preview;

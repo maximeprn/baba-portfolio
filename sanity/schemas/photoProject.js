@@ -131,6 +131,49 @@ export const photoProject = defineType({
       group: 'layout',
     }),
     defineField({
+      name: 'previewMobilePattern',
+      title: 'Mobile preview pattern (0–15)',
+      description:
+        'When the viewport is below "Mobile breakpoint", swap the desktop preview pattern for this one. Typical use: pattern 10 (single full-bleed slot) so featured cards collapse from a side-by-side comparison to one photo on narrow screens.',
+      type: 'number',
+      group: 'layout',
+      validation: (Rule) => Rule.min(0).max(15).integer(),
+    }),
+    defineField({
+      name: 'previewMobilePhotoIndices',
+      title: 'Mobile preview photos (indices)',
+      description:
+        'Photo indices used when the mobile pattern is active. Length must match the mobile pattern\'s slot count.',
+      type: 'array',
+      of: [{ type: 'number' }],
+      group: 'layout',
+    }),
+    defineField({
+      name: 'previewMobileBreakpoint',
+      title: 'Mobile breakpoint (px)',
+      description:
+        'Max-width below which the mobile pattern + mobile photos apply. The featured side-by-side comparison was originally set to 1349 so it collapsed on tablets too.',
+      type: 'number',
+      group: 'layout',
+      validation: (Rule) => Rule.min(0).integer(),
+    }),
+    defineField({
+      name: 'previewAspectRatio',
+      title: 'Preview aspect ratio',
+      description:
+        'Optional CSS aspect-ratio override for the compact card (e.g. "5 / 4", "16 / 9"). Leave blank to derive from the first photo + the biggest slot.',
+      type: 'string',
+      group: 'layout',
+    }),
+    defineField({
+      name: 'previewMaxHeight',
+      title: 'Preview max-height',
+      description:
+        'Optional CSS max-height cap for the compact card (e.g. "60vh"). Keeps very tall cards from dominating the viewport.',
+      type: 'string',
+      group: 'layout',
+    }),
+    defineField({
       name: 'imagePosition',
       title: 'Image position override',
       description:

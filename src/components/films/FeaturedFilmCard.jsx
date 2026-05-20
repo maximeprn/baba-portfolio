@@ -50,7 +50,11 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
   // use Mux's auto-generated thumbnail so cards always have a background.
   const posterUrl = thumbnail || muxPosterUrl || null;
 
-  const isVideoLeft = imagePosition === 'left';
+  // Image position: explicit value wins; otherwise alternate by row so the
+  // homepage stays balanced no matter how the editor reorders the films.
+  // Even rows put the video on the left, odd rows on the right.
+  const isVideoLeft = imagePosition === 'left'
+    || (imagePosition !== 'right' && index % 2 === 0);
   const variant = LAYOUT_VARIANTS[index % LAYOUT_VARIANTS.length];
 
   const videoRef = useRef(null);

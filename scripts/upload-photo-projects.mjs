@@ -186,9 +186,10 @@ async function main() {
   console.log(`✓ Done. ${docs.length} projects migrated in 1 transaction.`);
   console.log(`  ${assetByFilename.size} unique image assets uploaded (or already existed).`);
   console.log('');
-  console.log('IMPORTANT — to avoid one Vercel deploy per project, set "Delay"');
-  console.log('on the Sanity webhook to at least 60 seconds. Sanity will coalesce');
-  console.log('the burst of 22 mutations into a single webhook fire.');
+  console.log('REMINDER — Sanity has no webhook debounce, so the 22 mutations in');
+  console.log('this transaction each fire a webhook event = up to 22 Vercel deploys.');
+  console.log('Next time, toggle the Sanity webhook DISABLED before running this');
+  console.log('script, then re-enable + manual Redeploy from Vercel. See CLAUDE.md.');
   console.log('');
   console.log('Next steps:');
   console.log('  1. `npm run cms:fetch` to refresh src/data/cms.json with the new project data.');

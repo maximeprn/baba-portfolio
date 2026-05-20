@@ -85,35 +85,84 @@ export default function DeployTool() {
   const [message, setMessage] = useState('');
   const [lastDeployedAt, setLastDeployedAt] = useState(null);
 
+  // Vercel's deploy hook dedupes back-to-back triggers when a build is
+  // already running. The response is 200 either way (queued OR ignored),
+  // so we lock the button for a "cool-down" after each click to make
+  // Basile wait for the in-flight build to finish.
+  const COOLDOWN_SECONDS = 90;
+  const [cooldownLeft, setCooldownLeft] = useState(0);
+
   const handleDeploy = useCallback(async () => {
+    const urlHint = DEPLOY_HOOK_URL
+      ? `${new URL(DEPLOY_HOOK_URL).origin}/…${DEPLOY_HOOK_URL.slice(-8)}`
+      : '(empty)';
+
     if (!DEPLOY_HOOK_URL) {
       setStatus('error');
       setMessage(
-        'VITE_VERCEL_DEPLOY_HOOK_URL is not set. Add it to your Vercel project env vars (Settings → Environment Variables) and trigger one rebuild so the Studio bundle picks it up.',
+        'VITE_VERCEL_DEPLOY_HOOK_URL is not set in the JS bundle. Locally: check .env has the line and restart `npm run dev`. In Vercel: confirm the var is set for Production AND trigger one redeploy so the new bundle picks it up.',
       );
+      // eslint-disable-next-line no-console
+      console.warn('[DeployTool] URL is empty:', { urlHint, raw: DEPLOY_HOOK_URL });
       return;
     }
     setStatus('deploying');
     setMessage('');
+    // eslint-disable-next-line no-console
+    console.log('[DeployTool] POST →', urlHint);
     try {
       const response = await fetch(DEPLOY_HOOK_URL, { method: 'POST' });
+      // eslint-disable-next-line no-console
+      console.log('[DeployTool] fetch →', response.status, response.ok ? 'ok' : 'not ok');
+
       if (!response.ok) {
         const body = await response.text().catch(() => '');
         throw new Error(`Vercel responded ${response.status}: ${body || 'no body'}`);
       }
+
       setStatus('success');
-      setMessage('Vercel build queued. Check Vercel → Deployments for progress.');
+      setMessage(
+        `Vercel returned 200 (build hook triggered). NOTE: if a previous build is still running, this trigger may have been silently de-duplicated. Watch Vercel → Deployments for a new entry within ~30s.`,
+      );
       setLastDeployedAt(new Date());
-      setTimeout(() => setStatus('idle'), 8000);
+
+      // Lock the button for the cool-down so back-to-back clicks don't get
+      // silently swallowed by Vercel's dedupe behaviour.
+      setCooldownLeft(COOLDOWN_SECONDS);
+      const interval = setInterval(() => {
+        setCooldownLeft((n) => {
+          if (n <= 1) {
+            clearInterval(interval);
+            setStatus('idle');
+            return 0;
+          }
+          return n - 1;
+        });
+      }, 1000);
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[DeployTool] fetch failed →', err);
       setStatus('error');
-      setMessage(err.message || 'Unknown error');
+      const isLikelyCorsBlock =
+        err instanceof TypeError && /fetch/i.test(err.message);
+      setMessage(
+        isLikelyCorsBlock
+          ? `Cross-origin fetch blocked by your browser before Vercel could respond. The deploy hook may have still been triggered — check Vercel → Deployments to confirm. (Original error: ${err.message})`
+          : `Fetch to ${urlHint} failed: ${err.message || 'Unknown error'}. Common causes: wrong/expired deploy hook URL, an ad-blocker intercepting api.vercel.com, or network issue.`,
+      );
     }
   }, []);
 
   const isDeploying = status === 'deploying';
   const isError = status === 'error';
   const isSuccess = status === 'success';
+  const isCoolingDown = cooldownLeft > 0;
+  const buttonDisabled = isDeploying || isCoolingDown;
+  const buttonLabel = isDeploying
+    ? 'Triggering…'
+    : isCoolingDown
+      ? `Wait ${cooldownLeft}s for current build…`
+      : 'Deploy now';
 
   return (
     <div style={styles.page}>
@@ -130,11 +179,11 @@ export default function DeployTool() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
           <button
             type="button"
-            style={{ ...styles.button, ...(isDeploying ? styles.buttonDisabled : null) }}
+            style={{ ...styles.button, ...(buttonDisabled ? styles.buttonDisabled : null) }}
             onClick={handleDeploy}
-            disabled={isDeploying}
+            disabled={buttonDisabled}
           >
-            {isDeploying ? 'Triggering…' : isSuccess ? '✓ Deploy triggered' : 'Deploy now'}
+            {buttonLabel}
           </button>
           {lastDeployedAt && (
             <span style={{ ...styles.muted, fontSize: 13 }}>

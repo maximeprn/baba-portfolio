@@ -1591,6 +1591,35 @@
   },
   "photoProjects": [
     {
+      "id": "photoProject-asics-running",
+      "slug": "asics-running",
+      "title": "Asics Running",
+      "description": "Asics Running — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Asics Running",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/802db06c22c447fc15812d3a4d2bbcba7db6eb37-1080x1350.jpg",
+          "alt": "Asics Running — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/c162ffb6f30061b87a922a42ef9a5debcf4adf82-1080x1080.jpg",
+          "alt": "Asics Running — 2",
+          "aspectRatio": 1
+        }
+      ],
+      "preview": {
+        "pattern": 7,
+        "photos": [
+          0,
+          1
+        ]
+      }
+    },
+    {
       "id": "photoProject-acid-surfing",
       "slug": "acid-surfing",
       "title": "Acid Surfing",
@@ -1685,75 +1714,6 @@
       }
     },
     {
-      "id": "photoProject-asics-running",
-      "slug": "asics-running",
-      "title": "Asics Running",
-      "description": "Asics Running — placeholder description, replace with editorial copy.",
-      "year": 2024,
-      "client": "Asics Running",
-      "category": "Editorial",
-      "featured": false,
-      "photos": [
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/802db06c22c447fc15812d3a4d2bbcba7db6eb37-1080x1350.jpg",
-          "alt": "Asics Running — 1",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/c162ffb6f30061b87a922a42ef9a5debcf4adf82-1080x1080.jpg",
-          "alt": "Asics Running — 2",
-          "aspectRatio": 1
-        }
-      ],
-      "preview": {
-        "pattern": 7,
-        "photos": [
-          0,
-          1
-        ]
-      }
-    },
-    {
-      "id": "photoProject-balthasar-de-pury",
-      "slug": "balthasar-de-pury",
-      "title": "Balthasar de Pury",
-      "description": "Balthasar de Pury — placeholder description, replace with editorial copy.",
-      "year": 2024,
-      "client": "Balthasar de Pury",
-      "category": "Editorial",
-      "featured": false,
-      "photos": [
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/4bb5b1cfb3dc83451db71f8ba7894ff59ae1c555-1036x671.jpg",
-          "alt": "Balthasar de Pury — 1",
-          "aspectRatio": 1.5439642324888228
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/7248c2fb3be8654410a4764a10a5375162a70ba1-1036x671.jpg",
-          "alt": "Balthasar de Pury — 2",
-          "aspectRatio": 1.5439642324888228
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/d0613e27bcf55cc849712a205286f8443cacddb9-1080x700.jpg",
-          "alt": "Balthasar de Pury — 3",
-          "aspectRatio": 1.542857142857143
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/fccb4fcadeea774b3ca903bf49df3f0f565a6459-1036x671.jpg",
-          "alt": "Balthasar de Pury — 4",
-          "aspectRatio": 1.5439642324888228
-        }
-      ],
-      "preview": {
-        "pattern": 8,
-        "photos": [
-          0,
-          2,
-          3
-        ]
-      }
-    },
-    {
       "id": "photoProject-bascule",
       "slug": "bascule",
       "title": "Bascule",
@@ -1795,7 +1755,7 @@
       "description": "Charlie Watch — placeholder description, replace with editorial copy.",
       "year": 2024,
       "client": "Charlie Watch",
-      "category": "Editorial",
+      "category": "Commercial",
       "featured": false,
       "photos": [
         {
@@ -1830,6 +1790,46 @@
           0,
           2,
           4
+        ]
+      }
+    },
+    {
+      "id": "photoProject-balthasar-de-pury",
+      "slug": "balthasar-de-pury",
+      "title": "Balthasar de Pury",
+      "description": "Balthasar de Pury — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Balthasar de Pury",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/4bb5b1cfb3dc83451db71f8ba7894ff59ae1c555-1036x671.jpg",
+          "alt": "Balthasar de Pury — 1",
+          "aspectRatio": 1.5439642324888228
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/7248c2fb3be8654410a4764a10a5375162a70ba1-1036x671.jpg",
+          "alt": "Balthasar de Pury — 2",
+          "aspectRatio": 1.5439642324888228
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/d0613e27bcf55cc849712a205286f8443cacddb9-1080x700.jpg",
+          "alt": "Balthasar de Pury — 3",
+          "aspectRatio": 1.542857142857143
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/fccb4fcadeea774b3ca903bf49df3f0f565a6459-1036x671.jpg",
+          "alt": "Balthasar de Pury — 4",
+          "aspectRatio": 1.5439642324888228
+        }
+      ],
+      "preview": {
+        "pattern": 8,
+        "photos": [
+          0,
+          2,
+          3
         ]
       }
     },
@@ -1936,6 +1936,71 @@
           1,
           2
         ]
+      }
+    },
+    {
+      "id": "photoProject-tedax-max",
+      "slug": "tedax-max",
+      "title": "Tedax Max",
+      "description": "Tedax Max — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Tedax Max",
+      "category": "Editorial",
+      "featured": true,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f274070e7873cf71d28c052dfa22b446ada74d21-1080x1350.jpg",
+          "alt": "Tedax Max — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/dbc5a4b6a67da82aecad9ffc7cbb144ca8c053c0-1080x1350.jpg",
+          "alt": "Tedax Max — 3",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/84cb7cc7ee9aca51df586851f0be10b62f54eb76-1080x1350.jpg",
+          "alt": "Tedax Max — 4",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/406314b4c2a331ec34741690fa22a297e674a3c8-1080x1350.jpg",
+          "alt": "Tedax Max — 5",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/26701b43e3af4fd7b8d2babd4540dd83d59ef50d-1080x1350.jpg",
+          "alt": "Tedax Max — 6",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/41d5ee7a64799c50a8e46ca3d1c29562f2343c34-1080x1350.jpg",
+          "alt": "Tedax Max — 7",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/0f600bee452f11313c3d9c02cd7fa44f84228ee0-1080x1350.jpg",
+          "alt": "Tedax Max — 8",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/699521c7cdaee86e9058fe2d037d74bb1054fbf5-1080x1350.jpg",
+          "alt": "Tedax Max — 2",
+          "aspectRatio": 0.8
+        }
+      ],
+      "preview": {
+        "pattern": 15,
+        "photos": [
+          0,
+          4
+        ],
+        "mobilePattern": 10,
+        "mobilePhotos": [
+          0
+        ],
+        "mobileBreakpoint": 1349,
+        "maxHeight": "60vh"
       }
     },
     {
@@ -2286,6 +2351,45 @@
       }
     },
     {
+      "id": "photoProject-rimowa",
+      "slug": "rimowa",
+      "title": "Rimowa",
+      "description": "Rimowa — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Rimowa",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6186e4a4887994d628a8952ac86ff863e93cb4a2-1080x1350.jpg",
+          "alt": "Rimowa — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/455e42e68e8bfb11f914686fad3b34b5189dbe79-1080x1081.jpg",
+          "alt": "Rimowa — 2",
+          "aspectRatio": 0.9990749306197965
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/140527c1a7cbf0f221b77ec7d9b0e491b874a45b-1080x1080.jpg",
+          "alt": "Rimowa — 3",
+          "aspectRatio": 1
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ecd0cd07495c2ab7e0a9261dda80281c5e067003-1080x1080.jpg",
+          "alt": "Rimowa — 4",
+          "aspectRatio": 1
+        }
+      ],
+      "preview": {
+        "pattern": 1,
+        "photos": [
+          0,
+          2
+        ]
+      }
+    },
+    {
       "id": "photoProject-pag",
       "slug": "pag",
       "title": "Pag",
@@ -2332,45 +2436,6 @@
           0,
           3,
           5
-        ]
-      }
-    },
-    {
-      "id": "photoProject-rimowa",
-      "slug": "rimowa",
-      "title": "Rimowa",
-      "description": "Rimowa — placeholder description, replace with editorial copy.",
-      "year": 2024,
-      "client": "Rimowa",
-      "category": "Editorial",
-      "featured": false,
-      "photos": [
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6186e4a4887994d628a8952ac86ff863e93cb4a2-1080x1350.jpg",
-          "alt": "Rimowa — 1",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/455e42e68e8bfb11f914686fad3b34b5189dbe79-1080x1081.jpg",
-          "alt": "Rimowa — 2",
-          "aspectRatio": 0.9990749306197965
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/140527c1a7cbf0f221b77ec7d9b0e491b874a45b-1080x1080.jpg",
-          "alt": "Rimowa — 3",
-          "aspectRatio": 1
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ecd0cd07495c2ab7e0a9261dda80281c5e067003-1080x1080.jpg",
-          "alt": "Rimowa — 4",
-          "aspectRatio": 1
-        }
-      ],
-      "preview": {
-        "pattern": 1,
-        "photos": [
-          0,
-          2
         ]
       }
     },
@@ -2460,71 +2525,6 @@
         "photos": [
           3,
           0
-        ],
-        "mobilePattern": 10,
-        "mobilePhotos": [
-          0
-        ],
-        "mobileBreakpoint": 1349,
-        "maxHeight": "60vh"
-      }
-    },
-    {
-      "id": "photoProject-tedax-max",
-      "slug": "tedax-max",
-      "title": "Tedax Max",
-      "description": "Tedax Max — placeholder description, replace with editorial copy.",
-      "year": 2024,
-      "client": "Tedax Max",
-      "category": "Editorial",
-      "featured": true,
-      "photos": [
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f274070e7873cf71d28c052dfa22b446ada74d21-1080x1350.jpg",
-          "alt": "Tedax Max — 1",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/699521c7cdaee86e9058fe2d037d74bb1054fbf5-1080x1350.jpg",
-          "alt": "Tedax Max — 2",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/dbc5a4b6a67da82aecad9ffc7cbb144ca8c053c0-1080x1350.jpg",
-          "alt": "Tedax Max — 3",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/84cb7cc7ee9aca51df586851f0be10b62f54eb76-1080x1350.jpg",
-          "alt": "Tedax Max — 4",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/406314b4c2a331ec34741690fa22a297e674a3c8-1080x1350.jpg",
-          "alt": "Tedax Max — 5",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/26701b43e3af4fd7b8d2babd4540dd83d59ef50d-1080x1350.jpg",
-          "alt": "Tedax Max — 6",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/41d5ee7a64799c50a8e46ca3d1c29562f2343c34-1080x1350.jpg",
-          "alt": "Tedax Max — 7",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/0f600bee452f11313c3d9c02cd7fa44f84228ee0-1080x1350.jpg",
-          "alt": "Tedax Max — 8",
-          "aspectRatio": 0.8
-        }
-      ],
-      "preview": {
-        "pattern": 15,
-        "photos": [
-          0,
-          4
         ],
         "mobilePattern": 10,
         "mobilePhotos": [
@@ -2675,5 +2675,5 @@
     "socialTwitter": null,
     "socialVimeo": "https://vimeo.com/user37669788"
   },
-  "_fetchedAt": "2026-05-20T04:18:23.938Z"
+  "_fetchedAt": "2026-05-20T04:59:29.553Z"
 }

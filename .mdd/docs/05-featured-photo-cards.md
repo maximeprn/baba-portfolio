@@ -5,13 +5,15 @@ edition: BABA Portfolio
 depends_on:
   - 02-design-system
   - 03-collapsed-film-cards
+  - 09-cms-photo-projects
 source_files:
   - src/components/photos/FeaturedPhotoCard.jsx
   - src/components/photos/PhotoCardPreview.jsx
   - src/components/photos/ExpandedPhotoGallery.jsx
   - src/pages/Photos.jsx
-  - src/data/photoProjects.js
-  - scripts/scaffold-photo-projects.mjs
+  - src/sanity/loader.js  # photoProjects + getFeaturedProjects/getNonFeaturedProjects (CMS-backed; see doc 09)
+  - src/data/photoProjects.js  # legacy fallback only
+  - scripts/scaffold-photo-projects.mjs  # obsolete — content now lives in Sanity (see doc 09)
 routes:
   - /photos
 models: []

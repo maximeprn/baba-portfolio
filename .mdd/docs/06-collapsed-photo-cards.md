@@ -6,11 +6,13 @@ depends_on:
   - 02-design-system
   - 03-collapsed-film-cards
   - 05-featured-photo-cards
+  - 09-cms-photo-projects
 source_files:
   - src/components/photos/CollapsedPhotoCard.jsx
   - src/components/photos/ExpandedPhotoGallery.jsx
   - src/pages/Photos.jsx
-  - src/data/photoProjects.js
+  - src/sanity/loader.js  # photoProjects + getNonFeaturedProjects (CMS-backed; see doc 09)
+  - src/data/photoProjects.js  # legacy fallback only
 routes:
   - /photos
 models: []

@@ -173,9 +173,9 @@ export const film = defineType({
     }),
     defineField({
       name: 'videoUrl',
-      title: 'Vimeo player URL (modal)',
+      title: 'Vimeo URL (modal)',
       description:
-        'Drives the full-screen Vimeo modal opened on click. Format: https://player.vimeo.com/video/<id>',
+        'Drives the full-screen Vimeo modal opened on click. Paste any Vimeo link — the normal share link (https://vimeo.com/<id>) works fine; the site converts it to the embeddable player automatically.',
       type: 'url',
       fieldset: 'video',
       validation: (Rule) => Rule.uri({ scheme: ['http', 'https'] }),

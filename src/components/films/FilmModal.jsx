@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { toVimeoEmbedUrl } from '../../utils/vimeo';
 
 /**
  * FilmModal — Popup Vimeo player overlay with dimmed backdrop.
@@ -64,7 +65,17 @@ function FilmModal({ film, isOpen, onClose }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  if (!isOpen || !film || !film.videoUrl) return null;
+  // Normalise whatever Vimeo URL the CMS holds into an embeddable player URL.
+  // A bare watch-page link (https://vimeo.com/<id>) cannot be iframed —
+  // Vimeo serves it with X-Frame-Options: DENY. See src/utils/vimeo.js.
+  const embedUrl = toVimeoEmbedUrl(film?.videoUrl, {
+    autoplay: 1,
+    title: 0,
+    byline: 0,
+    portrait: 0,
+  });
+
+  if (!isOpen || !film || !embedUrl) return null;
 
   return createPortal(
     <div
@@ -108,7 +119,7 @@ function FilmModal({ film, isOpen, onClose }) {
 
         {/* Vimeo iframe */}
         <iframe
-          src={`${film.videoUrl}?autoplay=1&title=0&byline=0&portrait=0`}
+          src={embedUrl}
           title={film.title}
           className="w-full h-full border-0 rounded-lg"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

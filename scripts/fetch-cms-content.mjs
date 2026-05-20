@@ -63,6 +63,7 @@ const QUERY = `{
     client,
     category,
     featured,
+    visible,
     previewPattern,
     previewPhotoIndices,
     previewMobilePattern,
@@ -85,7 +86,7 @@ const QUERY = `{
     year,
     client,
     category,
-    featured,
+    visible,
     collapsed,
     "thumbnail": thumbnail.asset->url,
     videoUrl,
@@ -154,6 +155,8 @@ function flattenPhotoProject(project) {
     client: project.client ?? '',
     category: project.category ?? '',
     featured: !!project.featured,
+    // visible defaults to true so legacy docs without the field stay shown.
+    visible: project.visible !== false,
     photos,
   };
   if (preview) out.preview = preview;
@@ -186,7 +189,8 @@ function flattenFilm(film) {
     year: film.year ?? null,
     client: film.client ?? '',
     category: film.category ?? '',
-    featured: !!film.featured,
+    // visible defaults to true so legacy docs without the field stay shown.
+    visible: film.visible !== false,
     collapsed: !!film.collapsed,
     thumbnail: film.thumbnail ?? null,
     videoUrl: film.videoUrl ?? null,

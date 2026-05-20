@@ -8,7 +8,7 @@
       "year": 2026,
       "client": "Portal",
       "category": "Branded Documentary",
-      "featured": true,
+      "visible": true,
       "collapsed": false,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/1186537438",
@@ -30,7 +30,7 @@
       "year": 2026,
       "client": "Saucony",
       "category": "Commercial",
-      "featured": true,
+      "visible": true,
       "collapsed": false,
       "thumbnail": null,
       "videoUrl": "https://vimeo.com/1180456052",
@@ -65,7 +65,7 @@
       "year": 2021,
       "client": "Maison Mara",
       "category": "Fashion Film",
-      "featured": true,
+      "visible": true,
       "collapsed": false,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/541582370",
@@ -101,8 +101,8 @@
       "year": 2025,
       "client": "Veja",
       "category": "Commercial",
-      "featured": false,
-      "collapsed": false,
+      "visible": true,
+      "collapsed": true,
       "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/9b8174848a577073e73b1c85781b355dfad4f02f-1280x720.jpg",
       "videoUrl": "https://player.vimeo.com/video/1062003612",
       "aspectRatio": 1.78,
@@ -137,7 +137,7 @@
       "year": 2025,
       "client": "Sacai",
       "category": "Fashion / Behind the Scenes",
-      "featured": true,
+      "visible": true,
       "collapsed": false,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/1047455821",
@@ -173,7 +173,7 @@
       "year": 2023,
       "client": "ASICS",
       "category": "Documentary / Sport",
-      "featured": true,
+      "visible": true,
       "collapsed": false,
       "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/71f5cbe29ada11a67ae78ac4a8979a7b37cd859f-1280x720.jpg",
       "videoUrl": "https://player.vimeo.com/video/895840721",
@@ -205,7 +205,7 @@
       "year": 2024,
       "client": "Decathlon",
       "category": "Commercial",
-      "featured": true,
+      "visible": true,
       "collapsed": false,
       "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/7e70eebe70c1317d1a46aa01125a2a76350a7d97-720x576.jpg",
       "videoUrl": "https://player.vimeo.com/video/989542038",
@@ -257,7 +257,7 @@
       "year": 2023,
       "client": "Centre National de la Danse",
       "category": "Documentary",
-      "featured": true,
+      "visible": true,
       "collapsed": false,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/868701940",
@@ -284,7 +284,7 @@
       "year": 2022,
       "client": "On Running",
       "category": "Documentary / Sport",
-      "featured": true,
+      "visible": true,
       "collapsed": false,
       "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/d808bbc7abdd907bd556838c81e38442a50b661a-1280x960.jpg",
       "videoUrl": "https://player.vimeo.com/video/768152390",
@@ -320,7 +320,7 @@
       "year": 2023,
       "client": "Antoine Bourachot",
       "category": "Music / Short Film",
-      "featured": true,
+      "visible": true,
       "collapsed": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/863910150",
@@ -352,7 +352,7 @@
       "year": 2021,
       "client": "ASSOS of Switzerland",
       "category": "Branded Documentary",
-      "featured": true,
+      "visible": true,
       "collapsed": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/647313570",
@@ -379,7 +379,7 @@
       "year": 2021,
       "client": "Personal",
       "category": "Showreel",
-      "featured": false,
+      "visible": true,
       "collapsed": false,
       "thumbnail": null,
       "videoUrl": "https://vimeo.com/562172132?fl=pl&fe=cm",
@@ -406,7 +406,7 @@
       "year": 2021,
       "client": "Salomon",
       "category": "Spec Commercial",
-      "featured": true,
+      "visible": true,
       "collapsed": true,
       "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/0af39bdc01276f0d847b369bf554f9880416b3c3-1280x720.jpg",
       "videoUrl": "https://player.vimeo.com/video/551544527",
@@ -442,7 +442,7 @@
       "year": 2021,
       "client": "Kamikwazi",
       "category": "Music Video",
-      "featured": true,
+      "visible": true,
       "collapsed": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/513405009",
@@ -474,7 +474,7 @@
       "year": 2018,
       "client": "Hommage Clothing",
       "category": "Fashion Film",
-      "featured": true,
+      "visible": true,
       "collapsed": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/271458415",
@@ -510,7 +510,7 @@
       "year": 2018,
       "client": "Hommage Clothing",
       "category": "Fashion Film",
-      "featured": true,
+      "visible": true,
       "collapsed": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/269335097",
@@ -537,7 +537,7 @@
       "year": 2016,
       "client": "Hommage Clothing",
       "category": "Fashion Film",
-      "featured": true,
+      "visible": true,
       "collapsed": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/187173133",
@@ -2162,6 +2162,7 @@
       "client": "Asics Running",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/802db06c22c447fc15812d3a4d2bbcba7db6eb37-1080x1350.jpg",
@@ -2191,6 +2192,7 @@
       "client": "Acid Surfing",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/97b67e28de9828b5627db64b9606ac137b19a9ef-1080x1350.jpg",
@@ -2235,6 +2237,7 @@
       "client": "Adidas",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/eaffd94617e0d7c6b1b692be2e286ed92198c9f2-1080x903.jpg",
@@ -2285,6 +2288,7 @@
       "client": "Bascule",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/af17b169eaa79de44cabd1d16c50112f2e824f07-1080x810.jpg",
@@ -2320,6 +2324,7 @@
       "client": "Charlie Watch",
       "category": "Commercial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/94c074e41f8f6f8ea4cfb8ecc9da6e8d2934b0b8-1080x1350.jpg",
@@ -2365,6 +2370,7 @@
       "client": "Balthasar de Pury",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/4bb5b1cfb3dc83451db71f8ba7894ff59ae1c555-1036x671.jpg",
@@ -2405,6 +2411,7 @@
       "client": "Digital Travel",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/d4eb12bc119d2bd6c9168abf8385512d94064f0b-1080x1384.jpg",
@@ -2475,6 +2482,7 @@
       "client": "Fusalp",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/5ad63eff971b3ac2674113f11edd1b5cc4b9fc52-1080x1206.jpg",
@@ -2510,6 +2518,7 @@
       "client": "Tedax Max",
       "category": "Editorial",
       "featured": true,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/41d5ee7a64799c50a8e46ca3d1c29562f2343c34-1080x1350.jpg",
@@ -2575,6 +2584,7 @@
       "client": "Judo",
       "category": "Editorial",
       "featured": true,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/d2a12f92eb79cf73096a180f434f4d7ac9f16548-1080x1359.jpg",
@@ -2630,6 +2640,7 @@
       "client": "Les Others",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/836f2d81fe74a4f49fde0510008b433ba2f37efe-1080x1350.jpg",
@@ -2684,6 +2695,7 @@
       "client": "Lorette Colé Duprat",
       "category": "Editorial",
       "featured": true,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6af61c3c349b63eddd2a4aa5f697a63158f351d3-1080x1346.jpg",
@@ -2739,6 +2751,7 @@
       "client": "Lorne",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/9c9450df772aed0ea4600dd189b70885588b13ed-809x809.jpg",
@@ -2768,6 +2781,7 @@
       "client": "Moscot NYC",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/767a85f0308a6328d4f7c058c2823c9da0cfdd09-1080x1080.jpg",
@@ -2807,6 +2821,7 @@
       "client": "Nu Atelier",
       "category": "Editorial",
       "featured": true,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f877132750d0a959b146768329198fb6a4df2a3b-1080x1346.jpg",
@@ -2872,6 +2887,7 @@
       "client": "Oakley x Jolie Foulée",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6f21067e64b8f66569a41d9fa10fe762e148fc5f-1080x1350.jpg",
@@ -2922,6 +2938,7 @@
       "client": "Rimowa",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6186e4a4887994d628a8952ac86ff863e93cb4a2-1080x1350.jpg",
@@ -2961,6 +2978,7 @@
       "client": "Pag",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/3c8871203b79070aea6b368b8f141a749b214958-1080x1350.jpg",
@@ -3011,6 +3029,7 @@
       "client": "Saucony",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ca4d10e1a6c0152f4027f950a25327bc7935c9f7-1080x1350.jpg",
@@ -3046,6 +3065,7 @@
       "client": "Simond",
       "category": "Editorial",
       "featured": true,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/4398bfc777720186bc351dd709c27cbb3ce5bc4c-1080x1350.jpg",
@@ -3106,6 +3126,7 @@
       "client": "Veja",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/63b98a0d4ba7238b146c6eaba32e6d00c023ae98-1080x1350.jpg",
@@ -3160,6 +3181,7 @@
       "client": "Veja Running #1",
       "category": "Editorial",
       "featured": false,
+      "visible": true,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/97924051bfd63560baecef1e16bd1f07d54033b6-1080x1350.jpg",
@@ -3239,5 +3261,5 @@
     "socialTwitter": null,
     "socialVimeo": "https://vimeo.com/user37669788"
   },
-  "_fetchedAt": "2026-05-20T14:20:51.771Z"
+  "_fetchedAt": "2026-05-20T14:38:38.779Z"
 }

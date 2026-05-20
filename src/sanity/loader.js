@@ -38,7 +38,6 @@ const FALLBACK_SITE_SETTINGS = {
   navActiveStyle: 'bold-larger',
   navLinkSize: 16,
   navLinkActiveSize: 18,
-  cardAlignment: 'alternate',
   footerCopyright: 'Basile Deschamps. All rights reserved.',
   footerShowSocial: true,
 };
@@ -144,8 +143,10 @@ export const heroPhotos = (() => {
  */
 export const photoProjects = (() => {
   const fromCms = cmsData?.photoProjects;
-  if (Array.isArray(fromCms) && fromCms.length > 0) return fromCms;
-  return LEGACY_PHOTO_PROJECTS;
+  const source = Array.isArray(fromCms) && fromCms.length > 0 ? fromCms : LEGACY_PHOTO_PROJECTS;
+  // Hide projects whose "Show on site" toggle is off. Legacy docs without
+  // the field stay visible (visible: undefined → not strictly false).
+  return source.filter((p) => p.visible !== false);
 })();
 
 export const getFeaturedProjects = () => photoProjects.filter((p) => p.featured);
@@ -166,11 +167,12 @@ export const getProjectBySlug = (slug) => photoProjects.find((p) => p.slug === s
  */
 export const films = (() => {
   const fromCms = cmsData?.films;
-  if (Array.isArray(fromCms) && fromCms.length > 0) return fromCms;
-  return LEGACY_FILMS;
+  const source = Array.isArray(fromCms) && fromCms.length > 0 ? fromCms : LEGACY_FILMS;
+  // Hide films whose "Show on site" toggle is off. Legacy docs without the
+  // field stay visible (visible: undefined → not strictly false).
+  return source.filter((f) => f.visible !== false);
 })();
 
-export const getFeaturedFilms = () => films.filter((f) => f.featured && !f.collapsed);
 export const getCollapsedFilms = () => films.filter((f) => f.collapsed);
 export const getNonCollapsedFilms = () => films.filter((f) => !f.collapsed);
 export const getFilmBySlug = (slug) => films.find((f) => f.slug === slug);

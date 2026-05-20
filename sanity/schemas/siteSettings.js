@@ -6,7 +6,6 @@ export const siteSettings = defineType({
   type: 'document',
   groups: [
     { name: 'identity', title: 'Identity', default: true },
-    { name: 'layout', title: 'Layout' },
     { name: 'seo', title: 'SEO' },
     { name: 'social', title: 'Social' },
     { name: 'nav', title: 'Navigation' },
@@ -33,26 +32,6 @@ export const siteSettings = defineType({
       title: 'Artist last name',
       type: 'string',
       group: 'identity',
-      validation: (Rule) => Rule.required(),
-    }),
-
-    // -------------------- Layout --------------------
-    defineField({
-      name: 'cardAlignment',
-      title: 'Card alignment',
-      description:
-        'Where the image/video sits on the cards on the homepage (films) and Photos page (photo projects). "Alternate" puts the media on the left for the first card, right for the second, left for the third, and so on. "All left" / "All right" force every card to the same side.',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Alternate (recommended)', value: 'alternate' },
-          { title: 'All on the left', value: 'all-left' },
-          { title: 'All on the right', value: 'all-right' },
-        ],
-        layout: 'radio',
-      },
-      initialValue: 'alternate',
-      group: 'layout',
       validation: (Rule) => Rule.required(),
     }),
 

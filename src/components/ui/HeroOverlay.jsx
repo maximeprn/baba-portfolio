@@ -6,33 +6,47 @@
  * `hidden md:block` desktop wrapper and once inside its `md:hidden` mobile
  * wrapper — so the layout is chosen by an explicit `variant` prop:
  *
- *   variant="desktop" → free anchor + offset positioning (+ nav-safe clamp)
- *   variant="mobile"  → automatic, unbreakable top/bottom safe zones
+ *   variant="desktop" → free anchor layout (fixed insets), tablet/desktop size
+ *   variant="mobile"  → automatic nav-safe zones, phone size
  *
- * See .mdd/docs/13-hero-overlay-mobile.md.
+ * Text size is resolved per viewport tier (phone / tablet / desktop) — see
+ * resolveOverlayFontSize. See .mdd/docs/14-hero-overlay-sizing.md.
  */
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { heroOverlay } from '../../sanity/loader';
-import { fluidScale } from '../../utils/fluidScale';
 import {
   anchorToStyle,
   buildDesktopRenderPlan,
   computeFitScale,
-  DESKTOP_NAV_SAFE_PX,
-  fluidOffset,
   MOBILE_BOTTOM_PAD_PX,
   MOBILE_EDGE_PAD_PX,
   MOBILE_NAV_SAFE_PX,
   MOBILE_ZONE_GAP_PX,
-  OVERLAY_TEXT_MOBILE_RATIO,
+  resolveOverlayFontSize,
   resolveStyle,
-  resolveTextSizePx,
   splitMobileZones,
+  stackRowGapPx,
+  viewportTier,
 } from './heroOverlayLayout';
 
-// px gap from the opposite viewport edge for a desktop stack container.
-const STACK_VIEWPORT_PADDING = 16;
+// Opposite-edge bound for a desktop stack, so flex-wrap has a width to wrap
+// against. 1rem matches the mobile edge padding.
+const STACK_EDGE_BOUND = '1rem';
+
+/** Track the viewport tier ('phone' | 'tablet' | 'desktop'), live on resize. */
+function useViewportTier() {
+  const [tier, setTier] = useState(() =>
+    typeof window === 'undefined' ? 'desktop' : viewportTier(window.innerWidth),
+  );
+  useEffect(() => {
+    const onResize = () => setTier(viewportTier(window.innerWidth));
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+  return tier;
+}
 
 // ---------------------------------------------------------------------------
 // Shared text element
@@ -40,12 +54,12 @@ const STACK_VIEWPORT_PADDING = 16;
 
 /**
  * The visual element of an overlay item — the <a> or <span> with text
- * styling and (optional) link href. Positioning is applied by the parent.
+ * styling and (optional) link href. Positioning is applied by the parent;
+ * font-size is resolved for the current viewport tier.
  */
-function HeroOverlayText({ item, variant = 'desktop' }) {
+function HeroOverlayText({ item, tier = 'desktop' }) {
   const { text, link, maxWidth } = item;
 
-  // `style` here is the body/contact typographic treatment, not the size.
   const sizeClass =
     resolveStyle(item) === 'contact'
       ? 'font-header font-medium tracking-[0.15em]'
@@ -68,16 +82,7 @@ function HeroOverlayText({ item, variant = 'desktop' }) {
     .filter(Boolean)
     .join(' ');
 
-  // Fluid font-size from the named size scale, plus the optional max-width cap.
-  // The mobile variant shrinks harder (OVERLAY_TEXT_MOBILE_RATIO) than the
-  // desktop default so the hero text reads as noticeably more compact on phones.
-  const desktopPx = resolveTextSizePx(item);
-  const style = {
-    fontSize:
-      variant === 'mobile'
-        ? fluidScale(desktopPx, { mobileRatio: OVERLAY_TEXT_MOBILE_RATIO })
-        : fluidScale(desktopPx),
-  };
+  const style = { fontSize: resolveOverlayFontSize(item, tier) };
   if (typeof maxWidth === 'number' && maxWidth > 0) {
     style.maxWidth = `${maxWidth}px`;
   }
@@ -110,15 +115,14 @@ function HeroOverlayText({ item, variant = 'desktop' }) {
 }
 
 // ---------------------------------------------------------------------------
-// Desktop layout — free anchor + offset positioning
+// Desktop layout — fixed-inset anchor positioning
 // ---------------------------------------------------------------------------
 
 /** A single absolutely-positioned desktop item (not part of a stack). */
-function HeroOverlayItem({ item }) {
-  const positionStyle = anchorToStyle(item.anchor, item.offsetX ?? 0, item.offsetY ?? 0);
+function HeroOverlayItem({ item, tier }) {
   return (
-    <div className="absolute z-10" style={positionStyle}>
-      <HeroOverlayText item={item} />
+    <div className="absolute z-10" style={anchorToStyle(item.anchor)}>
+      <HeroOverlayText item={item} tier={tier} />
     </div>
   );
 }
@@ -126,46 +130,18 @@ function HeroOverlayItem({ item }) {
 /**
  * A desktop stack of overlay items — flex-row with flex-wrap so items sit
  * inline when there's room and wrap to new rows when there isn't. Positioned
- * at the FIRST item's anchor + offsets; top-anchored stacks get the same
- * `max()` nav-safe clamp as single items.
+ * at the first item's anchor; the row gap is sized to the text.
  */
-function HeroOverlayStack({ items }) {
+function HeroOverlayStack({ items, tier }) {
   const first = items[0];
   const anchor = first.anchor || 'top-left';
-  const offsetX = first.offsetX ?? 0;
-  const offsetY = first.offsetY ?? 0;
-  const [v, h] = anchor.split('-');
+  const h = anchor.split('-')[1]; // 'left' | 'right'
 
-  const style = {};
-  const transforms = [];
-
-  if (v === 'top') {
-    style.top = `max(${DESKTOP_NAV_SAFE_PX}px, ${fluidOffset(offsetY)})`;
-  } else if (v === 'bottom') {
-    style.bottom = fluidOffset(offsetY);
-  } else {
-    style.top = '50%';
-    transforms.push(`translateY(calc(-50% + ${fluidOffset(offsetY)}))`);
-  }
-
-  // Set the opposite side too, so the container has a bounded width that
-  // lets flex-wrap kick in when items can't fit on a single row.
-  if (h === 'left') {
-    style.left = fluidOffset(offsetX);
-    style.right = `${STACK_VIEWPORT_PADDING}px`;
-  } else if (h === 'right') {
-    style.right = fluidOffset(offsetX);
-    style.left = `${STACK_VIEWPORT_PADDING}px`;
-  } else {
-    style.left = '50%';
-    style.maxWidth = `calc(100vw - ${STACK_VIEWPORT_PADDING * 2}px)`;
-    transforms.push(`translateX(calc(-50% + ${fluidOffset(offsetX)}))`);
-  }
-
-  if (transforms.length) style.transform = transforms.join(' ');
-
-  const rowGapPx = typeof first.stackRowGap === 'number' ? first.stackRowGap : 24;
-  style.rowGap = `${rowGapPx}px`;
+  const style = anchorToStyle(anchor);
+  // Bound the opposite side so flex-wrap has a width to wrap against.
+  if (h === 'right') style.left = STACK_EDGE_BOUND;
+  else style.right = STACK_EDGE_BOUND;
+  style.rowGap = `${stackRowGapPx(first)}px`;
 
   const justifyClass = h === 'right' ? 'justify-end' : 'justify-start';
 
@@ -175,7 +151,7 @@ function HeroOverlayStack({ items }) {
       style={style}
     >
       {items.map((item, i) => (
-        <HeroOverlayText key={item._key ?? `s-${i}`} item={item} />
+        <HeroOverlayText key={item._key ?? `s-${i}`} item={item} tier={tier} />
       ))}
     </div>
   );
@@ -183,14 +159,15 @@ function HeroOverlayStack({ items }) {
 
 /** Desktop renderer — render plan of singles + stacks. */
 function HeroOverlayDesktop({ items }) {
+  const tier = useViewportTier();
   const plan = buildDesktopRenderPlan(items);
   return (
     <>
       {plan.map((node, i) =>
         node.type === 'stack' ? (
-          <HeroOverlayStack key={`stack-${i}`} items={node.items} />
+          <HeroOverlayStack key={`stack-${i}`} items={node.items} tier={tier} />
         ) : (
-          <HeroOverlayItem key={node.item._key ?? `item-${i}`} item={node.item} />
+          <HeroOverlayItem key={node.item._key ?? `item-${i}`} item={node.item} tier={tier} />
         ),
       )}
     </>
@@ -208,9 +185,9 @@ function HeroOverlayDesktop({ items }) {
  * height would not fit, scaled down with a CSS transform until they do.
  *
  * `offsetHeight` is used for measurement — it is the untransformed layout
- * height, so applying the scale transform never re-triggers measurement
- * (no measure/scale loop). The overlay items array is a static build-time
- * import, so the effect runs once on mount + on viewport resize.
+ * height, so applying the scale transform never re-triggers measurement.
+ * The overlay items array is a static build-time import, so the effect runs
+ * once on mount + on viewport resize.
  */
 function HeroOverlayMobile({ items }) {
   const containerRef = useRef(null);
@@ -260,7 +237,7 @@ function HeroOverlayMobile({ items }) {
           }}
         >
           {top.map((item, i) => (
-            <HeroOverlayText key={item._key ?? `mt-${i}`} item={item} variant="mobile" />
+            <HeroOverlayText key={item._key ?? `mt-${i}`} item={item} tier="phone" />
           ))}
         </div>
       )}
@@ -280,7 +257,7 @@ function HeroOverlayMobile({ items }) {
           }}
         >
           {bottom.map((item, i) => (
-            <HeroOverlayText key={item._key ?? `mb-${i}`} item={item} variant="mobile" />
+            <HeroOverlayText key={item._key ?? `mb-${i}`} item={item} tier="phone" />
           ))}
         </div>
       )}

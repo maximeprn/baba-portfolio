@@ -2,10 +2,10 @@
  * Hero overlay — layout primitives.
  *
  * Pure helpers + constants shared by the desktop and mobile overlay
- * renderers in HeroOverlay.jsx. Kept React-free so the positioning maths
- * can be reasoned about (and unit-tested) in isolation.
+ * renderers in HeroOverlay.jsx. Kept React-free so the positioning and
+ * sizing maths can be reasoned about (and tested) in isolation.
  *
- * See .mdd/docs/13-hero-overlay-mobile.md.
+ * See .mdd/docs/14-hero-overlay-sizing.md (and 13-hero-overlay-mobile.md).
  */
 import { fluidScale } from '../../utils/fluidScale';
 
@@ -15,7 +15,7 @@ import { fluidScale } from '../../utils/fluidScale';
 
 /**
  * Named sizes Basile picks in Sanity → desktop-ceiling px values (each fed
- * through `fluidScale` so it scales down on narrow viewports, like the nav).
+ * through `fluidScale` so it scales on narrow viewports, like the nav).
  *
  * Values are chosen so the two legacy presets map exactly, keeping existing
  * content pixel-identical without a data migration:
@@ -23,23 +23,20 @@ import { fluidScale } from '../../utils/fluidScale';
  *   legacy "contact" (25px) → 'md'
  */
 export const SIZE_SCALE = { xs: 18, sm: 22, md: 25, lg: 28, xl: 34 };
-export const DEFAULT_TEXT_SIZE = 'md';
 
 /**
- * Mobile shrink ratio for overlay text. On phones, overlay text renders at
- * this fraction of its desktop size — a deeper shrink than the nav's 0.85 —
- * so the mobile/desktop size contrast is pronounced (a phone is a much
- * smaller canvas; the hero text should read as noticeably more compact).
- * At 0.75, `md` (25px desktop) lands at ~19px on phones.
+ * Mobile shrink ratio for overlay text in AUTO mode. On phones, overlay text
+ * renders at this fraction of its desktop size — a deeper shrink than the
+ * nav's 0.85 — so the mobile/desktop contrast is pronounced.
  */
 export const OVERLAY_TEXT_MOBILE_RATIO = 0.75;
 
 /**
- * Resolve an item's text size to a desktop-ceiling px value.
+ * Resolve an item's base (computer) text size to a px value.
  *
  * New items carry `textSize` (xs…xl). Legacy items (created before the
- * `textSize` field existed) have none — they fall back to the size that
- * preserves their original look, keyed off the (retitled) `size` field.
+ * `textSize` field existed) fall back to the size that preserves their
+ * original look, keyed off the `size` (style) field.
  */
 export function resolveTextSizePx(item) {
   if (item?.textSize && SIZE_SCALE[item.textSize]) {
@@ -48,10 +45,14 @@ export function resolveTextSizePx(item) {
   return item?.size === 'contact' ? SIZE_SCALE.md : SIZE_SCALE.lg;
 }
 
+/** Resolve a named size key to px, falling back when unset/unknown. */
+export function sizeKeyToPx(key, fallbackPx) {
+  return key && SIZE_SCALE[key] ? SIZE_SCALE[key] : fallbackPx;
+}
+
 /**
  * Resolve an item's text style — `body` or `contact`. Controls casing +
- * letter-spacing only (never size). The CMS field key is still `size` for
- * backwards compatibility; it is titled "Text style" in Studio.
+ * letter-spacing only (never size).
  */
 export function resolveStyle(item) {
   return item?.size === 'contact' ? 'contact' : 'body';
@@ -63,56 +64,86 @@ export function verticalAnchor(item) {
 }
 
 // ---------------------------------------------------------------------------
-// Desktop positioning
+// Viewport tiers + per-screen size resolution
 // ---------------------------------------------------------------------------
 
-/**
- * Desktop nav-safe line. The nav is `absolute top-0 h-20` (80px tall — see
- * Navigation.jsx); top-anchored overlay items are clamped to never render
- * above this line, so a low `offsetY` cannot collide with the nav links.
- */
-export const DESKTOP_NAV_SAFE_PX = 96; // 80px nav + 16px breathing room
+export const TABLET_MIN_PX = 768; // phone → tablet boundary
+export const DESKTOP_MIN_PX = 1024; // tablet → desktop boundary
 
-// Floor ratio for the fluid offset ramp: on the narrowest desktop widths an
-// offset shrinks toward this fraction of its CMS value before the ramp tops
-// out at the full value on standard laptop/desktop widths.
-const OFFSET_FLOOR_RATIO = 0.4;
-
-/** Fluid (clamp-based) offset for desktop anchor positioning. */
-export const fluidOffset = (px) => fluidScale(px, { mobileRatio: OFFSET_FLOOR_RATIO });
+/** Classify a viewport width into a tier. */
+export function viewportTier(width) {
+  if (width < TABLET_MIN_PX) return 'phone';
+  if (width < DESKTOP_MIN_PX) return 'tablet';
+  return 'desktop';
+}
 
 /**
- * Resolve an anchor (e.g. 'top-left') plus pixel offsets into a CSS
- * positioning object for a single desktop overlay item.
+ * Resolve the CSS font-size for an overlay item at a given viewport tier.
  *
- * Top-anchored items receive a `max()` nav-safe clamp so a small `offsetY`
- * can never push text under the nav.
+ * Auto mode (`autoShrinkSmallScreens` on / unset): the desktop + tablet tiers
+ * use the standard fluid clamp; the phone tier uses the deeper overlay
+ * mobile ratio. Manual mode: a fixed px per tier (phone/tablet picked by the
+ * editor, desktop = the base size), each falling back to the base size.
  */
-export function anchorToStyle(anchor, offsetX = 0, offsetY = 0) {
+export function resolveOverlayFontSize(item, tier) {
+  const basePx = resolveTextSizePx(item);
+  const autoShrink = item?.autoShrinkSmallScreens !== false;
+
+  if (autoShrink) {
+    if (tier === 'phone') {
+      return fluidScale(basePx, { mobileRatio: OVERLAY_TEXT_MOBILE_RATIO });
+    }
+    return fluidScale(basePx); // tablet + desktop
+  }
+
+  if (tier === 'phone') return `${sizeKeyToPx(item?.phoneSize, basePx)}px`;
+  if (tier === 'tablet') return `${sizeKeyToPx(item?.tabletSize, basePx)}px`;
+  return `${basePx}px`; // desktop
+}
+
+// ---------------------------------------------------------------------------
+// Desktop positioning — fixed insets (no editable offsets)
+// ---------------------------------------------------------------------------
+
+// Edge insets for the desktop overlay. Expressed in rem so they stay
+// consistent with the Tailwind spacing scale and respect browser font
+// settings. The top inset (9rem ≈ 144px) clears the 80px nav comfortably.
+export const DESKTOP_EDGE_INSET = '2.5rem'; // 40px — left / right
+export const DESKTOP_TOP_INSET = '9rem'; // 144px — clears the nav
+export const DESKTOP_BOTTOM_INSET = '2.5rem'; // 40px — bottom
+
+/**
+ * Resolve an anchor (e.g. 'top-left') into a CSS positioning object for a
+ * single desktop overlay item. Positions come from fixed insets — there are
+ * no per-item offsets to configure.
+ */
+export function anchorToStyle(anchor) {
   const [v, h] = (anchor || 'top-left').split('-');
   const style = {};
   const transforms = [];
 
-  if (v === 'top') {
-    style.top = `max(${DESKTOP_NAV_SAFE_PX}px, ${fluidOffset(offsetY)})`;
-  } else if (v === 'bottom') {
-    style.bottom = fluidOffset(offsetY);
-  } else {
+  if (v === 'top') style.top = DESKTOP_TOP_INSET;
+  else if (v === 'bottom') style.bottom = DESKTOP_BOTTOM_INSET;
+  else {
     style.top = '50%';
-    transforms.push(`translateY(calc(-50% + ${fluidOffset(offsetY)}))`);
+    transforms.push('translateY(-50%)');
   }
 
-  if (h === 'left') {
-    style.left = fluidOffset(offsetX);
-  } else if (h === 'right') {
-    style.right = fluidOffset(offsetX);
-  } else {
-    style.left = '50%';
-    transforms.push(`translateX(calc(-50% + ${fluidOffset(offsetX)}))`);
-  }
+  if (h === 'right') style.right = DESKTOP_EDGE_INSET;
+  else style.left = DESKTOP_EDGE_INSET; // 'left' (no center anchors)
 
   if (transforms.length) style.transform = transforms.join(' ');
   return style;
+}
+
+// Gap between stacked texts, as a fraction of the text size. Proportional so
+// it looks right for one-liners and short paragraphs alike — it tracks the
+// text size (em-style), not the page root (which is what rem would do).
+const STACK_GAP_RATIO = 0.55;
+
+/** Vertical gap (px) between items in a desktop stack, sized to the text. */
+export function stackRowGapPx(item) {
+  return Math.round(resolveTextSizePx(item) * STACK_GAP_RATIO);
 }
 
 /**

@@ -42,15 +42,16 @@ const FALLBACK_SITE_SETTINGS = {
   footerShowSocial: true,
 };
 
+// Safety-net content used only when cms.json has no heroOverlay. Positions
+// come from fixed insets now, so items only carry anchor + content + size.
 const FALLBACK_HERO_OVERLAY = {
   items: [
     {
       text: 'Basile Deschamps is a film director and photographer based in Paris.',
       anchor: 'top-left',
-      offsetX: 32,
-      offsetY: 100,
       size: 'body',
-      textSize: 'lg',
+      textSize: 'md',
+      autoShrinkSmallScreens: true,
       link: { type: 'none' },
       mobileVisible: true,
       stackWithSiblings: true,
@@ -59,10 +60,9 @@ const FALLBACK_HERO_OVERLAY = {
     {
       text: 'Selected clients include Salomon, Parel Studios, Lorette Colé Duprat, On, Asics, Pag, Specialized, Veja.',
       anchor: 'top-left',
-      offsetX: 32,
-      offsetY: 145,
       size: 'body',
-      textSize: 'lg',
+      textSize: 'md',
+      autoShrinkSmallScreens: true,
       link: { type: 'none' },
       mobileVisible: true,
       stackWithSiblings: true,
@@ -71,10 +71,9 @@ const FALLBACK_HERO_OVERLAY = {
     {
       text: '+33 (0)6 17 91 79 89',
       anchor: 'bottom-left',
-      offsetX: 32,
-      offsetY: 40,
       size: 'contact',
       textSize: 'md',
+      autoShrinkSmallScreens: true,
       link: { type: 'phone', value: '+33617917989' },
       mobileVisible: true,
       stackWithSiblings: true,
@@ -82,10 +81,9 @@ const FALLBACK_HERO_OVERLAY = {
     {
       text: 'basiledeschamps3@gmail.com',
       anchor: 'bottom-left',
-      offsetX: 240,
-      offsetY: 40,
       size: 'contact',
       textSize: 'md',
+      autoShrinkSmallScreens: true,
       link: { type: 'email', value: 'basiledeschamps3@gmail.com' },
       mobileVisible: true,
       stackWithSiblings: true,

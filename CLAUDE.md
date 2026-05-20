@@ -150,7 +150,7 @@ _type in ["siteSettings", "heroOverlay", "showreel", "heroPhotos", "photoProject
 
 Four singletons + two collections:
 - **`siteSettings`** (singleton) — artist name, SEO, social URLs, footer copyright, nav style + link sizes
-- **`heroOverlay`** (singleton) — array of floating text items (bio, clients, phone, email…). Per item: anchor + desktop offsets, text style (body/contact) + named text size, link, and a mobile-visibility toggle. Desktop uses free positioning; mobile auto-arranges into nav-safe zones (see Hero overlay model below)
+- **`heroOverlay`** (singleton) — array of floating text items (bio, clients, phone, email…). Per item: anchor (fixed-inset position — no offsets), text style + size (with optional per-screen phone/tablet sizes), link, grouping, mobile-visibility. Fields split Basics / Advanced with plain-language labels. Mobile auto-arranges into nav-safe zones (see Hero overlay model below)
 - **`showreel`** (singleton) — Vimeo URL + hero video file path
 - **`heroPhotos`** (singleton) — array of uploaded images for the Photos page slideshow
 - **`photoProject`** (collection) — one document per photo project. Fields grouped into "Content" (title, slug, description, year, client, category, photos, visible, featured) and "Layout (advanced)" (previewPattern, previewPhotoIndices) so Basile sees the editable content fields by default and can drill into layout knobs when needed. `visible: false` hides the project from the public Photos page without unpublishing the document.
@@ -160,18 +160,15 @@ Field reference: see `sanity/schemas/*.js` for canonical definitions. Singletons
 
 ### Hero overlay model
 
-`heroOverlay.items[]` is rendered by [src/components/ui/HeroOverlay.jsx](src/components/ui/HeroOverlay.jsx) (pure layout helpers split into [heroOverlayLayout.js](src/components/ui/heroOverlayLayout.js)). `HeroBioOverlay` takes a `variant` prop — each hero (Films `HeroSection`, Photos `FloatingGalleryHero`) renders it twice, once inside its `hidden md:block` wrapper and once inside its `md:hidden` wrapper.
+`heroOverlay.items[]` is rendered by [HeroOverlay.jsx](src/components/ui/HeroOverlay.jsx) (pure helpers in [heroOverlayLayout.js](src/components/ui/heroOverlayLayout.js)). `HeroBioOverlay` takes a `variant` prop — each hero (Films `HeroSection`, Photos `FloatingGalleryHero`) renders it twice, once inside its `hidden md:block` wrapper and once inside its `md:hidden` wrapper.
 
-**Desktop (`variant="desktop"`)** — free absolute positioning:
-- **Anchor** — 6 options (left/right × top/middle/bottom — never centered) sets which corner offsets are measured from. Top-anchored items are clamped below a 96 px nav-safe line via CSS `max()` so a low offset can't reach the nav.
-- **Offset X / Y** — pixels from the anchor side (desktop only).
-- **Max width** — caps the item's width so long text wraps instead of overflowing.
-- **Stack with adjacent siblings** — adjacent flagged items at the same anchor merge into one flex-row-wrap container (desktop only). The first flagged item's anchor + offsets define the stack position; later items inherit.
-- **Stack row gap** — vertical gap between rows once a stack wraps (desktop only).
+**Positioning** — desktop (`variant="desktop"`, ≥768px) places each item from its `anchor` (6 options: left/right × top/middle/bottom — never centered) via **fixed rem insets** (`2.5rem` edges, `9rem` top so it clears the nav, `2.5rem` bottom). There are **no per-item offsets** — `offsetX`/`offsetY` are retired (kept `hidden` in the schema only so older docs don't show orphan-field warnings). Mobile (`variant="mobile"`, <768px) uses the automatic nav-safe top/bottom zones from doc 13 (`ResizeObserver` auto-shrink, floored 0.6); the vertical half of `anchor` picks the zone.
 
-**Mobile (`variant="mobile"`)** — automatic, unbreakable layout. Offsets/stacks are ignored. Items split into a top zone (anchored 104 px below the top, clear of the nav) and a bottom zone, each a left-aligned flex column. The vertical half of each item's `anchor` picks the zone (Top/Middle → top, Bottom → bottom). A `ResizeObserver` measures both zones and CSS-`transform`-scales them down (floored at 0.6) if their combined height wouldn't fit. `mobileVisible: false` hides an item from phones. See [.mdd/docs/13-hero-overlay-mobile.md](.mdd/docs/13-hero-overlay-mobile.md).
+**Size — per viewport tier** (`viewportTier()`: phone <768 / tablet 768–1024 / desktop ≥1024). `size` ("Style" in Studio) = `body`/`contact` (casing/tracking only). `textSize` = named scale `xs…xl` → 18/22/25/28/34px — the computer/base size. `autoShrinkSmallScreens` (default true): **on** → phone & tablet derive via `fluidScale` (phone uses `OVERLAY_TEXT_MOBILE_RATIO` 0.75); **off** → editor sets explicit `phoneSize`/`tabletSize`. All resolved by `resolveOverlayFontSize(item, tier)`. Legacy items without `textSize` fall back style-aware (`body`→28, `contact`→25) — migration-free.
 
-**Text style + size** — two separate CMS fields. `size` (titled "Text style" in Studio) is `body` or `contact` and controls casing/letter-spacing only. `textSize` is a named scale (`xs`/`sm`/`md`/`lg`/`xl` → 18/22/25/28/34 px, run through `fluidScale`). Legacy items without `textSize` fall back style-aware (`body`→28 px, `contact`→25 px), so the field rename is migration-free.
+**Grouping + gap** — `stackWithSiblings` items at the same anchor merge into one flex-wrap container; the row gap is **proportional to the text size** (`stackRowGapPx`, ≈0.55× — `em`-style, not a fixed/editable value). `mobileVisible: false` hides an item from phones.
+
+**Studio** — item fields split into Basics + a collapsed "Advanced" fieldset, plain-language labels/descriptions for a non-technical editor. See [.mdd/docs/14-hero-overlay-sizing.md](.mdd/docs/14-hero-overlay-sizing.md) and [13](.mdd/docs/13-hero-overlay-mobile.md).
 
 ### Fluid typography
 

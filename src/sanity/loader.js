@@ -14,6 +14,8 @@
 import cmsData from '../data/cms.json';
 import { heroPhotos as LEGACY_HERO_PHOTOS } from '../data/heroPhotos';
 import { photoProjects as LEGACY_PHOTO_PROJECTS } from '../data/photoProjects';
+import { films as LEGACY_FILMS } from '../data/films';
+import { shortVideo } from '../data/videoShorts';
 
 // ---------------------------------------------------------------------------
 // Fallbacks (the values previously hardcoded in siteConfig.js / HeroSection.jsx)
@@ -145,6 +147,39 @@ export const photoProjects = (() => {
 export const getFeaturedProjects = () => photoProjects.filter((p) => p.featured);
 export const getNonFeaturedProjects = () => photoProjects.filter((p) => !p.featured);
 export const getProjectBySlug = (slug) => photoProjects.find((p) => p.slug === slug);
+
+/**
+ * Films for the homepage.
+ *
+ * The CMS fetcher writes `films` already in the legacy shape
+ * (id, slug, title, description, year, client, category, featured,
+ * collapsed, thumbnail, videoUrl, videoType, videoFile, aspectRatio,
+ * credits{left,right}, imagePosition?).
+ *
+ * `videoFile` is stored verbatim in the CMS (the original full-length
+ * path) so the Studio stays readable. We run it through `shortVideo()`
+ * here — same as `src/data/films.js` did with its trailing `.map()` —
+ * so the runtime gets the short teaser cut + Vercel Blob URL.
+ *
+ * Falls back to the legacy `src/data/films.js` array if the CMS array
+ * is empty (e.g. dataset not yet migrated), so the page never goes
+ * blank during the Stage 5 migration window.
+ */
+export const films = (() => {
+  const fromCms = cmsData?.films;
+  if (Array.isArray(fromCms) && fromCms.length > 0) {
+    return fromCms.map((f) => ({
+      ...f,
+      videoFile: f.videoFile ? shortVideo(f.videoFile) : f.videoFile,
+    }));
+  }
+  return LEGACY_FILMS;
+})();
+
+export const getFeaturedFilms = () => films.filter((f) => f.featured && !f.collapsed);
+export const getCollapsedFilms = () => films.filter((f) => f.collapsed);
+export const getNonCollapsedFilms = () => films.filter((f) => !f.collapsed);
+export const getFilmBySlug = (slug) => films.find((f) => f.slug === slug);
 
 /**
  * Returns the social links that are non-null, formatted for display.

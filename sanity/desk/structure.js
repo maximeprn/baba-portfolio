@@ -41,4 +41,10 @@ export const structure = (S, context) =>
         S,
         context,
       }),
+      orderableDocumentListDeskItem({
+        type: 'film',
+        title: '🎬  Films',
+        S,
+        context,
+      }),
     ]);

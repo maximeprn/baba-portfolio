@@ -20,6 +20,11 @@ known_issues: []
 
 # 13 — Hero overlay — mobile auto-safe layout + named text sizes
 
+> **Partly superseded by [14-hero-overlay-sizing](14-hero-overlay-sizing.md).**
+> The mobile auto-safe layout below is current. Desktop positioning no longer
+> uses per-item `offsetX`/`offsetY` (now fixed insets), and text size is now
+> resolved per viewport tier — see doc 14.
+
 ## Purpose
 
 The CMS-driven hero overlay (bio + client list + contact details, floating on

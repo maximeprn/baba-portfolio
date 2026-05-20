@@ -11,65 +11,72 @@ const ANCHOR_OPTIONS = [
   { title: 'Bottom · Right', value: 'bottom-right' },
 ];
 
+// Shared named text-size scale. Reused for the computer size + the optional
+// per-screen phone / tablet sizes.
+const SIZE_OPTIONS = [
+  { title: 'Extra small', value: 'xs' },
+  { title: 'Small', value: 'sm' },
+  { title: 'Medium', value: 'md' },
+  { title: 'Large', value: 'lg' },
+  { title: 'Extra large', value: 'xl' },
+];
+
+// True when this item lets smaller screens size themselves automatically.
+// Missing value (older items) counts as "on".
+const isAutoShrink = ({ parent }) => parent?.autoShrinkSmallScreens !== false;
+
 export const heroOverlay = defineType({
   name: 'heroOverlay',
   title: 'Hero overlay',
   type: 'document',
   description:
-    'Floating text items rendered on top of the hero video (Films page) and hero photo slideshow (Photos page).',
+    'The floating text on top of the hero — the bio, the client list and the contact details.',
   fields: [
     defineField({
       name: 'items',
       title: 'Overlay items',
-      description: 'Reorder by dragging. Each item is positioned independently.',
+      description: 'Each piece of text on the hero. Drag to reorder.',
       type: 'array',
       of: [
         defineArrayMember({
           type: 'object',
           name: 'heroOverlayItem',
+          fieldsets: [
+            {
+              name: 'advanced',
+              title: 'Advanced options',
+              options: { collapsible: true, collapsed: true },
+            },
+          ],
           fields: [
+            // --- Basics --------------------------------------------------
             defineField({
               name: 'text',
               title: 'Text',
+              description: 'What this text says.',
               type: 'string',
               validation: (Rule) => Rule.required(),
             }),
             defineField({
               name: 'anchor',
-              title: 'Anchor point',
+              title: 'Position',
               description:
-                'Which corner / edge of the hero this item is positioned from. On phones, only the vertical part is used: Top and Middle items go into the top group (below the menu), Bottom items into the bottom group.',
+                'Which corner of the screen this text sits in. On phones, top items group near the top, bottom items near the bottom.',
               type: 'string',
               options: { list: ANCHOR_OPTIONS },
               initialValue: 'top-left',
               validation: (Rule) => Rule.required(),
             }),
             defineField({
-              name: 'offsetX',
-              title: 'Offset X (px)',
-              description:
-                'Distance inward from the anchor side, horizontally. Desktop only — on phones the text is positioned automatically.',
-              type: 'number',
-              initialValue: 32,
-            }),
-            defineField({
-              name: 'offsetY',
-              title: 'Offset Y (px)',
-              description:
-                'Distance inward from the anchor side, vertically. Desktop only — on phones the text is positioned automatically.',
-              type: 'number',
-              initialValue: 32,
-            }),
-            defineField({
               name: 'size',
-              title: 'Text style',
+              title: 'Style',
               description:
-                'Body = normal paragraph text. Contact = uppercase with wide letter-spacing (for phone / email). This sets the styling only — use “Text size” below to change how big it is.',
+                'Normal paragraph text, or contact style — CAPITALS with wide spacing, made for phone numbers and emails.',
               type: 'string',
               options: {
                 list: [
-                  { title: 'Body (bio / paragraph)', value: 'body' },
-                  { title: 'Contact (uppercase, tracked)', value: 'contact' },
+                  { title: 'Normal text', value: 'body' },
+                  { title: 'Contact (capitals, spaced out)', value: 'contact' },
                 ],
                 layout: 'radio',
               },
@@ -78,37 +85,59 @@ export const heroOverlay = defineType({
             }),
             defineField({
               name: 'textSize',
-              title: 'Text size',
+              title: 'Size',
               description:
-                'How big the text is. On phones it scales down automatically — and shrinks a little more if needed so it always fits without touching the menu or other overlay text.',
+                'How big the text is on a computer. Phones and tablets shrink it to match — see the setting just below.',
               type: 'string',
-              options: {
-                list: [
-                  { title: 'Extra small', value: 'xs' },
-                  { title: 'Small', value: 'sm' },
-                  { title: 'Medium', value: 'md' },
-                  { title: 'Large', value: 'lg' },
-                  { title: 'Extra large', value: 'xl' },
-                ],
-                layout: 'radio',
-              },
+              options: { list: SIZE_OPTIONS, layout: 'radio' },
               initialValue: 'md',
             }),
             defineField({
+              name: 'autoShrinkSmallScreens',
+              title: 'Shrink automatically on phone & tablet',
+              description:
+                'Leave this on and the text resizes itself for smaller screens. Turn it off to choose the phone and tablet sizes yourself.',
+              type: 'boolean',
+              initialValue: true,
+            }),
+            defineField({
+              name: 'phoneSize',
+              title: 'Phone size',
+              description: 'How big this text is on phones.',
+              type: 'string',
+              options: { list: SIZE_OPTIONS, layout: 'radio' },
+              initialValue: 'sm',
+              hidden: isAutoShrink,
+            }),
+            defineField({
+              name: 'tabletSize',
+              title: 'Tablet size',
+              description: 'How big this text is on tablets.',
+              type: 'string',
+              options: { list: SIZE_OPTIONS, layout: 'radio' },
+              initialValue: 'md',
+              hidden: isAutoShrink,
+            }),
+            // --- Advanced ------------------------------------------------
+            defineField({
               name: 'link',
-              title: 'Make this text a link',
+              title: 'Make it a link',
+              description:
+                'Turn this text into something clickable — an email, a phone number, or a website.',
               type: 'object',
+              fieldset: 'advanced',
               fields: [
                 defineField({
                   name: 'type',
-                  title: 'Link type',
+                  title: 'Opens',
+                  description: 'What happens when someone taps this text.',
                   type: 'string',
                   options: {
                     list: [
-                      { title: 'None (plain text)', value: 'none' },
-                      { title: 'Email (mailto:)', value: 'email' },
-                      { title: 'Phone (tel:)', value: 'phone' },
-                      { title: 'External URL', value: 'url' },
+                      { title: 'Nothing — just text', value: 'none' },
+                      { title: 'An email', value: 'email' },
+                      { title: 'A phone call', value: 'phone' },
+                      { title: 'A website', value: 'url' },
                     ],
                     layout: 'dropdown',
                   },
@@ -116,48 +145,46 @@ export const heroOverlay = defineType({
                 }),
                 defineField({
                   name: 'value',
-                  title: 'Link target',
-                  description:
-                    'Email address, phone number, or full URL — depending on link type.',
+                  title: 'Goes to',
+                  description: 'The email address, phone number, or web address.',
                   type: 'string',
                   hidden: ({ parent }) => !parent?.type || parent.type === 'none',
                 }),
               ],
             }),
             defineField({
-              name: 'mobileVisible',
-              title: 'Show on mobile (< 768px)',
+              name: 'maxWidth',
+              title: 'Maximum width',
               description:
-                'On phones, items are arranged automatically into a safe top and bottom area. Untick this to hide an item from phones entirely.',
-              type: 'boolean',
-              initialValue: true,
+                'Stops long text from stretching too wide on large screens. Leave empty for no limit.',
+              type: 'number',
+              fieldset: 'advanced',
+              validation: (Rule) => Rule.positive().integer(),
             }),
             defineField({
               name: 'stackWithSiblings',
-              title: 'Stack with adjacent siblings',
+              title: 'Group with the text above',
               description:
-                'Desktop only. Adjacent items with this toggle on AND the same anchor are stacked vertically into one column. The FIRST flagged item in the chain determines where the column sits (its offsets); later items inherit that position. A non-flagged item or a change of anchor breaks the chain.',
+                'Keeps this text attached to the one directly above it, so they move together as one block.',
               type: 'boolean',
+              fieldset: 'advanced',
               initialValue: false,
             }),
             defineField({
-              name: 'stackRowGap',
-              title: 'Stack row gap (px)',
-              description:
-                'Desktop only. When this item is the FIRST in a stack: vertical space between rows once items wrap. Defaults to 24px so the gap stays bigger than line-height. Ignored on items that are not the first in their stack.',
-              type: 'number',
-              initialValue: 24,
-              validation: (Rule) => Rule.min(0).integer(),
-              hidden: ({ parent }) => !parent?.stackWithSiblings,
+              name: 'mobileVisible',
+              title: 'Show on phones',
+              description: 'Uncheck to hide this text on phones only.',
+              type: 'boolean',
+              fieldset: 'advanced',
+              initialValue: true,
             }),
-            defineField({
-              name: 'maxWidth',
-              title: 'Max width (px)',
-              description:
-                'Cap the item’s width so long text wraps instead of running off the screen. Leave blank for no cap. Try 600 for full-sentence text like the bio or client list.',
-              type: 'number',
-              validation: (Rule) => Rule.positive().integer(),
-            }),
+            // --- Retired fields ------------------------------------------
+            // Positions and gaps are now fixed in code (see doc 14). These
+            // are kept hidden only so older documents don't show "unknown
+            // field" warnings in Studio. The renderer ignores them.
+            defineField({ name: 'offsetX', type: 'number', hidden: true }),
+            defineField({ name: 'offsetY', type: 'number', hidden: true }),
+            defineField({ name: 'stackRowGap', type: 'number', hidden: true }),
           ],
           preview: {
             select: {
@@ -170,7 +197,7 @@ export const heroOverlay = defineType({
             prepare: ({ text, anchor, size, textSize, stack }) => ({
               title: text,
               subtitle: `${anchor} · ${size}${textSize ? ` · ${textSize}` : ''}${
-                stack ? ' · stacks' : ''
+                stack ? ' · grouped' : ''
               }`,
             }),
           },

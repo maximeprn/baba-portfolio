@@ -27,6 +27,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { resolve, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createClient } from '@sanity/client';
+import { LexoRank } from 'lexorank';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = resolve(__dirname, '..');
@@ -77,7 +78,7 @@ async function uploadOrReuseAsset(filename) {
   return asset;
 }
 
-async function buildProjectDoc(project, index, total) {
+async function buildProjectDoc(project, index, total, orderRank) {
   const docId = `photoProject-${project.slug}`;
   process.stdout.write(`  [${index + 1}/${total}] ${project.title} … `);
 
@@ -94,12 +95,6 @@ async function buildProjectDoc(project, index, total) {
       alt: photo.alt ?? '',
     });
   }
-
-  // orderRank is what @sanity/orderable-document-list uses to sort the
-  // drag-to-reorder list. Lexicographically-comparable string; zero-padded
-  // numbers based on the legacy id give us a sensible initial order.
-  const rank = project.id ?? index + 1;
-  const orderRank = String(rank).padStart(8, '0');
 
   const doc = {
     _id: docId,
@@ -158,10 +153,22 @@ async function main() {
     process.exit(1);
   }
 
+  // Generate LexoRank values for each project so the drag-to-reorder plugin
+  // can produce valid "between" ranks when items are moved. Zero-padded ints
+  // would sort correctly with each other but break LexoRank's `between()`
+  // operation when the plugin generates new ranks for dragged items.
+  console.log('→ Generating LexoRank values for orderRank …');
+  let rank = LexoRank.middle();
+  const orderRanks = photoProjects.map((_, i) => {
+    const value = rank.toString();
+    if (i < photoProjects.length - 1) rank = rank.genNext();
+    return value;
+  });
+
   console.log('→ Uploading assets + building project docs …');
   const docs = [];
   for (let i = 0; i < photoProjects.length; i += 1) {
-    const doc = await buildProjectDoc(photoProjects[i], i, photoProjects.length);
+    const doc = await buildProjectDoc(photoProjects[i], i, photoProjects.length, orderRanks[i]);
     docs.push(doc);
   }
 

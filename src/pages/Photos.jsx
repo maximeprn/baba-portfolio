@@ -21,9 +21,7 @@ import {
   getFeaturedProjects,
   getNonFeaturedProjects,
   photoProjects,
-  siteSettings,
 } from '../sanity/loader';
-import { mediaSideFor } from '../utils/cardAlignment';
 
 function Photos() {
   const featuredProjects = getFeaturedProjects();
@@ -109,8 +107,8 @@ function Photos() {
     };
   }, [featuredProjects]);
 
-  // Card alignment is a single global setting — see siteSettings.cardAlignment
-  // + src/utils/cardAlignment.js. No more per-project overrides.
+  // Card image side alternates by row index. Hard-coded — no per-project
+  // or site-wide override.
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -135,7 +133,6 @@ function Photos() {
             <FeaturedPhotoCard
               project={project}
               index={idx}
-              mediaSide={mediaSideFor(idx, siteSettings.cardAlignment)}
               onPhotoClick={handlePhotoClick}
               onWillExpand={handleWillExpand}
               onDidCollapse={handleDidCollapse}

@@ -38,7 +38,6 @@ function reducedMotion() {
 function FeaturedPhotoCard({
   project,
   index = 0,
-  mediaSide = 'left',
   onPhotoClick,
   onWillExpand,
   onDidCollapse,
@@ -59,9 +58,8 @@ function FeaturedPhotoCard({
 
   const { scrollTo, getScrollPosition, isDesktop } = useSmoothScrollContext();
   const { id, title, description, year, client, category } = project;
-  // `mediaSide` is supplied by the parent based on the site-wide
-  // `cardAlignment` setting (see src/utils/cardAlignment.js).
-  const isImageLeft = mediaSide === 'left';
+  // Alternate by row: even rows → image left, odd rows → image right.
+  const isImageLeft = index % 2 === 0;
 
   // Notify parent when the card lands in 'collapsed' after a close.
   useEffect(() => {

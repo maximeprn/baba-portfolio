@@ -9,15 +9,14 @@ import { orderRankField } from '@sanity/orderable-document-list';
  *   2. Story            — description, year, client, category
  *   3. Credits          — array of {side, role, name}
  *   4. Video            — Mux preview asset + Vimeo modal URL
- *   5. Display flags    — featured, collapsed
+ *   5. Display flag     — collapsed
  *   6. Advanced (collapsed by default) — thumbnail override, aspectRatio
  *      override
  *
- * Two display flags drive how a film renders:
- *   - collapsed=false + featured=true  → FeaturedFilmCard (video preview)
- *   - collapsed=false + featured=false → FilmCard (medium card)
- *   - collapsed=true                   → CollapsedFilmCard in "Other Projects"
- * `collapsed` wins when both are true.
+ * One display flag drives placement:
+ *   - collapsed=false → FeaturedFilmCard (video preview, video left/right
+ *                       alternates by row index)
+ *   - collapsed=true  → CollapsedFilmCard in the "Other Projects" row
  *
  * Ordering is drag-and-drop via @sanity/orderable-document-list. The plugin
  * manages the hidden `orderRank` field. The fetcher sorts by orderRank asc.
@@ -54,7 +53,7 @@ export const film = defineType({
     {
       name: 'display',
       title: 'Display',
-      options: { columns: 2 },
+      options: { columns: 1 },
     },
     {
       name: 'advanced',
@@ -182,12 +181,12 @@ export const film = defineType({
       validation: (Rule) => Rule.uri({ scheme: ['http', 'https'] }),
     }),
 
-    // ---------- Display flags ----------
+    // ---------- Display ----------
     defineField({
-      name: 'featured',
-      title: 'Featured',
+      name: 'visible',
+      title: 'Show on site',
       description:
-        'Show as a large card with an autoplaying video preview. When OFF, the film renders as a smaller card with the thumbnail. Only applies when "Collapsed" is OFF.',
+        'Toggle off to hide this film from the homepage without unpublishing the document.',
       type: 'boolean',
       initialValue: true,
       fieldset: 'display',
@@ -196,7 +195,7 @@ export const film = defineType({
       name: 'collapsed',
       title: 'Collapsed',
       description:
-        'Move this film to the "Other Projects" row at the bottom (small card, click to expand). Wins over "Featured".',
+        'Move this film to the "Other Projects" row at the bottom (small card, click to expand).',
       type: 'boolean',
       initialValue: false,
       fieldset: 'display',
@@ -239,19 +238,13 @@ export const film = defineType({
     select: {
       title: 'title',
       year: 'year',
-      featured: 'featured',
       collapsed: 'collapsed',
       media: 'thumbnail',
     },
-    prepare: ({ title, year, featured, collapsed, media }) => {
-      const tags = [];
-      if (collapsed) tags.push('collapsed');
-      else if (featured) tags.push('featured');
-      return {
-        title: title || 'Untitled film',
-        subtitle: [year, ...tags].filter(Boolean).join(' · '),
-        media,
-      };
-    },
+    prepare: ({ title, year, collapsed, media }) => ({
+      title: title || 'Untitled film',
+      subtitle: [year, collapsed ? 'collapsed' : null].filter(Boolean).join(' · '),
+      media,
+    }),
   },
 });

@@ -2,15 +2,13 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 import HeroSection from '../components/ui/HeroSection';
-import FilmCard from '../components/films/FilmCard';
 import FeaturedFilmCard from '../components/films/FeaturedFilmCard';
 import CollapsedFilmCard from '../components/films/CollapsedFilmCard';
 import FilmModal from '../components/films/FilmModal';
 import TitleSection from '../components/ui/TitleSection';
 
-import { films, siteSettings } from '../sanity/loader';
+import { films } from '../sanity/loader';
 import { siteConfig } from '../data/siteConfig';
-import { mediaSideFor } from '../utils/cardAlignment';
 
 function ShowreelOverlay({ vimeoUrl, onClose }) {
   return (
@@ -117,23 +115,13 @@ function Films() {
 
         {films.filter(f => !f.collapsed).map((film, index) => (
           <div key={film.id} className="py-2.5 w-full">
-            {film.featured ? (
-              <FeaturedFilmCard
-                film={film}
-                index={index}
-                mediaSide={mediaSideFor(index, siteSettings.cardAlignment)}
-                onFilmClick={handleFilmClick}
-                shouldLoad={loadPhase !== 'hero'}
-                onVideoReady={handleFeaturedVideoReady}
-              />
-            ) : (
-              <FilmCard
-                film={film}
-                index={index}
-                mediaSide={mediaSideFor(index, siteSettings.cardAlignment)}
-                onFilmClick={handleFilmClick}
-              />
-            )}
+            <FeaturedFilmCard
+              film={film}
+              index={index}
+              onFilmClick={handleFilmClick}
+              shouldLoad={loadPhase !== 'hero'}
+              onVideoReady={handleFeaturedVideoReady}
+            />
           </div>
         ))}
 

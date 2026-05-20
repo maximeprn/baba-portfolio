@@ -32,7 +32,7 @@ const LAYOUT_VARIANTS = [
   },
 ];
 
-function FeaturedFilmCard({ film, index = 0, mediaSide = 'left', onFilmClick, shouldLoad = true, onVideoReady }) {
+function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onVideoReady }) {
   const {
     title,
     description,
@@ -49,9 +49,8 @@ function FeaturedFilmCard({ film, index = 0, mediaSide = 'left', onFilmClick, sh
   // use Mux's auto-generated thumbnail so cards always have a background.
   const posterUrl = thumbnail || muxPosterUrl || null;
 
-  // Where the video sits — provided by the parent based on the site-wide
-  // `cardAlignment` setting (see src/utils/cardAlignment.js).
-  const isVideoLeft = mediaSide === 'left';
+  // Alternate by row: even rows → video left, odd rows → video right.
+  const isVideoLeft = index % 2 === 0;
   const variant = LAYOUT_VARIANTS[index % LAYOUT_VARIANTS.length];
 
   const videoRef = useRef(null);

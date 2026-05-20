@@ -97,6 +97,15 @@ export const photoProject = defineType({
       validation: (Rule) => Rule.min(1).warning('A project usually has at least one photo.'),
     }),
     defineField({
+      name: 'visible',
+      title: 'Show on site',
+      description:
+        'Toggle off to hide this project from the Photos page without unpublishing the document.',
+      type: 'boolean',
+      initialValue: true,
+      group: 'content',
+    }),
+    defineField({
       name: 'featured',
       title: 'Featured',
       description:

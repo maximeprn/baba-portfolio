@@ -8,8 +8,9 @@ import CollapsedFilmCard from '../components/films/CollapsedFilmCard';
 import FilmModal from '../components/films/FilmModal';
 import TitleSection from '../components/ui/TitleSection';
 
-import { films } from '../sanity/loader';
+import { films, siteSettings } from '../sanity/loader';
 import { siteConfig } from '../data/siteConfig';
+import { mediaSideFor } from '../utils/cardAlignment';
 
 function ShowreelOverlay({ vimeoUrl, onClose }) {
   return (
@@ -120,6 +121,7 @@ function Films() {
               <FeaturedFilmCard
                 film={film}
                 index={index}
+                mediaSide={mediaSideFor(index, siteSettings.cardAlignment)}
                 onFilmClick={handleFilmClick}
                 shouldLoad={loadPhase !== 'hero'}
                 onVideoReady={handleFeaturedVideoReady}
@@ -128,6 +130,7 @@ function Films() {
               <FilmCard
                 film={film}
                 index={index}
+                mediaSide={mediaSideFor(index, siteSettings.cardAlignment)}
                 onFilmClick={handleFilmClick}
               />
             )}

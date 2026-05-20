@@ -11,7 +11,7 @@ import { orderRankField } from '@sanity/orderable-document-list';
  *   4. Video            — Mux preview asset + Vimeo modal URL
  *   5. Display flags    — featured, collapsed
  *   6. Advanced (collapsed by default) — thumbnail override, aspectRatio
- *      override, imagePosition override
+ *      override
  *
  * Two display flags drive how a film renders:
  *   - collapsed=false + featured=true  → FeaturedFilmCard (video preview)
@@ -221,23 +221,6 @@ export const film = defineType({
       fieldset: 'advanced',
       validation: (Rule) => Rule.positive(),
     }),
-    defineField({
-      name: 'imagePosition',
-      title: 'Image position (override)',
-      description:
-        'For featured cards. Controls whether the video preview sits on the left or right. Leave blank for auto (alternates by row).',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Auto', value: '' },
-          { title: 'Left', value: 'left' },
-          { title: 'Right', value: 'right' },
-        ],
-        layout: 'radio',
-      },
-      fieldset: 'advanced',
-    }),
-
     orderRankField({ type: 'film' }),
   ],
   orderings: [

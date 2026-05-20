@@ -173,22 +173,6 @@ export const photoProject = defineType({
       type: 'string',
       group: 'layout',
     }),
-    defineField({
-      name: 'imagePosition',
-      title: 'Image position override',
-      description:
-        'For featured cards. Leave blank for auto (alternates left/right by index).',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Auto', value: '' },
-          { title: 'Left', value: 'left' },
-          { title: 'Right', value: 'right' },
-        ],
-        layout: 'radio',
-      },
-      group: 'layout',
-    }),
   ],
   orderings: [
     {

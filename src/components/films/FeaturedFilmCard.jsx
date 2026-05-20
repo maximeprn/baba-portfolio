@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
+import Hls from 'hls.js';
 
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
 
@@ -40,9 +41,15 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
     category,
     imagePosition,
     videoFile,
+    muxStreamUrl,
+    muxPosterUrl,
     thumbnail,
     aspectRatio = 1.78,
   } = film;
+
+  // Prefer Mux poster when present; fall back to the static thumbnail
+  // (legacy Blob film) so cards never have a blank background.
+  const posterUrl = muxPosterUrl || thumbnail || null;
 
   const isVideoLeft = imagePosition === 'left';
   const variant = LAYOUT_VARIANTS[index % LAYOUT_VARIANTS.length];
@@ -105,6 +112,32 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
       wrapper.style.opacity = '';
     };
   }, [addScrollListener]);
+
+  // HLS attachment for Mux-hosted streams. Runs once shouldLoad goes true.
+  // For browsers with native HLS (Safari), we set <video src> directly so
+  // hls.js never instantiates. Everything else uses hls.js's MediaSource.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (!shouldLoad || !muxStreamUrl) return;
+
+    // Native HLS — Safari, iOS WebKit.
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = muxStreamUrl;
+      return;
+    }
+    if (!Hls.isSupported()) return;
+
+    const hls = new Hls({
+      // Keep the preview tile light: cap to the lowest renditions Mux
+      // ships so background autoplay tiles never request a 1080p layer.
+      capLevelToPlayerSize: true,
+      maxBufferLength: 8,
+    });
+    hls.loadSource(muxStreamUrl);
+    hls.attachMedia(video);
+    return () => hls.destroy();
+  }, [shouldLoad, muxStreamUrl]);
 
   // Playback is driven by the in-view effect — not by autoPlay or onLoadedData —
   // so videos only run while the user can actually see them.
@@ -170,8 +203,8 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
           className="w-full overflow-hidden cursor-pointer"
           style={{
             aspectRatio,
-            ...(thumbnail ? {
-              backgroundImage: `url(${thumbnail})`,
+            ...(posterUrl ? {
+              backgroundImage: `url(${posterUrl})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             } : {}),
@@ -179,8 +212,10 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
         >
           <video
             ref={videoRef}
-            src={shouldLoad ? videoFile : undefined}
-            poster={thumbnail || undefined}
+            // For Mux-backed films we attach via hls.js in the effect above.
+            // For legacy Blob films we still drive `src` directly here.
+            src={shouldLoad && !muxStreamUrl ? videoFile : undefined}
+            poster={posterUrl || undefined}
             loop
             playsInline
             muted

@@ -12,6 +12,7 @@
 import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
 import { visionTool } from '@sanity/vision';
+import { muxInput } from 'sanity-plugin-mux-input';
 import { schemaTypes } from './sanity/schemas';
 import { structure } from './sanity/desk/structure';
 import DeployTool from './sanity/tools/DeployTool';
@@ -27,6 +28,15 @@ export default defineConfig({
   plugins: [
     structureTool({ structure }),
     visionTool(),
+    // Mux video input: drag-and-drop uploads from Studio, automatic 720p
+    // transcoding + adaptive bitrate (HLS). Token ID + secret are stored
+    // server-side in Sanity's secrets API (set via `npx sanity secrets`),
+    // NOT in the public Studio bundle.
+    muxInput({
+      max_resolution_tier: '1080p',
+      encoding_tier: 'smart',
+      mp4_support: 'none',
+    }),
   ],
   // Custom tools appear as tabs in the Studio's left sidebar. The Deploy
   // tool is a manual replacement for the Sanity → Vercel auto-webhook —

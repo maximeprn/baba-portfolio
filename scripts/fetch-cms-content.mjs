@@ -86,7 +86,13 @@ const QUERY = `{
     videoFile,
     aspectRatio,
     imagePosition,
-    credits[]{ side, role, name }
+    credits[]{ side, role, name },
+    "mux": videoMux.asset->{
+      playbackId,
+      "status":   data.status,
+      "aspect":   data.aspect_ratio,
+      "duration": data.duration
+    }
   }
 }`;
 
@@ -162,6 +168,13 @@ function flattenFilm(film) {
     credits[side].push({ role: item.role, name: item.name });
   }
 
+  // Mux fields are only populated when an asset is attached AND ready.
+  // While the asset is `preparing` we fall back to the static thumbnail —
+  // no half-loaded HLS stream.
+  const muxPlaybackId = film.mux?.playbackId ?? null;
+  const muxReady = film.mux?.status === 'ready';
+  const muxAspect = parseAspectString(film.mux?.aspect);
+
   const out = {
     id: film._id,
     slug: film.slug,
@@ -176,11 +189,28 @@ function flattenFilm(film) {
     videoUrl: film.videoUrl ?? null,
     videoType: film.videoType ?? 'vimeo',
     videoFile: film.videoFile ?? null,
-    aspectRatio: typeof film.aspectRatio === 'number' ? film.aspectRatio : 1.78,
+    aspectRatio:
+      typeof film.aspectRatio === 'number'
+        ? film.aspectRatio
+        : muxAspect ?? 1.78,
     credits,
+    muxPlaybackId: muxReady ? muxPlaybackId : null,
+    muxStatus: film.mux?.status ?? null,
+    muxStreamUrl: muxReady ? `https://stream.mux.com/${muxPlaybackId}.m3u8` : null,
+    muxPosterUrl: muxPlaybackId
+      ? `https://image.mux.com/${muxPlaybackId}/thumbnail.jpg?time=0.5`
+      : null,
   };
   if (film.imagePosition) out.imagePosition = film.imagePosition;
   return out;
+}
+
+function parseAspectString(s) {
+  // Mux returns aspect_ratio as "16:9", "4:3", etc. Convert to a number.
+  if (typeof s !== 'string') return null;
+  const [w, h] = s.split(':').map((n) => parseFloat(n));
+  if (!w || !h) return null;
+  return w / h;
 }
 
 async function fetchCmsContent() {

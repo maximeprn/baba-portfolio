@@ -565,15 +565,15 @@
   "heroOverlay": {
     "_createdAt": "2026-05-19T16:05:43Z",
     "_id": "heroOverlay",
-    "_rev": "qreaEEKCEqJb6GObKleJ7y",
+    "_rev": "n9md8RGrJQEGd6mdCRpIDJ",
     "_system": {
       "base": {
         "id": "heroOverlay",
-        "rev": "MX8ZVHSGJki14Hclm4SVh9"
+        "rev": "Zxrj8tcFvJIi44e6XE6ga0"
       }
     },
     "_type": "heroOverlay",
-    "_updatedAt": "2026-05-19T17:10:44Z",
+    "_updatedAt": "2026-05-20T16:26:27Z",
     "items": [
       {
         "_key": "bio",
@@ -589,7 +589,8 @@
         "size": "body",
         "stackRowGap": 40,
         "stackWithSiblings": true,
-        "text": "Basile Deschamps is a film director and photographer based in Paris."
+        "text": "Basile Deschamps is a film director and photographer based in Paris.",
+        "textSize": "md"
       },
       {
         "_key": "clients",
@@ -604,7 +605,8 @@
         "offsetY": 200,
         "size": "body",
         "stackWithSiblings": true,
-        "text": "Selected clients include Salomon, Parel Studios, Lorette Colé Duprat, On, Asics, Pag, Specialized, Veja."
+        "text": "Selected clients include Salomon, Parel Studios, Lorette Colé Duprat, On, Asics, Pag, Specialized, Veja.",
+        "textSize": "md"
       },
       {
         "_key": "phone",
@@ -620,7 +622,8 @@
         "offsetY": 40,
         "size": "contact",
         "stackWithSiblings": true,
-        "text": "+33 (0)6 17 91 79 89"
+        "text": "+33 (0)6 17 91 79 89",
+        "textSize": "md"
       },
       {
         "_key": "email",
@@ -636,7 +639,8 @@
         "offsetY": 40,
         "size": "contact",
         "stackWithSiblings": true,
-        "text": "basiledeschamps3@gmail.com"
+        "text": "basiledeschamps3@gmail.com",
+        "textSize": "md"
       }
     ]
   },
@@ -3217,12 +3221,35 @@
   "showreel": {
     "_createdAt": "2026-05-19T16:05:45Z",
     "_id": "showreel",
-    "_rev": "qreaEEKCEqJb6GObKlLGSE",
+    "_rev": "xX9YeQzdQC2WYPtGdfGeBS",
+    "_system": {
+      "base": {
+        "id": "showreel",
+        "rev": "4uQ6kSFs3bJrWFT6rO0I6d"
+      }
+    },
     "_type": "showreel",
-    "_updatedAt": "2026-05-19T16:05:45Z",
-    "mux": null,
+    "_updatedAt": "2026-05-20T15:10:51Z",
+    "mux": {
+      "aspect": "16:9",
+      "duration": 91.52,
+      "playbackId": "fmiZ5Z7RBiLFVm01VH2zIOSIdvEa19l45fsHgBDf1TKA",
+      "status": "ready"
+    },
     "videoFile": "/videos/Showreel 2021.mp4",
-    "vimeoUrl": "https://player.vimeo.com/video/989542038"
+    "videoMux": {
+      "_type": "mux.video",
+      "asset": {
+        "_ref": "29569a8d-a998-4d97-b039-d618d1b28530",
+        "_type": "reference",
+        "_weak": true
+      }
+    },
+    "vimeoUrl": "https://player.vimeo.com/video/562172132",
+    "muxPlaybackId": "fmiZ5Z7RBiLFVm01VH2zIOSIdvEa19l45fsHgBDf1TKA",
+    "muxStatus": "ready",
+    "muxStreamUrl": "https://stream.mux.com/fmiZ5Z7RBiLFVm01VH2zIOSIdvEa19l45fsHgBDf1TKA.m3u8",
+    "muxPosterUrl": "https://image.mux.com/fmiZ5Z7RBiLFVm01VH2zIOSIdvEa19l45fsHgBDf1TKA/thumbnail.jpg?time=0.5"
   },
   "siteSettings": {
     "_createdAt": "2026-05-19T16:05:42Z",
@@ -3261,5 +3288,5 @@
     "socialTwitter": null,
     "socialVimeo": "https://vimeo.com/user37669788"
   },
-  "_fetchedAt": "2026-05-20T14:38:38.779Z"
+  "_fetchedAt": "2026-05-20T16:29:50.698Z"
 }

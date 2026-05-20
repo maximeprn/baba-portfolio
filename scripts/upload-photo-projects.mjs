@@ -77,7 +77,7 @@ async function uploadOrReuseAsset(filename) {
   return asset;
 }
 
-async function migrateProject(project, index, total) {
+async function buildProjectDoc(project, index, total) {
   const docId = `photoProject-${project.slug}`;
   process.stdout.write(`  [${index + 1}/${total}] ${project.title} … `);
 
@@ -144,8 +144,8 @@ async function migrateProject(project, index, total) {
     doc.imagePosition = project.imagePosition;
   }
 
-  await client.createOrReplace(doc);
-  process.stdout.write(`✓ ${photoFields.length} photos\n`);
+  process.stdout.write(`built (${photoFields.length} photos)\n`);
+  return doc;
 }
 
 async function main() {
@@ -158,20 +158,34 @@ async function main() {
     process.exit(1);
   }
 
-  console.log('→ Migrating projects to Sanity …');
+  console.log('→ Uploading assets + building project docs …');
+  const docs = [];
   for (let i = 0; i < photoProjects.length; i += 1) {
-    await migrateProject(photoProjects[i], i, photoProjects.length);
+    const doc = await buildProjectDoc(photoProjects[i], i, photoProjects.length);
+    docs.push(doc);
   }
 
+  // Commit all 22 projects in ONE atomic transaction so Sanity sees this as
+  // a single batch instead of 22 separate API calls. The webhook still fires
+  // per-document mutation — set a "Delay" of ~60s on the Sanity webhook
+  // (Sanity Manage → API → Webhooks) so the burst is coalesced into a single
+  // Vercel deploy. See CLAUDE.md → "Sanity webhook config".
+  console.log('→ Committing transaction (1 atomic write for all projects) …');
+  const tx = client.transaction();
+  for (const doc of docs) tx.createOrReplace(doc);
+  await tx.commit();
+
   console.log('');
-  console.log(`✓ Done. ${photoProjects.length} projects migrated.`);
+  console.log(`✓ Done. ${docs.length} projects migrated in 1 transaction.`);
   console.log(`  ${assetByFilename.size} unique image assets uploaded (or already existed).`);
+  console.log('');
+  console.log('IMPORTANT — to avoid one Vercel deploy per project, set "Delay"');
+  console.log('on the Sanity webhook to at least 60 seconds. Sanity will coalesce');
+  console.log('the burst of 22 mutations into a single webhook fire.');
   console.log('');
   console.log('Next steps:');
   console.log('  1. `npm run cms:fetch` to refresh src/data/cms.json with the new project data.');
   console.log('  2. Open /admin → 📷 Photo projects → verify project list + edit titles/descriptions.');
-  console.log('  3. UPDATE THE SANITY WEBHOOK GROQ FILTER to include "photoProject":');
-  console.log('       _type in ["siteSettings", "heroOverlay", "showreel", "heroPhotos", "photoProject"]');
 }
 
 main().catch((err) => {

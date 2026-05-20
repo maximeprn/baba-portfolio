@@ -123,12 +123,19 @@ const SHOWREEL = {
 };
 
 async function seed() {
-  console.log('→ Seeding singletons (createOrReplace will overwrite existing values)…');
-  await client.createOrReplace(SITE_SETTINGS);
+  // Commit all three singletons in ONE transaction so the burst of mutations
+  // hits Sanity together. With a "Delay" of ~60s on the Sanity webhook
+  // (recommended in CLAUDE.md), this coalesces to a single Vercel deploy
+  // instead of three.
+  console.log('→ Seeding singletons in one transaction (createOrReplace will overwrite existing values)…');
+  await client
+    .transaction()
+    .createOrReplace(SITE_SETTINGS)
+    .createOrReplace(HERO_OVERLAY)
+    .createOrReplace(SHOWREEL)
+    .commit();
   console.log('  ✓ siteSettings');
-  await client.createOrReplace(HERO_OVERLAY);
   console.log('  ✓ heroOverlay');
-  await client.createOrReplace(SHOWREEL);
   console.log('  ✓ showreel');
   console.log('✓ Done. Open https://www.sanity.io/manage/personal/project/e9pgmdfm to view.');
 }

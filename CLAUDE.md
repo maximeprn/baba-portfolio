@@ -175,7 +175,7 @@ Field reference: see `sanity/schemas/*.js` for canonical definitions. Singletons
 
 ### Fluid typography
 
-`src/utils/fluidScale.js` exposes a single `fluidScale(basePx, { mobileRatio = 0.85 })` helper. Used for both nav link sizes and hero overlay text. Pattern: `clamp(base × mobileRatio, base/10 vw, base)` — desktop ceiling at the CMS-set value, mobile floor at 85%.
+`src/utils/fluidScale.js` exposes a single `fluidScale(basePx, { mobileRatio = 0.85 })` helper. Used for both nav link sizes and hero overlay text. Pattern: `clamp(base × mobileRatio, base/10 vw, base)` — desktop ceiling at the CMS-set value, mobile floor at `mobileRatio`. Nav links use the 0.85 default; hero overlay text passes `OVERLAY_TEXT_MOBILE_RATIO` (0.75) for a stronger mobile/desktop size contrast.
 
 ## Key Files
 

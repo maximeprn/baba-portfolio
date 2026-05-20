@@ -26,6 +26,15 @@ export const SIZE_SCALE = { xs: 18, sm: 22, md: 25, lg: 28, xl: 34 };
 export const DEFAULT_TEXT_SIZE = 'md';
 
 /**
+ * Mobile shrink ratio for overlay text. On phones, overlay text renders at
+ * this fraction of its desktop size — a deeper shrink than the nav's 0.85 —
+ * so the mobile/desktop size contrast is pronounced (a phone is a much
+ * smaller canvas; the hero text should read as noticeably more compact).
+ * At 0.75, `md` (25px desktop) lands at ~19px on phones.
+ */
+export const OVERLAY_TEXT_MOBILE_RATIO = 0.75;
+
+/**
  * Resolve an item's text size to a desktop-ceiling px value.
  *
  * New items carry `textSize` (xs…xl). Legacy items (created before the

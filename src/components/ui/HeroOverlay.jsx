@@ -25,6 +25,7 @@ import {
   MOBILE_EDGE_PAD_PX,
   MOBILE_NAV_SAFE_PX,
   MOBILE_ZONE_GAP_PX,
+  OVERLAY_TEXT_MOBILE_RATIO,
   resolveStyle,
   resolveTextSizePx,
   splitMobileZones,
@@ -41,7 +42,7 @@ const STACK_VIEWPORT_PADDING = 16;
  * The visual element of an overlay item — the <a> or <span> with text
  * styling and (optional) link href. Positioning is applied by the parent.
  */
-function HeroOverlayText({ item }) {
+function HeroOverlayText({ item, variant = 'desktop' }) {
   const { text, link, maxWidth } = item;
 
   // `style` here is the body/contact typographic treatment, not the size.
@@ -68,7 +69,15 @@ function HeroOverlayText({ item }) {
     .join(' ');
 
   // Fluid font-size from the named size scale, plus the optional max-width cap.
-  const style = { fontSize: fluidScale(resolveTextSizePx(item)) };
+  // The mobile variant shrinks harder (OVERLAY_TEXT_MOBILE_RATIO) than the
+  // desktop default so the hero text reads as noticeably more compact on phones.
+  const desktopPx = resolveTextSizePx(item);
+  const style = {
+    fontSize:
+      variant === 'mobile'
+        ? fluidScale(desktopPx, { mobileRatio: OVERLAY_TEXT_MOBILE_RATIO })
+        : fluidScale(desktopPx),
+  };
   if (typeof maxWidth === 'number' && maxWidth > 0) {
     style.maxWidth = `${maxWidth}px`;
   }
@@ -251,7 +260,7 @@ function HeroOverlayMobile({ items }) {
           }}
         >
           {top.map((item, i) => (
-            <HeroOverlayText key={item._key ?? `mt-${i}`} item={item} />
+            <HeroOverlayText key={item._key ?? `mt-${i}`} item={item} variant="mobile" />
           ))}
         </div>
       )}
@@ -271,7 +280,7 @@ function HeroOverlayMobile({ items }) {
           }}
         >
           {bottom.map((item, i) => (
-            <HeroOverlayText key={item._key ?? `mb-${i}`} item={item} />
+            <HeroOverlayText key={item._key ?? `mb-${i}`} item={item} variant="mobile" />
           ))}
         </div>
       )}

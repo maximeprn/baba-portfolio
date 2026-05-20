@@ -136,8 +136,10 @@ meanwhile. No write script, no `SANITY_WRITE_TOKEN` needed.
 
 - `textSize` (named) wins when set. Legacy items fall back style-aware
   (`body → lg`, `contact → md`).
-- Mobile size is auto-derived: the same `fluidScale()` ramp shrinks the desktop
-  ceiling, then auto-shrink trims further if needed. No separate mobile size.
+- Mobile size is auto-derived: overlay text renders at `OVERLAY_TEXT_MOBILE_RATIO`
+  (0.75) of its desktop size on phones — a deeper shrink than the nav's 0.85, so
+  the mobile/desktop contrast is pronounced (`md` → ~19px on phones). Auto-shrink
+  trims further if needed. No separate mobile size field.
 
 ## Dependencies
 

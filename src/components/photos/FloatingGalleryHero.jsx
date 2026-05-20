@@ -8,7 +8,7 @@
 
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { heroPhotos } from '../../sanity/loader';
-import { HeroBioOverlay } from '../ui/HeroSection';
+import { HeroBioOverlay } from '../ui/HeroOverlay';
 
 // Fisher-Yates shuffle (returns new array)
 function shuffle(arr) {
@@ -175,7 +175,7 @@ function FloatingGalleryHero() {
               alt="Photography portfolio"
               className="absolute inset-0 w-full h-full object-cover"
             />
-            <HeroBioOverlay />
+            <HeroBioOverlay variant="desktop" />
           </div>
         </div>
       </div>
@@ -191,7 +191,7 @@ function FloatingGalleryHero() {
               alt="Photography portfolio"
               className="absolute inset-0 w-full h-full object-cover"
             />
-            <HeroBioOverlay />
+            <HeroBioOverlay variant="mobile" />
           </div>
         </div>
       </div>

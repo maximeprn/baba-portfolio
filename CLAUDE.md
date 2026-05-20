@@ -150,7 +150,7 @@ _type in ["siteSettings", "heroOverlay", "showreel", "heroPhotos", "photoProject
 
 Four singletons + two collections:
 - **`siteSettings`** (singleton) — artist name, SEO, social URLs, footer copyright, nav style + link sizes
-- **`heroOverlay`** (singleton) — array of floating text items (bio, clients, phone, email…) with per-item anchor/offsets/size/link
+- **`heroOverlay`** (singleton) — array of floating text items (bio, clients, phone, email…). Per item: anchor + desktop offsets, text style (body/contact) + named text size, link, and a mobile-visibility toggle. Desktop uses free positioning; mobile auto-arranges into nav-safe zones (see Hero overlay model below)
 - **`showreel`** (singleton) — Vimeo URL + hero video file path
 - **`heroPhotos`** (singleton) — array of uploaded images for the Photos page slideshow
 - **`photoProject`** (collection) — one document per photo project. Fields grouped into "Content" (title, slug, description, year, client, category, photos, visible, featured) and "Layout (advanced)" (previewPattern, previewPhotoIndices) so Basile sees the editable content fields by default and can drill into layout knobs when needed. `visible: false` hides the project from the public Photos page without unpublishing the document.
@@ -160,13 +160,18 @@ Field reference: see `sanity/schemas/*.js` for canonical definitions. Singletons
 
 ### Hero overlay model
 
-Each `heroOverlay.items[]` entry is an absolute-positioned text/link block. The renderer ([src/components/ui/HeroSection.jsx](src/components/ui/HeroSection.jsx)) supports:
+`heroOverlay.items[]` is rendered by [src/components/ui/HeroOverlay.jsx](src/components/ui/HeroOverlay.jsx) (pure layout helpers split into [heroOverlayLayout.js](src/components/ui/heroOverlayLayout.js)). `HeroBioOverlay` takes a `variant` prop — each hero (Films `HeroSection`, Photos `FloatingGalleryHero`) renders it twice, once inside its `hidden md:block` wrapper and once inside its `md:hidden` wrapper.
 
-- **Anchor** — 9 options (`top-left`, `bottom-right`, etc.) sets which corner offsets are measured from.
-- **Offset X / Y** — pixels from the anchor side.
+**Desktop (`variant="desktop"`)** — free absolute positioning:
+- **Anchor** — 6 options (left/right × top/middle/bottom — never centered) sets which corner offsets are measured from. Top-anchored items are clamped below a 96 px nav-safe line via CSS `max()` so a low offset can't reach the nav.
+- **Offset X / Y** — pixels from the anchor side (desktop only).
 - **Max width** — caps the item's width so long text wraps instead of overflowing.
-- **Stack with adjacent siblings** — adjacent flagged items at the same anchor merge into one flex-row-wrap container. Items go inline when there's room, wrap to vertical when not. The first flagged item's anchor + offsets define the stack position; later items inherit.
-- **Stack row gap** — vertical gap between rows once a stack wraps. Defaults to 24 px (deliberately bigger than line-height so paragraph separation stays visible on mobile).
+- **Stack with adjacent siblings** — adjacent flagged items at the same anchor merge into one flex-row-wrap container (desktop only). The first flagged item's anchor + offsets define the stack position; later items inherit.
+- **Stack row gap** — vertical gap between rows once a stack wraps (desktop only).
+
+**Mobile (`variant="mobile"`)** — automatic, unbreakable layout. Offsets/stacks are ignored. Items split into a top zone (anchored 104 px below the top, clear of the nav) and a bottom zone, each a left-aligned flex column. The vertical half of each item's `anchor` picks the zone (Top/Middle → top, Bottom → bottom). A `ResizeObserver` measures both zones and CSS-`transform`-scales them down (floored at 0.6) if their combined height wouldn't fit. `mobileVisible: false` hides an item from phones. See [.mdd/docs/13-hero-overlay-mobile.md](.mdd/docs/13-hero-overlay-mobile.md).
+
+**Text style + size** — two separate CMS fields. `size` (titled "Text style" in Studio) is `body` or `contact` and controls casing/letter-spacing only. `textSize` is a named scale (`xs`/`sm`/`md`/`lg`/`xl` → 18/22/25/28/34 px, run through `fluidScale`). Legacy items without `textSize` fall back style-aware (`body`→28 px, `contact`→25 px), so the field rename is migration-free.
 
 ### Fluid typography
 
@@ -176,7 +181,8 @@ Each `heroOverlay.items[]` entry is an absolute-positioned text/link block. The 
 
 - `src/data/siteConfig.js` — Compatibility shim. Components still `import { siteConfig }` but the values stream from `src/sanity/loader.js`.
 - `src/data/films.js` / `src/data/photoProjects.js` — Legacy fallback data. Both are now CMS-driven (Stages 4 + 5); these stay in the repo as a safety net the loader falls back to if `cms.json` is empty.
-- `src/components/ui/HeroSection.jsx` — Fullscreen sticky video hero. Reads `heroOverlay.items[]` from CMS for the floating text overlay.
+- `src/components/ui/HeroSection.jsx` — Fullscreen sticky video hero. Renders `<HeroBioOverlay>` for the CMS-driven floating text overlay.
+- `src/components/ui/HeroOverlay.jsx` — Shared hero text overlay (`HeroBioOverlay`), used by both heroes. Desktop = free positioning; mobile = automatic nav-safe zones. Layout maths in `heroOverlayLayout.js`.
 - `src/components/films/FilmModal.jsx` — Shared fullscreen Vimeo overlay (used by both film detail and showreel).
 - `src/components/ui/PersistentHeroText.jsx` — Split-color artist name overlay (white on video, black on background).
 - `tailwind.config.js` — Custom design tokens all backed by CSS variables from `index.css`.

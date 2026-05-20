@@ -1,5 +1,555 @@
 {
-  "films": [],
+  "films": [
+    {
+      "id": "film-veja-condor-3",
+      "slug": "veja-condor-3",
+      "title": "Veja Condor 3",
+      "description": "A sport film built around the launch of the Condor 3. From marathon tarmac to mountain trail, directed, edited, and scored by Basile Deschamps.",
+      "year": 2025,
+      "client": "Veja",
+      "category": "Commercial",
+      "featured": true,
+      "collapsed": false,
+      "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/9b8174848a577073e73b1c85781b355dfad4f02f-1280x720.jpg",
+      "videoUrl": "https://player.vimeo.com/video/1062003612",
+      "videoType": "vimeo",
+      "videoFile": "/videos/Veja Condor 3.mp4",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "Edit",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": [
+          {
+            "role": "Music",
+            "name": "Basile Deschamps"
+          }
+        ]
+      },
+      "muxPlaybackId": null,
+      "muxStatus": null,
+      "muxStreamUrl": null,
+      "muxPosterUrl": null,
+      "imagePosition": "left"
+    },
+    {
+      "id": "film-sacai-ss25",
+      "slug": "sacai-ss25",
+      "title": "Sacai SS25",
+      "description": "A backstage film shot during Sacai's Spring/Summer 2025 show in Paris. Directed, edited, and scored by Basile Deschamps, capturing the atmosphere around the collection before and after the runway.",
+      "year": 2025,
+      "client": "Sacai",
+      "category": "Fashion / Behind the Scenes",
+      "featured": true,
+      "collapsed": false,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/1047455821",
+      "videoType": "vimeo",
+      "videoFile": "/videos/Sacai SS25.mp4",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "Edit",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": [
+          {
+            "role": "Music",
+            "name": "Basile Deschamps"
+          }
+        ]
+      },
+      "muxPlaybackId": null,
+      "muxStatus": null,
+      "muxStreamUrl": null,
+      "muxPosterUrl": null,
+      "imagePosition": "right"
+    },
+    {
+      "id": "film-decathlon-cocreation",
+      "slug": "decathlon-cocreation",
+      "title": "Decathlon \"Co-Creation\" Olympic Games Campaign",
+      "description": "A campaign made for the Paris 2024 Olympic Games, built around the idea of co-creation between athletes, designers, and communities.",
+      "year": 2024,
+      "client": "Decathlon",
+      "category": "Commercial",
+      "featured": true,
+      "collapsed": false,
+      "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/7e70eebe70c1317d1a46aa01125a2a76350a7d97-720x576.jpg",
+      "videoUrl": "https://player.vimeo.com/video/989542038",
+      "videoType": "vimeo",
+      "videoFile": "/videos/Decathlon Co-Creation Olympic Games Campaign.mp4",
+      "aspectRatio": 1.25,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "DOP",
+            "name": "Julien Caldarone / Studio Lamadone"
+          },
+          {
+            "role": "Edit, Compositing, Color",
+            "name": "Lucas Brunier"
+          },
+          {
+            "role": "Music",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": [
+          {
+            "role": "Production",
+            "name": "Pral"
+          },
+          {
+            "role": "Producer",
+            "name": "@alloalix"
+          },
+          {
+            "role": "Line Producer",
+            "name": "@antoinewatine"
+          }
+        ]
+      },
+      "muxPlaybackId": null,
+      "muxStatus": null,
+      "muxStreamUrl": null,
+      "muxPosterUrl": null,
+      "imagePosition": "left"
+    },
+    {
+      "id": "film-quentin-malriq",
+      "slug": "quentin-malriq",
+      "title": "Quentin Malriq, An Athlete Portrait by DISTANCE",
+      "description": "A film following middle-distance runner Quentin Malriq as he fights for Olympic selection. Made for ASICS, the portrait stays close to the daily grind. The margins are tiny and the stakes are everything.",
+      "year": 2023,
+      "client": "ASICS",
+      "category": "Documentary / Sport",
+      "featured": true,
+      "collapsed": false,
+      "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/71f5cbe29ada11a67ae78ac4a8979a7b37cd859f-1280x720.jpg",
+      "videoUrl": "https://player.vimeo.com/video/895840721",
+      "videoType": "vimeo",
+      "videoFile": "/videos/Quentin Malriq - An athlete portrait by DISTANCE.mp4",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": [
+          {
+            "role": "Production",
+            "name": "DISTANCE"
+          }
+        ]
+      },
+      "muxPlaybackId": null,
+      "muxStatus": null,
+      "muxStreamUrl": null,
+      "muxPosterUrl": null,
+      "imagePosition": "right"
+    },
+    {
+      "id": "film-le-cnd-camping-2023",
+      "slug": "le-cnd-camping-2023",
+      "title": "Le CN D, Camping 2023",
+      "description": "A doc shot during Camping, a two-week international gathering of hundreds of dancers at the CN D in Pantin. Classes, workshops, krump to contemporary. The film captures what it feels like when that many bodies share one building.",
+      "year": 2023,
+      "client": "Centre National de la Danse",
+      "category": "Documentary",
+      "featured": true,
+      "collapsed": false,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/868701940",
+      "videoType": "vimeo",
+      "videoFile": "/videos/Le CN D - camping 2023.mp4",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": []
+      },
+      "muxPlaybackId": null,
+      "muxStatus": null,
+      "muxStreamUrl": null,
+      "muxPosterUrl": null,
+      "imagePosition": "left"
+    },
+    {
+      "id": "film-diversions-ep-teaser",
+      "slug": "diversions-ep-teaser",
+      "title": "DIVERSIONS EP by Antoine Bourachot, Teaser",
+      "description": "A Super 8 teaser for composer Antoine Bourachot's EP. Synthesisers, vintage gear, the quiet of a recording studio. Analog and warm.",
+      "year": 2023,
+      "client": "Antoine Bourachot",
+      "category": "Music / Short Film",
+      "featured": true,
+      "collapsed": false,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/863910150",
+      "videoType": "vimeo",
+      "videoFile": "/videos/DIVERSIONS EP by Antoine Bourachot - Teaser.mp4",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": [
+          {
+            "role": "Artist",
+            "name": "Antoine Bourachot"
+          }
+        ]
+      },
+      "muxPlaybackId": null,
+      "muxStatus": null,
+      "muxStreamUrl": null,
+      "muxPosterUrl": null,
+      "imagePosition": "right"
+    },
+    {
+      "id": "film-badre-documentary",
+      "slug": "badre-documentary",
+      "title": "Badre, A Short Documentary by DISTANCE",
+      "description": "A portrait of marathon runner Badre Zioini returning to competition after five years away. Part of On Running's Point2 series.",
+      "year": 2022,
+      "client": "On Running",
+      "category": "Documentary / Sport",
+      "featured": true,
+      "collapsed": false,
+      "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/d808bbc7abdd907bd556838c81e38442a50b661a-1280x960.jpg",
+      "videoUrl": "https://player.vimeo.com/video/768152390",
+      "videoType": "vimeo",
+      "videoFile": "/videos/Badre - a short documentary by DISTANCE.mp4",
+      "aspectRatio": 1.33,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "DOP",
+            "name": "Julien Caldarone"
+          }
+        ],
+        "right": [
+          {
+            "role": "Production",
+            "name": "DISTANCE"
+          }
+        ]
+      },
+      "muxPlaybackId": null,
+      "muxStatus": null,
+      "muxStreamUrl": null,
+      "muxPosterUrl": null,
+      "imagePosition": "left"
+    },
+    {
+      "id": "film-assos-feno-suit",
+      "slug": "assos-feno-suit",
+      "title": "ASSOS Feno Suit, Director's Cut",
+      "description": "The director's cut for the ASSOS Feno Suit launch. Goes deeper than the commercial version into the rider, the craft, and what Swiss cycling culture actually looks like up close.",
+      "year": 2021,
+      "client": "ASSOS of Switzerland",
+      "category": "Branded Documentary",
+      "featured": true,
+      "collapsed": true,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/647313570",
+      "videoType": "vimeo",
+      "videoFile": "/videos/ASSOS Feno Suit - Director's Cut.mp4",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": []
+      },
+      "muxPlaybackId": null,
+      "muxStatus": null,
+      "muxStreamUrl": null,
+      "muxPosterUrl": null,
+      "imagePosition": "right"
+    },
+    {
+      "id": "film-showreel-2021",
+      "slug": "showreel-2021",
+      "title": "Showreel 2021",
+      "description": "A reel compiled from footage shot in early 2021. Sports, fashumentary.",
+      "year": 2021,
+      "client": "Personal",
+      "category": "Showreel",
+      "featured": true,
+      "collapsed": true,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/562172132",
+      "videoType": "vimeo",
+      "videoFile": "/videos/Showreel 2021.mp4",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": []
+      },
+      "muxPlaybackId": null,
+      "muxStatus": null,
+      "muxStreamUrl": null,
+      "muxPosterUrl": null,
+      "imagePosition": "left"
+    },
+    {
+      "id": "film-salomon-trail-running",
+      "slug": "salomon-trail-running",
+      "title": "Salomon Trail Running (Spec Ad)",
+      "description": "A self-initiated trail running film for Salomon. Directed and scored by Basile Deschamps, featuring Nathan Hirsch, Johnathan Bamberger, Matt Rosengarten, and Victor Sion.",
+      "year": 2021,
+      "client": "Salomon",
+      "category": "Spec Commercial",
+      "featured": true,
+      "collapsed": true,
+      "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/0af39bdc01276f0d847b369bf554f9880416b3c3-1280x720.jpg",
+      "videoUrl": "https://player.vimeo.com/video/551544527",
+      "videoType": "vimeo",
+      "videoFile": "/videos/Salomon Trail Running (Spec ad).mp4",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "Music",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": [
+          {
+            "role": "Featuring",
+            "name": "Nathan Hirsch, Johnathan Bamberger, Matt Rosengarten, Victor Sion"
+          }
+        ]
+      },
+      "muxPlaybackId": null,
+      "muxStatus": null,
+      "muxStreamUrl": null,
+      "muxPosterUrl": null,
+      "imagePosition": "right"
+    },
+    {
+      "id": "film-bastille-maison-mara",
+      "slug": "bastille-maison-mara",
+      "title": "Bastille, Maison Mara",
+      "description": "A fashion film for Maison Mara, directed and shot by Basile Deschamps. Styling by Natasha Els, with Loren Humpfreys and Olivier Ntumba. Paris, quiet confidence, nothing overdone.",
+      "year": 2021,
+      "client": "Maison Mara",
+      "category": "Fashion Film",
+      "featured": true,
+      "collapsed": true,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/541582370",
+      "videoType": "vimeo",
+      "videoFile": "/videos/Bastille - Maison Mara.mp4",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction / DOP",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "Styling",
+            "name": "Natasha Els"
+          }
+        ],
+        "right": [
+          {
+            "role": "Cast",
+            "name": "Loren Humpfreys, Olivier Ntumba"
+          }
+        ]
+      },
+      "muxPlaybackId": null,
+      "muxStatus": null,
+      "muxStreamUrl": null,
+      "muxPosterUrl": null,
+      "imagePosition": "left"
+    },
+    {
+      "id": "film-kamikwazi-locked-down",
+      "slug": "kamikwazi-locked-down",
+      "title": "Kamikwazi, Locked Down",
+      "description": "A music video made during lockdown. Written and performed by Julius Adorsu (Kamikwazi), directed and produced by Basile Deschamps. Small space, real energy.",
+      "year": 2021,
+      "client": "Kamikwazi",
+      "category": "Music Video",
+      "featured": true,
+      "collapsed": true,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/513405009",
+      "videoType": "vimeo",
+      "videoFile": "/videos/Kamikwazi - Locked Down.mp4",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction / Production",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": [
+          {
+            "role": "Artist",
+            "name": "Julius Adorsu (Kamikwazi)"
+          }
+        ]
+      },
+      "muxPlaybackId": null,
+      "muxStatus": null,
+      "muxStreamUrl": null,
+      "muxPosterUrl": null,
+      "imagePosition": "right"
+    },
+    {
+      "id": "film-hommage-back-to-1992-2",
+      "slug": "hommage-back-to-1992-2",
+      "title": "Hommage Clothing, Back to 1992 (Video No. 2)",
+      "description": "Second film in the Back to 1992 campaign. Directed by Basile Deschamps, shot by Yann Macherez, edited by Tristan Deschamps. Nineties streetwear through a modern lens.",
+      "year": 2018,
+      "client": "Hommage Clothing",
+      "category": "Fashion Film",
+      "featured": true,
+      "collapsed": true,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/271458415",
+      "videoType": "vimeo",
+      "videoFile": "/videos/Hommage Clothing - Back to 1992.mp4",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "DOP",
+            "name": "Yann Macherez"
+          }
+        ],
+        "right": [
+          {
+            "role": "Edit",
+            "name": "Tristan Deschamps"
+          }
+        ]
+      },
+      "muxPlaybackId": null,
+      "muxStatus": null,
+      "muxStreamUrl": null,
+      "muxPosterUrl": null,
+      "imagePosition": "left"
+    },
+    {
+      "id": "film-hommage-back-to-1992-1",
+      "slug": "hommage-back-to-1992-1",
+      "title": "Hommage Clothing, Back to 1992 (Video No. 1)",
+      "description": "First film in the Back to 1992 series for Hommage Clothing. Directed by Basile Deschamps. Early work, archive-inspired.",
+      "year": 2018,
+      "client": "Hommage Clothing",
+      "category": "Fashion Film",
+      "featured": true,
+      "collapsed": true,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/269335097",
+      "videoType": "vimeo",
+      "videoFile": "/videos/Hommage Clothing - Back to 1992 1.mp4",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": []
+      },
+      "muxPlaybackId": null,
+      "muxStatus": null,
+      "muxStreamUrl": null,
+      "muxPosterUrl": null,
+      "imagePosition": "right"
+    },
+    {
+      "id": "film-hommage-late-16-collection",
+      "slug": "hommage-late-16-collection",
+      "title": "Hommage, Late '16 Collection",
+      "description": "Basile Deschamps' first fashion film. Made for Hommage Clothing's late 2016 collection with Tristan J. Deschamps and Clément Pinaut.",
+      "year": 2016,
+      "client": "Hommage Clothing",
+      "category": "Fashion Film",
+      "featured": true,
+      "collapsed": true,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/187173133",
+      "videoType": "vimeo",
+      "videoFile": "/videos/Hommage - Late 16' Collection.mp4",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": [
+          {
+            "role": "With",
+            "name": "Tristan J. Deschamps, Clément Pinaut"
+          }
+        ]
+      },
+      "muxPlaybackId": null,
+      "muxStatus": null,
+      "muxStreamUrl": null,
+      "muxPosterUrl": null,
+      "imagePosition": "left"
+    }
+  ],
   "heroOverlay": {
     "_createdAt": "2026-05-19T16:05:43Z",
     "_id": "heroOverlay",
@@ -2676,5 +3226,5 @@
     "socialTwitter": null,
     "socialVimeo": "https://vimeo.com/user37669788"
   },
-  "_fetchedAt": "2026-05-20T09:51:26.959Z"
+  "_fetchedAt": "2026-05-20T10:25:33.088Z"
 }

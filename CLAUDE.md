@@ -27,6 +27,7 @@ npm run dev
 - `npm run cms:fix-photo-project-ranks` — Re-assigns every photoProject's `orderRank` to a fresh LexoRank value. Run when drag-to-reorder in Studio is producing flaky results (a sign the ranks aren't LexoRank-compatible). Needs `SANITY_WRITE_TOKEN`.
 - `npm run cms:upload-films` — One-shot: read `src/data/films.js` (`FILM_ENTRIES`) and create `film` docs in Sanity. Idempotent (pinned doc IDs = `film-<slug>`). Uploads existing posters from `public/posters/`; films without a poster on disk get a blank thumbnail. Needs `SANITY_WRITE_TOKEN`. See [.mdd/docs/10-cms-films.md](.mdd/docs/10-cms-films.md).
 - `npm run cms:fix-film-ranks` — Re-assigns every film's `orderRank` to a fresh LexoRank value. Same fix as for photo projects. Needs `SANITY_WRITE_TOKEN`.
+- `npm run cms:migrate-blob-to-mux` — One-shot: for every film with a Blob `videoFile` and no `videoMux`, copy the video into Mux (transcoded + ABR HLS) and patch the Sanity doc. Idempotent. Needs `SANITY_WRITE_TOKEN`, `MUX_TOKEN_ID`, `MUX_TOKEN_SECRET`. See [.mdd/docs/12-cms-video-uploads-mux.md](.mdd/docs/12-cms-video-uploads-mux.md).
 - `npm run studio:deploy` — Deploy a hosted backup studio to `basiledeschamps.sanity.studio`
 
 **When to run each script** — quick reference:
@@ -42,6 +43,8 @@ npm run dev
 | Adding a new film | Create in Studio via `/admin → 🎬 Films` (no script needed) |
 | Bulk re-import from legacy `photoProjects.js` | `cms:upload-photo-projects` (overwrites Sanity docs — manual edits lost) |
 | Bulk re-import from legacy `films.js` | `cms:upload-films` (overwrites Sanity docs — manual edits lost) |
+| Migrate legacy Blob videos into Mux (one time) | `cms:migrate-blob-to-mux` |
+| Adding/updating a film's preview video | Upload in Studio via `/admin → 🎬 Films → Media → Preview video (Mux)` |
 
 Before running any `cms:upload-*` or `cms:fix-*` script: leave the Sanity auto-webhook disabled (default) so the N mutations don't fire N Vercel builds. After the script finishes, click the Studio **🚀 Deploy** tool to publish the changes.
 
@@ -151,7 +154,7 @@ Four singletons + two collections:
 - **`showreel`** (singleton) — Vimeo URL + hero video file path
 - **`heroPhotos`** (singleton) — array of uploaded images for the Photos page slideshow
 - **`photoProject`** (collection) — one document per photo project. Fields grouped into "Content" (title, slug, description, year, client, category, photos, featured, displayOrder) and "Layout (advanced)" (previewPattern, previewPhotoIndices, imagePosition) so Basile sees the editable content fields by default and can drill into layout knobs when needed.
-- **`film`** (collection) — one document per film. Fields grouped into "Content" (title, slug, description, year, client, category, credits, featured, collapsed), "Media" (thumbnail image, Vimeo URL, videoFile path, aspectRatio), and "Layout (advanced)" (imagePosition). Videos are NOT in Sanity — only the `/videos/<file>.mp4` path string is stored; files live on Vercel Blob (Sanity free tier caps individual files at 100 MB). `credits` is a flat array of `{side, role, name}` rows; the runtime rebuilds the `{left:[], right:[]}` shape expected by components.
+- **`film`** (collection) — one document per film. Fields grouped into "Content" (title, slug, description, year, client, category, credits, featured, collapsed), "Media" (thumbnail image, Vimeo URL, Mux preview asset, aspectRatio), and "Layout (advanced)" (imagePosition). Autoplaying preview video is stored in Mux via `sanity-plugin-mux-input` — drag-and-drop in Studio, Mux transcodes to ABR HLS and serves via its own CDN (does NOT consume Vercel Fast Data Transfer). A legacy `videoFile` path string remains as a read-only fallback for films that haven't been migrated to Mux yet. `credits` is a flat array of `{side, role, name}` rows; the runtime rebuilds the `{left:[], right:[]}` shape expected by components.
 
 Field reference: see `sanity/schemas/*.js` for canonical definitions. Singletons are enforced via `sanity/desk/structure.js` + action filters in `sanity.config.js`. Both collections (`photoProject`, `film`) use `@sanity/orderable-document-list` and are sorted by `orderRank` ascending.
 

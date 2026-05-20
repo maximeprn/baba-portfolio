@@ -169,34 +169,44 @@ export const film = defineType({
     }),
     defineField({
       name: 'videoUrl',
-      title: 'Vimeo player URL',
+      title: 'Vimeo player URL (modal)',
       description:
-        'Drives the click-through modal. Format: https://player.vimeo.com/video/<id>',
+        'Drives the full-screen Vimeo modal opened on click. Format: https://player.vimeo.com/video/<id>',
       type: 'url',
       group: 'media',
       validation: (Rule) => Rule.uri({ scheme: ['http', 'https'] }),
     }),
     defineField({
+      name: 'videoMux',
+      title: 'Preview video (Mux)',
+      description:
+        'Autoplaying preview shown on the homepage card. Drop a .mov/.mp4 here and Mux will transcode + serve via adaptive bitrate streaming. Encoding takes ~30s after upload completes.',
+      type: 'mux.video',
+      group: 'media',
+    }),
+    defineField({
+      name: 'videoFile',
+      title: 'Legacy video file path (Vercel Blob)',
+      description:
+        'Transitional fallback. Path under /videos/ — e.g. "/videos/Veja Condor 3.mp4". Used only when "Preview video (Mux)" above is empty. Will be removed in a future migration once every film has a Mux asset.',
+      type: 'string',
+      group: 'media',
+      readOnly: true,
+    }),
+    defineField({
       name: 'videoType',
-      title: 'Video type',
+      title: 'Legacy video type',
       type: 'string',
       options: {
         list: [
-          { title: 'Vimeo (recommended)', value: 'vimeo' },
+          { title: 'Vimeo', value: 'vimeo' },
           { title: 'MP4 (direct)', value: 'mp4' },
         ],
         layout: 'radio',
       },
       initialValue: 'vimeo',
       group: 'media',
-    }),
-    defineField({
-      name: 'videoFile',
-      title: 'Video file path',
-      description:
-        'Path under /videos/ — e.g. "/videos/Veja Condor 3.mp4". The file lives on Vercel Blob; this string is the rewrite target. Leave blank if the film has no autoplaying preview.',
-      type: 'string',
-      group: 'media',
+      hidden: true,
     }),
     defineField({
       name: 'aspectRatio',

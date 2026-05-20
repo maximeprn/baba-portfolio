@@ -18,19 +18,23 @@
     "cms:fix-photo-project-ranks": "node scripts/fix-photo-project-ranks.mjs",
     "cms:upload-films": "node scripts/upload-films.mjs",
     "cms:fix-film-ranks": "node scripts/fix-film-ranks.mjs",
+    "cms:migrate-blob-to-mux": "node scripts/migrate-blob-to-mux.mjs",
     "studio:dev": "sanity dev",
     "studio:deploy": "sanity deploy"
   },
   "dependencies": {
+    "@mux/mux-node": "^14.1.0",
     "@sanity/client": "^7.22.0",
     "@sanity/image-url": "^1.2.0",
     "@sanity/orderable-document-list": "^1.5.1",
     "@sanity/vision": "^4.22.0",
+    "hls.js": "^1.6.16",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet-async": "^3.0.0",
     "react-router-dom": "^6.22.0",
     "sanity": "^4.22.0",
+    "sanity-plugin-mux-input": "^2.19.0",
     "styled-components": "^6.4.2"
   },
   "devDependencies": {

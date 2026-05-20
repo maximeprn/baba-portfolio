@@ -14,7 +14,7 @@
  * bottom of the array, sourced from `./videoShorts`.
  */
 
-import { shortVideo } from './videoShorts';
+import { shortVideo } from './videoShorts.js';
 
 /**
  * Raw film entries with their ORIGINAL videoFile paths (no shortVideo()

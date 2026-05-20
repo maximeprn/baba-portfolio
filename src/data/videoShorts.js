@@ -26,7 +26,7 @@
  * full video is served.
  */
 
-import blobUrls from './blobUrls.json';
+import blobUrls from './blobUrls.json' with { type: 'json' };
 
 const VIDEO_SHORTS = {
   "/videos/ASSOS Feno Suit - Director's Cut.mp4":

@@ -107,7 +107,9 @@ function ExpandedPhotoGallery({ project, pinHeader, onPhotoClick, onClose }) {
     const unsubscribe = addScrollListener(apply);
     return () => {
       unsubscribe();
-      if (headerRef.current) headerRef.current.style.transform = '';
+      // Use the captured `header`, not headerRef.current — the ref may
+      // point at a different node by the time cleanup runs.
+      header.style.transform = '';
     };
   }, [pinHeader, isDesktop, addScrollListener, getScrollPosition]);
 

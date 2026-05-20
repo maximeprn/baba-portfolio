@@ -393,7 +393,7 @@ function HeroSection({ onVideoClick, onReady }) {
       }, 100);
     }, 2500);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isSafari]);
 
   // Mute hero when user opens a video (showreel or film modal)
   const handleHeroVideoClick = () => {

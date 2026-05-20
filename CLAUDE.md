@@ -25,18 +25,23 @@ npm run dev
 - `npm run cms:upload-hero-photos` — One-shot: upload every file from `public/img/BABA PHOTOS/` to Sanity + write the `heroPhotos` singleton. Re-runs are cheap (SHA1 dedup). Needs `SANITY_WRITE_TOKEN`. See [.mdd/docs/08-cms-hero-photos.md](.mdd/docs/08-cms-hero-photos.md).
 - `npm run cms:upload-photo-projects` — One-shot: read `src/data/photoProjects.js` and create 22 `photoProject` docs in Sanity. Idempotent (pinned doc IDs). Needs `SANITY_WRITE_TOKEN`. See [.mdd/docs/09-cms-photo-projects.md](.mdd/docs/09-cms-photo-projects.md).
 - `npm run cms:fix-photo-project-ranks` — Re-assigns every photoProject's `orderRank` to a fresh LexoRank value. Run when drag-to-reorder in Studio is producing flaky results (a sign the ranks aren't LexoRank-compatible). Needs `SANITY_WRITE_TOKEN`.
+- `npm run cms:upload-films` — One-shot: read `src/data/films.js` (`FILM_ENTRIES`) and create `film` docs in Sanity. Idempotent (pinned doc IDs = `film-<slug>`). Uploads existing posters from `public/posters/`; films without a poster on disk get a blank thumbnail. Needs `SANITY_WRITE_TOKEN`. See [.mdd/docs/10-cms-films.md](.mdd/docs/10-cms-films.md).
+- `npm run cms:fix-film-ranks` — Re-assigns every film's `orderRank` to a fresh LexoRank value. Same fix as for photo projects. Needs `SANITY_WRITE_TOKEN`.
 - `npm run studio:deploy` — Deploy a hosted backup studio to `basiledeschamps.sanity.studio`
 
 **When to run each script** — quick reference:
 
 | Situation | Command |
 |---|---|
-| Fresh clone, first-time setup | `cms:seed` → `cms:upload-hero-photos` → `cms:upload-photo-projects` |
+| Fresh clone, first-time setup | `cms:seed` → `cms:upload-hero-photos` → `cms:upload-photo-projects` → `cms:upload-films` |
 | Sanity content changed, want it locally | `cms:fetch` (or `cms:watch` for live reload) |
-| Drag-to-reorder behaving weirdly | `cms:fix-photo-project-ranks` |
+| Drag-to-reorder behaving weirdly (photos) | `cms:fix-photo-project-ranks` |
+| Drag-to-reorder behaving weirdly (films) | `cms:fix-film-ranks` |
 | Adding a new photo to the slideshow | Upload in Studio via `/admin → 🖼️ Hero photos` (no script needed) |
 | Adding a new photo project | Create in Studio via `/admin → 📷 Photo projects` (no script needed) |
+| Adding a new film | Create in Studio via `/admin → 🎬 Films` (no script needed) |
 | Bulk re-import from legacy `photoProjects.js` | `cms:upload-photo-projects` (overwrites Sanity docs — manual edits lost) |
+| Bulk re-import from legacy `films.js` | `cms:upload-films` (overwrites Sanity docs — manual edits lost) |
 
 Before running any `cms:upload-*` or `cms:fix-*` script: leave the Sanity auto-webhook disabled (default) so the N mutations don't fire N Vercel builds. After the script finishes, click the Studio **🚀 Deploy** tool to publish the changes.
 
@@ -122,7 +127,7 @@ Security note: the deploy hook URL ends up in the public Studio bundle (everyone
 
 ### Migration scripts — manual webhook toggle
 
-Migration scripts (`cms:upload-photo-projects`, `cms:upload-hero-photos`, `cms:fix-photo-project-ranks`, `cms:seed`) batch all their mutations into a single Sanity transaction so the data write is atomic. But Sanity still fires N webhook events (one per document). If the auto-webhook is enabled, that's N Vercel deploys.
+Migration scripts (`cms:upload-photo-projects`, `cms:upload-hero-photos`, `cms:upload-films`, `cms:fix-photo-project-ranks`, `cms:fix-film-ranks`, `cms:seed`) batch all their mutations into a single Sanity transaction so the data write is atomic. But Sanity still fires N webhook events (one per document). If the auto-webhook is enabled, that's N Vercel deploys.
 
 Workflow:
 1. Sanity Manage → toggle webhook **disabled** (if not already)
@@ -135,19 +140,20 @@ Workflow:
 
 Current filter (matches every schema type defined in [sanity/schemas/index.js](sanity/schemas/index.js)):
 ```groq
-_type in ["siteSettings", "heroOverlay", "showreel", "heroPhotos", "photoProject"]
+_type in ["siteSettings", "heroOverlay", "showreel", "heroPhotos", "photoProject", "film"]
 ```
 
 ### Schema
 
-Four singletons + one collection:
+Four singletons + two collections:
 - **`siteSettings`** (singleton) — artist name, SEO, social URLs, footer copyright, nav style + link sizes
 - **`heroOverlay`** (singleton) — array of floating text items (bio, clients, phone, email…) with per-item anchor/offsets/size/link
 - **`showreel`** (singleton) — Vimeo URL + hero video file path
 - **`heroPhotos`** (singleton) — array of uploaded images for the Photos page slideshow
 - **`photoProject`** (collection) — one document per photo project. Fields grouped into "Content" (title, slug, description, year, client, category, photos, featured, displayOrder) and "Layout (advanced)" (previewPattern, previewPhotoIndices, imagePosition) so Basile sees the editable content fields by default and can drill into layout knobs when needed.
+- **`film`** (collection) — one document per film. Fields grouped into "Content" (title, slug, description, year, client, category, credits, featured, collapsed), "Media" (thumbnail image, Vimeo URL, videoFile path, aspectRatio), and "Layout (advanced)" (imagePosition). Videos are NOT in Sanity — only the `/videos/<file>.mp4` path string is stored; files live on Vercel Blob (Sanity free tier caps individual files at 100 MB). `credits` is a flat array of `{side, role, name}` rows; the runtime rebuilds the `{left:[], right:[]}` shape expected by components.
 
-Field reference: see `sanity/schemas/*.js` for canonical definitions. Singletons are enforced via `sanity/desk/structure.js` + action filters in `sanity.config.js`. The `photoProject` list view is sorted by `displayOrder` ascending.
+Field reference: see `sanity/schemas/*.js` for canonical definitions. Singletons are enforced via `sanity/desk/structure.js` + action filters in `sanity.config.js`. Both collections (`photoProject`, `film`) use `@sanity/orderable-document-list` and are sorted by `orderRank` ascending.
 
 ### Hero overlay model
 
@@ -166,7 +172,7 @@ Each `heroOverlay.items[]` entry is an absolute-positioned text/link block. The 
 ## Key Files
 
 - `src/data/siteConfig.js` — Compatibility shim. Components still `import { siteConfig }` but the values stream from `src/sanity/loader.js`.
-- `src/data/films.js` / `src/data/photoProjects.js` — Static content (future Stage 4/5 will move to CMS).
+- `src/data/films.js` / `src/data/photoProjects.js` — Legacy fallback data. Both are now CMS-driven (Stages 4 + 5); these stay in the repo as a safety net the loader falls back to if `cms.json` is empty.
 - `src/components/ui/HeroSection.jsx` — Fullscreen sticky video hero. Reads `heroOverlay.items[]` from CMS for the floating text overlay.
 - `src/components/films/FilmModal.jsx` — Shared fullscreen Vimeo overlay (used by both film detail and showreel).
 - `src/components/ui/PersistentHeroText.jsx` — Split-color artist name overlay (white on video, black on background).

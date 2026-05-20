@@ -8,7 +8,7 @@ import CollapsedFilmCard from '../components/films/CollapsedFilmCard';
 import FilmModal from '../components/films/FilmModal';
 import TitleSection from '../components/ui/TitleSection';
 
-import { films } from '../data/films';
+import { films } from '../sanity/loader';
 import { siteConfig } from '../data/siteConfig';
 
 function ShowreelOverlay({ vimeoUrl, onClose }) {

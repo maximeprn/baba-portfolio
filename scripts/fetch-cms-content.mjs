@@ -69,6 +69,24 @@ const QUERY = `{
       "width":  asset->metadata.dimensions.width,
       "height": asset->metadata.dimensions.height
     }
+  },
+  "films": *[_type == "film"] | order(orderRank asc) {
+    _id,
+    title,
+    "slug": slug.current,
+    description,
+    year,
+    client,
+    category,
+    featured,
+    collapsed,
+    "thumbnail": thumbnail.asset->url,
+    videoUrl,
+    videoType,
+    videoFile,
+    aspectRatio,
+    imagePosition,
+    credits[]{ side, role, name }
   }
 }`;
 
@@ -133,6 +151,38 @@ function flattenPhotoProject(project) {
   return out;
 }
 
+function flattenFilm(film) {
+  // Reconstruct credits as { left: [...], right: [...] } from the flat
+  // array of { side, role, name } so existing React components don't need
+  // any change.
+  const credits = { left: [], right: [] };
+  for (const item of film.credits ?? []) {
+    if (!item || !item.role || !item.name) continue;
+    const side = item.side === 'right' ? 'right' : 'left';
+    credits[side].push({ role: item.role, name: item.name });
+  }
+
+  const out = {
+    id: film._id,
+    slug: film.slug,
+    title: film.title,
+    description: film.description ?? '',
+    year: film.year ?? null,
+    client: film.client ?? '',
+    category: film.category ?? '',
+    featured: !!film.featured,
+    collapsed: !!film.collapsed,
+    thumbnail: film.thumbnail ?? null,
+    videoUrl: film.videoUrl ?? null,
+    videoType: film.videoType ?? 'vimeo',
+    videoFile: film.videoFile ?? null,
+    aspectRatio: typeof film.aspectRatio === 'number' ? film.aspectRatio : 1.78,
+    credits,
+  };
+  if (film.imagePosition) out.imagePosition = film.imagePosition;
+  return out;
+}
+
 async function fetchCmsContent() {
   const data = await client.fetch(QUERY);
 
@@ -142,7 +192,8 @@ async function fetchCmsContent() {
       !data.heroOverlay &&
       !data.showreel &&
       !data.heroPhotos &&
-      !(Array.isArray(data.photoProjects) && data.photoProjects.length))
+      !(Array.isArray(data.photoProjects) && data.photoProjects.length) &&
+      !(Array.isArray(data.films) && data.films.length))
   ) {
     throw new Error('Sanity returned no documents — has content been seeded yet?');
   }
@@ -167,6 +218,11 @@ async function fetchCmsContent() {
   // photoProjects → flatten to the legacy shape consumed by Photos.jsx.
   if (Array.isArray(data.photoProjects)) {
     data.photoProjects = data.photoProjects.map(flattenPhotoProject);
+  }
+
+  // films → flatten to the legacy shape consumed by Films.jsx.
+  if (Array.isArray(data.films)) {
+    data.films = data.films.map(flattenFilm);
   }
 
   // Stamp the snapshot with a fetch timestamp for debugging.

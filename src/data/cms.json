@@ -1,4 +1,5 @@
 {
+  "films": [],
   "heroOverlay": {
     "_createdAt": "2026-05-19T16:05:43Z",
     "_id": "heroOverlay",
@@ -1674,8 +1675,8 @@
       "featured": false,
       "photos": [
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ec68356d2975d4fec28e6b13ae0e9ccecedee2d2-1080x903.jpg",
-          "alt": "Adidas — 1",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/eaffd94617e0d7c6b1b692be2e286ed92198c9f2-1080x903.jpg",
+          "alt": "Adidas — 6",
           "aspectRatio": 1.196013289036545
         },
         {
@@ -1699,8 +1700,8 @@
           "aspectRatio": 1.196013289036545
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/eaffd94617e0d7c6b1b692be2e286ed92198c9f2-1080x903.jpg",
-          "alt": "Adidas — 6",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ec68356d2975d4fec28e6b13ae0e9ccecedee2d2-1080x903.jpg",
+          "alt": "Adidas — 1",
           "aspectRatio": 1.196013289036545
         }
       ],
@@ -1914,14 +1915,14 @@
       "featured": false,
       "photos": [
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/7b603ae2895228979e1b17dd01f58a20c0d7863f-1080x1207.jpg",
-          "alt": "Fusalp — 1",
-          "aspectRatio": 0.8947804473902237
-        },
-        {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/5ad63eff971b3ac2674113f11edd1b5cc4b9fc52-1080x1206.jpg",
           "alt": "Fusalp — 2",
           "aspectRatio": 0.8955223880597015
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/7b603ae2895228979e1b17dd01f58a20c0d7863f-1080x1207.jpg",
+          "alt": "Fusalp — 1",
+          "aspectRatio": 0.8947804473902237
         },
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/9d5f0930e87887b1906de43dbc3892d150414bc1-1080x1207.jpg",
@@ -1949,8 +1950,8 @@
       "featured": true,
       "photos": [
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f274070e7873cf71d28c052dfa22b446ada74d21-1080x1350.jpg",
-          "alt": "Tedax Max — 1",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/41d5ee7a64799c50a8e46ca3d1c29562f2343c34-1080x1350.jpg",
+          "alt": "Tedax Max — 7",
           "aspectRatio": 0.8
         },
         {
@@ -1974,13 +1975,13 @@
           "aspectRatio": 0.8
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/41d5ee7a64799c50a8e46ca3d1c29562f2343c34-1080x1350.jpg",
-          "alt": "Tedax Max — 7",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/0f600bee452f11313c3d9c02cd7fa44f84228ee0-1080x1350.jpg",
+          "alt": "Tedax Max — 8",
           "aspectRatio": 0.8
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/0f600bee452f11313c3d9c02cd7fa44f84228ee0-1080x1350.jpg",
-          "alt": "Tedax Max — 8",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f274070e7873cf71d28c052dfa22b446ada74d21-1080x1350.jpg",
+          "alt": "Tedax Max — 1",
           "aspectRatio": 0.8
         },
         {
@@ -2014,6 +2015,11 @@
       "featured": true,
       "photos": [
         {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/d2a12f92eb79cf73096a180f434f4d7ac9f16548-1080x1359.jpg",
+          "alt": "Judo — 6",
+          "aspectRatio": 0.7947019867549668
+        },
+        {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f0b597883d15367fdbdbae12bf243e1545fe5add-1080x1359.jpg",
           "alt": "Judo — 1",
           "aspectRatio": 0.7947019867549668
@@ -2037,11 +2043,6 @@
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ee5d50195c6c846e174382681ddcb8d212e4bc8c-1080x1358.jpg",
           "alt": "Judo — 5",
           "aspectRatio": 0.7952871870397643
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/d2a12f92eb79cf73096a180f434f4d7ac9f16548-1080x1359.jpg",
-          "alt": "Judo — 6",
-          "aspectRatio": 0.7947019867549668
         }
       ],
       "preview": {
@@ -2675,5 +2676,5 @@
     "socialTwitter": null,
     "socialVimeo": "https://vimeo.com/user37669788"
   },
-  "_fetchedAt": "2026-05-20T04:59:29.553Z"
+  "_fetchedAt": "2026-05-20T09:51:26.959Z"
 }

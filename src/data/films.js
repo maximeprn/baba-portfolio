@@ -16,7 +16,15 @@
 
 import { shortVideo } from './videoShorts';
 
-export const films = [
+/**
+ * Raw film entries with their ORIGINAL videoFile paths (no shortVideo()
+ * mapping applied). Used by `scripts/upload-films.mjs` so the human-readable
+ * paths land in the CMS instead of mangled Blob URLs.
+ *
+ * The exported `films` array below is this list with `shortVideo()` applied
+ * to every `videoFile`, which is what the legacy components consume.
+ */
+export const FILM_ENTRIES = [
   {
     id: 1,
     slug: 'veja-condor-3',
@@ -402,7 +410,9 @@ export const films = [
     collapsed: true,
     aspectRatio: 1.78,
   },
-].map((film) => ({
+];
+
+export const films = FILM_ENTRIES.map((film) => ({
   ...film,
   videoFile: shortVideo(film.videoFile),
 }));

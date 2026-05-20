@@ -16,6 +16,8 @@
     "cms:upload-hero-photos": "node scripts/upload-hero-photos.mjs",
     "cms:upload-photo-projects": "node scripts/upload-photo-projects.mjs",
     "cms:fix-photo-project-ranks": "node scripts/fix-photo-project-ranks.mjs",
+    "cms:upload-films": "node scripts/upload-films.mjs",
+    "cms:fix-film-ranks": "node scripts/fix-film-ranks.mjs",
     "studio:dev": "sanity dev",
     "studio:deploy": "sanity deploy"
   },

@@ -14,6 +14,7 @@ import { structureTool } from 'sanity/structure';
 import { visionTool } from '@sanity/vision';
 import { schemaTypes } from './sanity/schemas';
 import { structure } from './sanity/desk/structure';
+import DeployTool from './sanity/tools/DeployTool';
 
 const SINGLETON_TYPES = ['siteSettings', 'heroOverlay', 'showreel', 'heroPhotos'];
 
@@ -26,6 +27,18 @@ export default defineConfig({
   plugins: [
     structureTool({ structure }),
     visionTool(),
+  ],
+  // Custom tools appear as tabs in the Studio's left sidebar. The Deploy
+  // tool is a manual replacement for the Sanity → Vercel auto-webhook —
+  // gives one-click control over when production rebuilds.
+  tools: (prev) => [
+    ...prev,
+    {
+      name: 'deploy',
+      title: 'Deploy',
+      icon: () => '🚀',
+      component: DeployTool,
+    },
   ],
   schema: {
     types: schemaTypes,

@@ -1591,46 +1591,110 @@
   },
   "photoProjects": [
     {
-      "id": "photoProject-acid-surfing",
-      "slug": "acid-surfing",
-      "title": "Acid Surfing",
-      "description": "Acid Surfing — placeholder description, replace with editorial copy.",
+      "id": "photoProject-judo",
+      "slug": "judo",
+      "title": "Judo",
+      "description": "Judo — placeholder description, replace with editorial copy.",
       "year": 2024,
-      "client": "Acid Surfing",
+      "client": "Judo",
       "category": "Editorial",
-      "featured": false,
+      "featured": true,
       "photos": [
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/97b67e28de9828b5627db64b9606ac137b19a9ef-1080x1350.jpg",
-          "alt": "Acid Surfing — 1",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f0b597883d15367fdbdbae12bf243e1545fe5add-1080x1359.jpg",
+          "alt": "Judo — 1",
+          "aspectRatio": 0.7947019867549668
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/977f4d96de87f220441a49138d43dd747ac74250-1080x1358.jpg",
+          "alt": "Judo — 2",
+          "aspectRatio": 0.7952871870397643
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/4a8d57aacca69cf687274d27f219c04781aba39e-1080x1358.jpg",
+          "alt": "Judo — 3",
+          "aspectRatio": 0.7952871870397643
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/1f3a019be2961bbca7cd643b90e3049bc5c9919c-1080x1359.jpg",
+          "alt": "Judo — 4",
+          "aspectRatio": 0.7947019867549668
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ee5d50195c6c846e174382681ddcb8d212e4bc8c-1080x1358.jpg",
+          "alt": "Judo — 5",
+          "aspectRatio": 0.7952871870397643
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/d2a12f92eb79cf73096a180f434f4d7ac9f16548-1080x1359.jpg",
+          "alt": "Judo — 6",
+          "aspectRatio": 0.7947019867549668
+        }
+      ],
+      "preview": {
+        "pattern": 11,
+        "photos": [
+          0,
+          3
+        ]
+      }
+    },
+    {
+      "id": "photoProject-tedax-max",
+      "slug": "tedax-max",
+      "title": "Tedax Max",
+      "description": "Tedax Max — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Tedax Max",
+      "category": "Editorial",
+      "featured": true,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f274070e7873cf71d28c052dfa22b446ada74d21-1080x1350.jpg",
+          "alt": "Tedax Max — 1",
           "aspectRatio": 0.8
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/05db3c011c2fe18193f72faa0263c3c6df4990b5-1080x1350.jpg",
-          "alt": "Acid Surfing — 2",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/699521c7cdaee86e9058fe2d037d74bb1054fbf5-1080x1350.jpg",
+          "alt": "Tedax Max — 2",
           "aspectRatio": 0.8
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/25533151cafbf143ce55cee7fa22017d259e907d-1080x1350.jpg",
-          "alt": "Acid Surfing — 3",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/dbc5a4b6a67da82aecad9ffc7cbb144ca8c053c0-1080x1350.jpg",
+          "alt": "Tedax Max — 3",
           "aspectRatio": 0.8
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/8753ff557e2c5099d604ee48dea7777297bfd954-1080x1350.jpg",
-          "alt": "Acid Surfing — 4",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/84cb7cc7ee9aca51df586851f0be10b62f54eb76-1080x1350.jpg",
+          "alt": "Tedax Max — 4",
           "aspectRatio": 0.8
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ce1794a459affb39686ce0de13fdc9e0b5cd27df-1080x1350.jpg",
-          "alt": "Acid Surfing — 5",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/406314b4c2a331ec34741690fa22a297e674a3c8-1080x1350.jpg",
+          "alt": "Tedax Max — 5",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/26701b43e3af4fd7b8d2babd4540dd83d59ef50d-1080x1350.jpg",
+          "alt": "Tedax Max — 6",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/41d5ee7a64799c50a8e46ca3d1c29562f2343c34-1080x1350.jpg",
+          "alt": "Tedax Max — 7",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/0f600bee452f11313c3d9c02cd7fa44f84228ee0-1080x1350.jpg",
+          "alt": "Tedax Max — 8",
           "aspectRatio": 0.8
         }
       ],
       "preview": {
-        "pattern": 5,
+        "pattern": 15,
         "photos": [
           0,
-          2
+          4
         ]
       }
     },
@@ -1642,7 +1706,7 @@
       "year": 2024,
       "client": "Adidas",
       "category": "Editorial",
-      "featured": true,
+      "featured": false,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ec68356d2975d4fec28e6b13ae0e9ccecedee2d2-1080x903.jpg",
@@ -1681,35 +1745,6 @@
           0,
           3,
           5
-        ]
-      }
-    },
-    {
-      "id": "photoProject-asics-running",
-      "slug": "asics-running",
-      "title": "Asics Running",
-      "description": "Asics Running — placeholder description, replace with editorial copy.",
-      "year": 2024,
-      "client": "Asics Running",
-      "category": "Editorial",
-      "featured": false,
-      "photos": [
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/802db06c22c447fc15812d3a4d2bbcba7db6eb37-1080x1350.jpg",
-          "alt": "Asics Running — 1",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/c162ffb6f30061b87a922a42ef9a5debcf4adf82-1080x1080.jpg",
-          "alt": "Asics Running — 2",
-          "aspectRatio": 1
-        }
-      ],
-      "preview": {
-        "pattern": 7,
-        "photos": [
-          0,
-          1
         ]
       }
     },
@@ -1939,55 +1974,6 @@
       }
     },
     {
-      "id": "photoProject-judo",
-      "slug": "judo",
-      "title": "Judo",
-      "description": "Judo — placeholder description, replace with editorial copy.",
-      "year": 2024,
-      "client": "Judo",
-      "category": "Editorial",
-      "featured": true,
-      "photos": [
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f0b597883d15367fdbdbae12bf243e1545fe5add-1080x1359.jpg",
-          "alt": "Judo — 1",
-          "aspectRatio": 0.7947019867549668
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/977f4d96de87f220441a49138d43dd747ac74250-1080x1358.jpg",
-          "alt": "Judo — 2",
-          "aspectRatio": 0.7952871870397643
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/4a8d57aacca69cf687274d27f219c04781aba39e-1080x1358.jpg",
-          "alt": "Judo — 3",
-          "aspectRatio": 0.7952871870397643
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/1f3a019be2961bbca7cd643b90e3049bc5c9919c-1080x1359.jpg",
-          "alt": "Judo — 4",
-          "aspectRatio": 0.7947019867549668
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ee5d50195c6c846e174382681ddcb8d212e4bc8c-1080x1358.jpg",
-          "alt": "Judo — 5",
-          "aspectRatio": 0.7952871870397643
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/d2a12f92eb79cf73096a180f434f4d7ac9f16548-1080x1359.jpg",
-          "alt": "Judo — 6",
-          "aspectRatio": 0.7947019867549668
-        }
-      ],
-      "preview": {
-        "pattern": 11,
-        "photos": [
-          0,
-          3
-        ]
-      }
-    },
-    {
       "id": "photoProject-les-others",
       "slug": "les-others",
       "title": "Les Others",
@@ -2120,6 +2106,35 @@
       }
     },
     {
+      "id": "photoProject-asics-running",
+      "slug": "asics-running",
+      "title": "Asics Running",
+      "description": "Asics Running — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Asics Running",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/802db06c22c447fc15812d3a4d2bbcba7db6eb37-1080x1350.jpg",
+          "alt": "Asics Running — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/c162ffb6f30061b87a922a42ef9a5debcf4adf82-1080x1080.jpg",
+          "alt": "Asics Running — 2",
+          "aspectRatio": 1
+        }
+      ],
+      "preview": {
+        "pattern": 7,
+        "photos": [
+          0,
+          1
+        ]
+      }
+    },
+    {
       "id": "photoProject-moscot-nyc",
       "slug": "moscot-nyc",
       "title": "Moscot NYC",
@@ -2225,7 +2240,7 @@
       "year": 2024,
       "client": "Oakley x Jolie Foulée",
       "category": "Editorial",
-      "featured": true,
+      "featured": false,
       "photos": [
         {
           "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6f21067e64b8f66569a41d9fa10fe762e148fc5f-1080x1350.jpg",
@@ -2446,65 +2461,6 @@
       }
     },
     {
-      "id": "photoProject-tedax-max",
-      "slug": "tedax-max",
-      "title": "Tedax Max",
-      "description": "Tedax Max — placeholder description, replace with editorial copy.",
-      "year": 2024,
-      "client": "Tedax Max",
-      "category": "Editorial",
-      "featured": true,
-      "photos": [
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f274070e7873cf71d28c052dfa22b446ada74d21-1080x1350.jpg",
-          "alt": "Tedax Max — 1",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/699521c7cdaee86e9058fe2d037d74bb1054fbf5-1080x1350.jpg",
-          "alt": "Tedax Max — 2",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/dbc5a4b6a67da82aecad9ffc7cbb144ca8c053c0-1080x1350.jpg",
-          "alt": "Tedax Max — 3",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/84cb7cc7ee9aca51df586851f0be10b62f54eb76-1080x1350.jpg",
-          "alt": "Tedax Max — 4",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/406314b4c2a331ec34741690fa22a297e674a3c8-1080x1350.jpg",
-          "alt": "Tedax Max — 5",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/26701b43e3af4fd7b8d2babd4540dd83d59ef50d-1080x1350.jpg",
-          "alt": "Tedax Max — 6",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/41d5ee7a64799c50a8e46ca3d1c29562f2343c34-1080x1350.jpg",
-          "alt": "Tedax Max — 7",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/0f600bee452f11313c3d9c02cd7fa44f84228ee0-1080x1350.jpg",
-          "alt": "Tedax Max — 8",
-          "aspectRatio": 0.8
-        }
-      ],
-      "preview": {
-        "pattern": 15,
-        "photos": [
-          0,
-          4
-        ]
-      }
-    },
-    {
       "id": "photoProject-veja",
       "slug": "veja",
       "title": "Veja",
@@ -2597,6 +2553,50 @@
           3
         ]
       }
+    },
+    {
+      "id": "photoProject-acid-surfing",
+      "slug": "acid-surfing",
+      "title": "Acid Surfing",
+      "description": "Acid Surfing — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Acid Surfing",
+      "category": "Editorial",
+      "featured": false,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/97b67e28de9828b5627db64b9606ac137b19a9ef-1080x1350.jpg",
+          "alt": "Acid Surfing — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/05db3c011c2fe18193f72faa0263c3c6df4990b5-1080x1350.jpg",
+          "alt": "Acid Surfing — 2",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/25533151cafbf143ce55cee7fa22017d259e907d-1080x1350.jpg",
+          "alt": "Acid Surfing — 3",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/8753ff557e2c5099d604ee48dea7777297bfd954-1080x1350.jpg",
+          "alt": "Acid Surfing — 4",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ce1794a459affb39686ce0de13fdc9e0b5cd27df-1080x1350.jpg",
+          "alt": "Acid Surfing — 5",
+          "aspectRatio": 0.8
+        }
+      ],
+      "preview": {
+        "pattern": 5,
+        "photos": [
+          0,
+          2
+        ]
+      }
     }
   ],
   "showreel": {
@@ -2645,5 +2645,5 @@
     "socialTwitter": null,
     "socialVimeo": "https://vimeo.com/user37669788"
   },
-  "_fetchedAt": "2026-05-19T19:16:53.426Z"
+  "_fetchedAt": "2026-05-20T03:37:04.618Z"
 }

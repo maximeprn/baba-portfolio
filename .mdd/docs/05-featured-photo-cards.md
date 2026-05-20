@@ -22,6 +22,7 @@ known_issues:
   - "Aspect-ratio mismatch between collage slot and gallery cell is resolved by `object-fit: cover` + width-based scale only; a photo with very different source/destination crop may briefly pop at t=0. Acceptable on real content."
   - "On mobile the collapsed card stacks (collage above text); the FLIP morph still runs but visual rhythm is less dramatic because the destination gallery is single-column."
   - "Playwright cannot use native click/scrollIntoView on /photos because the desktop smooth-scroll sets body overflow:hidden and translates content via CSS transform. Tests must use locator.dispatchEvent('click'). See tests/e2e/featured-photo-cards.spec.js."
+  - "PhotoCardPreview supports per-project mobile fallback via `preview.mobilePattern` + `preview.mobilePhotos` + `preview.mobileBreakpoint` (default 767). The 5 originally-featured projects used pattern 10 (single full-bleed) with breakpoint 1349 + maxHeight 60vh — so the side-by-side comparison collapses to one photo on tablets and below. When migrating photo project data to a new system (e.g. CMS), THIS BEHAVIOR MUST BE PRESERVED — see sanity/schemas/photoProject.js fields `previewMobilePattern`, `previewMobilePhotoIndices`, `previewMobileBreakpoint`, `previewAspectRatio`, `previewMaxHeight`."
 ---
 
 # 05 — Featured Photo Cards: Compact Preview ↔ Expanded Gallery

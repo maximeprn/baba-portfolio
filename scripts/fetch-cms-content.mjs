@@ -57,6 +57,11 @@ const QUERY = `{
     featured,
     previewPattern,
     previewPhotoIndices,
+    previewMobilePattern,
+    previewMobilePhotoIndices,
+    previewMobileBreakpoint,
+    previewAspectRatio,
+    previewMaxHeight,
     imagePosition,
     "photos": photos[]{
       "src": asset->url,
@@ -84,12 +89,33 @@ function flattenPhotoProject(project) {
     aspectRatio: p.width && p.height ? p.width / p.height : 1,
   }));
 
-  const preview =
+  const hasDesktopPreview =
     typeof project.previewPattern === 'number' &&
     Array.isArray(project.previewPhotoIndices) &&
-    project.previewPhotoIndices.length > 0
-      ? { pattern: project.previewPattern, photos: project.previewPhotoIndices }
-      : null;
+    project.previewPhotoIndices.length > 0;
+
+  let preview = null;
+  if (hasDesktopPreview) {
+    preview = {
+      pattern: project.previewPattern,
+      photos: project.previewPhotoIndices,
+    };
+    // Mobile fallback: at viewport widths below `mobileBreakpoint`,
+    // PhotoCardPreview swaps to the mobile pattern + photos.
+    if (
+      typeof project.previewMobilePattern === 'number' &&
+      Array.isArray(project.previewMobilePhotoIndices) &&
+      project.previewMobilePhotoIndices.length > 0
+    ) {
+      preview.mobilePattern = project.previewMobilePattern;
+      preview.mobilePhotos = project.previewMobilePhotoIndices;
+    }
+    if (typeof project.previewMobileBreakpoint === 'number') {
+      preview.mobileBreakpoint = project.previewMobileBreakpoint;
+    }
+    if (project.previewAspectRatio) preview.aspectRatio = project.previewAspectRatio;
+    if (project.previewMaxHeight) preview.maxHeight = project.previewMaxHeight;
+  }
 
   const out = {
     id: project._id,

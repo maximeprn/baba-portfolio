@@ -18,24 +18,34 @@ const OVERLAY_DESKTOP_SIZE = {
 /**
  * Resolve an anchor (e.g. 'top-left', 'bottom-right', 'middle-center') plus
  * pixel offsets into a CSS positioning object.
+ *
+ * Offsets are pushed through `fluidScale` (same helper as the nav + text
+ * sizing) so the editor's desktop value is the ceiling and the offset
+ * shrinks on smaller viewports. Without this, a 40px offsetX would still
+ * be a literal 40px on a 360px phone — which is too much padding for the
+ * available width and doesn't match how the original site rendered the
+ * hero overlay (text-sm spacing on mobile, larger on desktop).
  */
+const OFFSET_MOBILE_RATIO = 0.4;
+const fluidOffset = (px) => fluidScale(px, { mobileRatio: OFFSET_MOBILE_RATIO });
+
 function anchorToStyle(anchor, offsetX = 0, offsetY = 0) {
   const [v, h] = (anchor || 'top-left').split('-');
   const style = {};
   const transforms = [];
 
-  if (v === 'top') style.top = `${offsetY}px`;
-  else if (v === 'bottom') style.bottom = `${offsetY}px`;
+  if (v === 'top') style.top = fluidOffset(offsetY);
+  else if (v === 'bottom') style.bottom = fluidOffset(offsetY);
   else {
     style.top = '50%';
-    transforms.push(`translateY(calc(-50% + ${offsetY}px))`);
+    transforms.push(`translateY(calc(-50% + ${fluidOffset(offsetY)}))`);
   }
 
-  if (h === 'left') style.left = `${offsetX}px`;
-  else if (h === 'right') style.right = `${offsetX}px`;
+  if (h === 'left') style.left = fluidOffset(offsetX);
+  else if (h === 'right') style.right = fluidOffset(offsetX);
   else {
     style.left = '50%';
-    transforms.push(`translateX(calc(-50% + ${offsetX}px))`);
+    transforms.push(`translateX(calc(-50% + ${fluidOffset(offsetX)}))`);
   }
 
   if (transforms.length) style.transform = transforms.join(' ');
@@ -160,28 +170,30 @@ function HeroOverlayStack({ items }) {
   const transforms = [];
 
   // Vertical positioning is anchor-driven, same as a single item.
-  if (v === 'top') style.top = `${offsetY}px`;
-  else if (v === 'bottom') style.bottom = `${offsetY}px`;
+  // Offsets are scaled responsively (mobile floor = 40% of desktop value)
+  // so the overlay tightens up on smaller screens.
+  if (v === 'top') style.top = fluidOffset(offsetY);
+  else if (v === 'bottom') style.bottom = fluidOffset(offsetY);
   else {
     style.top = '50%';
-    transforms.push(`translateY(calc(-50% + ${offsetY}px))`);
+    transforms.push(`translateY(calc(-50% + ${fluidOffset(offsetY)}))`);
   }
 
   // Horizontal positioning: in addition to the anchor edge, set the
   // opposite side too, so the container has a bounded width that lets
   // flex-wrap kick in when items can't fit on a single row.
   if (h === 'left') {
-    style.left = `${offsetX}px`;
+    style.left = fluidOffset(offsetX);
     style.right = `${STACK_VIEWPORT_PADDING}px`;
   } else if (h === 'right') {
-    style.right = `${offsetX}px`;
+    style.right = fluidOffset(offsetX);
     style.left = `${STACK_VIEWPORT_PADDING}px`;
   } else {
     // Center anchor: cap max-width so items can wrap, and shift the
     // centered container by offsetX.
     style.left = '50%';
     style.maxWidth = `calc(100vw - ${STACK_VIEWPORT_PADDING * 2}px)`;
-    transforms.push(`translateX(calc(-50% + ${offsetX}px))`);
+    transforms.push(`translateX(calc(-50% + ${fluidOffset(offsetX)}))`);
   }
 
   if (transforms.length) style.transform = transforms.join(' ');

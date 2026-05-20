@@ -115,11 +115,30 @@ async function migrateProject(project, index, total) {
     photos: photoFields,
   };
 
+  // Desktop preview pattern + photo indices.
   if (project.preview?.pattern != null) {
     doc.previewPattern = project.preview.pattern;
   }
   if (Array.isArray(project.preview?.photos)) {
     doc.previewPhotoIndices = project.preview.photos;
+  }
+  // Mobile preview fallback (controls the featured-card collapse below
+  // `mobileBreakpoint`). The original 5 featured projects used pattern 10
+  // (single full-bleed) with mobileBreakpoint 1349, maxHeight 60vh.
+  if (project.preview?.mobilePattern != null) {
+    doc.previewMobilePattern = project.preview.mobilePattern;
+  }
+  if (Array.isArray(project.preview?.mobilePhotos)) {
+    doc.previewMobilePhotoIndices = project.preview.mobilePhotos;
+  }
+  if (project.preview?.mobileBreakpoint != null) {
+    doc.previewMobileBreakpoint = project.preview.mobileBreakpoint;
+  }
+  if (project.preview?.aspectRatio) {
+    doc.previewAspectRatio = project.preview.aspectRatio;
+  }
+  if (project.preview?.maxHeight) {
+    doc.previewMaxHeight = project.preview.maxHeight;
   }
   if (project.imagePosition) {
     doc.imagePosition = project.imagePosition;

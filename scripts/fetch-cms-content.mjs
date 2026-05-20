@@ -82,8 +82,6 @@ const QUERY = `{
     collapsed,
     "thumbnail": thumbnail.asset->url,
     videoUrl,
-    videoType,
-    videoFile,
     aspectRatio,
     imagePosition,
     credits[]{ side, role, name },
@@ -187,8 +185,11 @@ function flattenFilm(film) {
     collapsed: !!film.collapsed,
     thumbnail: film.thumbnail ?? null,
     videoUrl: film.videoUrl ?? null,
-    videoType: film.videoType ?? 'vimeo',
-    videoFile: film.videoFile ?? null,
+    // Aspect-ratio resolution order:
+    //   1. Manual override from the schema field (rare — only set when the
+    //      editor wants to force a different card shape).
+    //   2. Mux's probed aspect_ratio (e.g. "16:9" → 1.78).
+    //   3. Sensible fallback (16:9).
     aspectRatio:
       typeof film.aspectRatio === 'number'
         ? film.aspectRatio

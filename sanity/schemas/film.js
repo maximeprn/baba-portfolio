@@ -160,9 +160,9 @@ export const film = defineType({
     // ----------- Media -----------
     defineField({
       name: 'thumbnail',
-      title: 'Thumbnail (poster image)',
+      title: 'Thumbnail (override)',
       description:
-        'Shown on non-featured and collapsed cards. Featured cards autoplay the video instead but use this as the loading poster.',
+        'Optional custom poster image. Leave blank to use a frame Mux picks automatically from the uploaded video. Set this when you want a specific frame, a different image, or a stylised poster.',
       type: 'image',
       options: { hotspot: true },
       group: 'media',
@@ -185,36 +185,11 @@ export const film = defineType({
       group: 'media',
     }),
     defineField({
-      name: 'videoFile',
-      title: 'Legacy video file path (Vercel Blob)',
-      description:
-        'Transitional fallback. Path under /videos/ — e.g. "/videos/Veja Condor 3.mp4". Used only when "Preview video (Mux)" above is empty. Will be removed in a future migration once every film has a Mux asset.',
-      type: 'string',
-      group: 'media',
-      readOnly: true,
-    }),
-    defineField({
-      name: 'videoType',
-      title: 'Legacy video type',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Vimeo', value: 'vimeo' },
-          { title: 'MP4 (direct)', value: 'mp4' },
-        ],
-        layout: 'radio',
-      },
-      initialValue: 'vimeo',
-      group: 'media',
-      hidden: true,
-    }),
-    defineField({
       name: 'aspectRatio',
-      title: 'Aspect ratio',
+      title: 'Aspect ratio (override)',
       description:
-        'Width / height ratio of the card preview. Defaults to 1.78 (16:9). Common values: 1.78, 1.33, 1.25.',
+        'Optional manual override. Leave blank to use the uploaded video\'s native aspect ratio (Mux probes it automatically). Set this only when you want to force a different card shape — e.g. crop a 16:9 video into a 4:3 frame. Common values: 1.78 (16:9), 1.33 (4:3), 1.25 (5:4).',
       type: 'number',
-      initialValue: 1.78,
       group: 'media',
       validation: (Rule) => Rule.positive(),
     }),

@@ -9,8 +9,9 @@ export const showreel = defineType({
   fields: [
     defineField({
       name: 'vimeoUrl',
-      title: 'Vimeo player URL',
-      description: 'Format: https://player.vimeo.com/video/<id>',
+      title: 'Vimeo URL',
+      description:
+        'Paste any Vimeo link — the normal share link (https://vimeo.com/<id>) works; the site converts it to the embeddable player automatically.',
       type: 'url',
       validation: (Rule) => Rule.required(),
     }),

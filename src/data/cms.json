@@ -12,8 +12,6 @@
       "collapsed": false,
       "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/9b8174848a577073e73b1c85781b355dfad4f02f-1280x720.jpg",
       "videoUrl": "https://player.vimeo.com/video/1062003612",
-      "videoType": "vimeo",
-      "videoFile": "/videos/Veja Condor 3.mp4",
       "aspectRatio": 1.78,
       "credits": {
         "left": [
@@ -33,11 +31,46 @@
           }
         ]
       },
-      "muxPlaybackId": null,
-      "muxStatus": null,
-      "muxStreamUrl": null,
-      "muxPosterUrl": null,
+      "muxPlaybackId": "qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg.m3u8",
+      "muxPosterUrl": "https://image.mux.com/qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg/thumbnail.jpg?time=0.5",
       "imagePosition": "left"
+    },
+    {
+      "id": "9cd36103-5158-4d59-a944-803184f513f9",
+      "slug": "outbreak-saucony",
+      "title": "OUTBREAK - Saucony Shock Capsule Campaign",
+      "description": "For the release of the Endorphin Pro 5, Speed 5 and Elite 2",
+      "year": 2026,
+      "client": "Saucony",
+      "category": "Commercial",
+      "featured": true,
+      "collapsed": false,
+      "thumbnail": null,
+      "videoUrl": "https://vimeo.com/1180456052",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "Music",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "DOP",
+            "name": "DOP : JC Baravian"
+          }
+        ],
+        "right": []
+      },
+      "muxPlaybackId": "eI2aUFi02yymZbUhZOwGmKVmXpe6H02PSO01NbxbJ1xyMk",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/eI2aUFi02yymZbUhZOwGmKVmXpe6H02PSO01NbxbJ1xyMk.m3u8",
+      "muxPosterUrl": "https://image.mux.com/eI2aUFi02yymZbUhZOwGmKVmXpe6H02PSO01NbxbJ1xyMk/thumbnail.jpg?time=0.5"
     },
     {
       "id": "film-sacai-ss25",
@@ -51,8 +84,6 @@
       "collapsed": false,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/1047455821",
-      "videoType": "vimeo",
-      "videoFile": "/videos/Sacai SS25.mp4",
       "aspectRatio": 1.78,
       "credits": {
         "left": [
@@ -90,8 +121,6 @@
       "collapsed": false,
       "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/7e70eebe70c1317d1a46aa01125a2a76350a7d97-720x576.jpg",
       "videoUrl": "https://player.vimeo.com/video/989542038",
-      "videoType": "vimeo",
-      "videoFile": "/videos/Decathlon Co-Creation Olympic Games Campaign.mp4",
       "aspectRatio": 1.25,
       "credits": {
         "left": [
@@ -145,8 +174,6 @@
       "collapsed": false,
       "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/71f5cbe29ada11a67ae78ac4a8979a7b37cd859f-1280x720.jpg",
       "videoUrl": "https://player.vimeo.com/video/895840721",
-      "videoType": "vimeo",
-      "videoFile": "/videos/Quentin Malriq - An athlete portrait by DISTANCE.mp4",
       "aspectRatio": 1.78,
       "credits": {
         "left": [
@@ -180,8 +207,6 @@
       "collapsed": false,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/868701940",
-      "videoType": "vimeo",
-      "videoFile": "/videos/Le CN D - camping 2023.mp4",
       "aspectRatio": 1.78,
       "credits": {
         "left": [
@@ -192,10 +217,10 @@
         ],
         "right": []
       },
-      "muxPlaybackId": null,
-      "muxStatus": null,
-      "muxStreamUrl": null,
-      "muxPosterUrl": null,
+      "muxPlaybackId": "gwVm8KP600OH02dTbHku2iTDl7apqeJdv9flv9zdQONtc",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/gwVm8KP600OH02dTbHku2iTDl7apqeJdv9flv9zdQONtc.m3u8",
+      "muxPosterUrl": "https://image.mux.com/gwVm8KP600OH02dTbHku2iTDl7apqeJdv9flv9zdQONtc/thumbnail.jpg?time=0.5",
       "imagePosition": "left"
     },
     {
@@ -210,8 +235,6 @@
       "collapsed": false,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/863910150",
-      "videoType": "vimeo",
-      "videoFile": "/videos/DIVERSIONS EP by Antoine Bourachot - Teaser.mp4",
       "aspectRatio": 1.78,
       "credits": {
         "left": [
@@ -227,10 +250,10 @@
           }
         ]
       },
-      "muxPlaybackId": null,
-      "muxStatus": null,
-      "muxStreamUrl": null,
-      "muxPosterUrl": null,
+      "muxPlaybackId": "Jifz2h02fwdJoFIbs0102hAJZtpayk5LGA9Nu15jCrTNDw",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/Jifz2h02fwdJoFIbs0102hAJZtpayk5LGA9Nu15jCrTNDw.m3u8",
+      "muxPosterUrl": "https://image.mux.com/Jifz2h02fwdJoFIbs0102hAJZtpayk5LGA9Nu15jCrTNDw/thumbnail.jpg?time=0.5",
       "imagePosition": "right"
     },
     {
@@ -245,8 +268,6 @@
       "collapsed": false,
       "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/d808bbc7abdd907bd556838c81e38442a50b661a-1280x960.jpg",
       "videoUrl": "https://player.vimeo.com/video/768152390",
-      "videoType": "vimeo",
-      "videoFile": "/videos/Badre - a short documentary by DISTANCE.mp4",
       "aspectRatio": 1.33,
       "credits": {
         "left": [
@@ -266,10 +287,10 @@
           }
         ]
       },
-      "muxPlaybackId": null,
-      "muxStatus": null,
-      "muxStreamUrl": null,
-      "muxPosterUrl": null,
+      "muxPlaybackId": "Bubbzudep01qwtZJ2x9oYJEIaJ4GRTRIeO9U01OU6z3X00",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/Bubbzudep01qwtZJ2x9oYJEIaJ4GRTRIeO9U01OU6z3X00.m3u8",
+      "muxPosterUrl": "https://image.mux.com/Bubbzudep01qwtZJ2x9oYJEIaJ4GRTRIeO9U01OU6z3X00/thumbnail.jpg?time=0.5",
       "imagePosition": "left"
     },
     {
@@ -284,8 +305,6 @@
       "collapsed": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/647313570",
-      "videoType": "vimeo",
-      "videoFile": "/videos/ASSOS Feno Suit - Director's Cut.mp4",
       "aspectRatio": 1.78,
       "credits": {
         "left": [
@@ -296,10 +315,10 @@
         ],
         "right": []
       },
-      "muxPlaybackId": null,
-      "muxStatus": null,
-      "muxStreamUrl": null,
-      "muxPosterUrl": null,
+      "muxPlaybackId": "RJPpHKntHyBjV014TuKHKJEZ201h02vU02jk4pMrJtzVJoI",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/RJPpHKntHyBjV014TuKHKJEZ201h02vU02jk4pMrJtzVJoI.m3u8",
+      "muxPosterUrl": "https://image.mux.com/RJPpHKntHyBjV014TuKHKJEZ201h02vU02jk4pMrJtzVJoI/thumbnail.jpg?time=0.5",
       "imagePosition": "right"
     },
     {
@@ -314,8 +333,6 @@
       "collapsed": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/562172132",
-      "videoType": "vimeo",
-      "videoFile": "/videos/Showreel 2021.mp4",
       "aspectRatio": 1.78,
       "credits": {
         "left": [
@@ -344,8 +361,6 @@
       "collapsed": true,
       "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/0af39bdc01276f0d847b369bf554f9880416b3c3-1280x720.jpg",
       "videoUrl": "https://player.vimeo.com/video/551544527",
-      "videoType": "vimeo",
-      "videoFile": "/videos/Salomon Trail Running (Spec ad).mp4",
       "aspectRatio": 1.78,
       "credits": {
         "left": [
@@ -365,10 +380,10 @@
           }
         ]
       },
-      "muxPlaybackId": null,
-      "muxStatus": null,
-      "muxStreamUrl": null,
-      "muxPosterUrl": null,
+      "muxPlaybackId": "rWb8jchEgmB42ainKB5AwmuyuHJoUbLHx00P02wpMZPWc",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/rWb8jchEgmB42ainKB5AwmuyuHJoUbLHx00P02wpMZPWc.m3u8",
+      "muxPosterUrl": "https://image.mux.com/rWb8jchEgmB42ainKB5AwmuyuHJoUbLHx00P02wpMZPWc/thumbnail.jpg?time=0.5",
       "imagePosition": "right"
     },
     {
@@ -383,8 +398,6 @@
       "collapsed": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/541582370",
-      "videoType": "vimeo",
-      "videoFile": "/videos/Bastille - Maison Mara.mp4",
       "aspectRatio": 1.78,
       "credits": {
         "left": [
@@ -422,8 +435,6 @@
       "collapsed": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/513405009",
-      "videoType": "vimeo",
-      "videoFile": "/videos/Kamikwazi - Locked Down.mp4",
       "aspectRatio": 1.78,
       "credits": {
         "left": [
@@ -439,10 +450,10 @@
           }
         ]
       },
-      "muxPlaybackId": null,
-      "muxStatus": null,
-      "muxStreamUrl": null,
-      "muxPosterUrl": null,
+      "muxPlaybackId": "X2iXdsVpNmh52Xj3cUbs2oke7sCi5KeGjXL0000KUadUU",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/X2iXdsVpNmh52Xj3cUbs2oke7sCi5KeGjXL0000KUadUU.m3u8",
+      "muxPosterUrl": "https://image.mux.com/X2iXdsVpNmh52Xj3cUbs2oke7sCi5KeGjXL0000KUadUU/thumbnail.jpg?time=0.5",
       "imagePosition": "right"
     },
     {
@@ -457,8 +468,6 @@
       "collapsed": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/271458415",
-      "videoType": "vimeo",
-      "videoFile": "/videos/Hommage Clothing - Back to 1992.mp4",
       "aspectRatio": 1.78,
       "credits": {
         "left": [
@@ -478,10 +487,10 @@
           }
         ]
       },
-      "muxPlaybackId": null,
-      "muxStatus": null,
-      "muxStreamUrl": null,
-      "muxPosterUrl": null,
+      "muxPlaybackId": "F8pQN9REW7AOCH402Pzr00R00HJeDcMc00XblhDiC63y6sU",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/F8pQN9REW7AOCH402Pzr00R00HJeDcMc00XblhDiC63y6sU.m3u8",
+      "muxPosterUrl": "https://image.mux.com/F8pQN9REW7AOCH402Pzr00R00HJeDcMc00XblhDiC63y6sU/thumbnail.jpg?time=0.5",
       "imagePosition": "left"
     },
     {
@@ -496,8 +505,6 @@
       "collapsed": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/269335097",
-      "videoType": "vimeo",
-      "videoFile": "/videos/Hommage Clothing - Back to 1992 1.mp4",
       "aspectRatio": 1.78,
       "credits": {
         "left": [
@@ -526,8 +533,6 @@
       "collapsed": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/187173133",
-      "videoType": "vimeo",
-      "videoFile": "/videos/Hommage - Late 16' Collection.mp4",
       "aspectRatio": 1.78,
       "credits": {
         "left": [
@@ -543,48 +548,11 @@
           }
         ]
       },
-      "muxPlaybackId": null,
-      "muxStatus": null,
-      "muxStreamUrl": null,
-      "muxPosterUrl": null,
-      "imagePosition": "left"
-    },
-    {
-      "id": "9cd36103-5158-4d59-a944-803184f513f9",
-      "slug": "outbreak-saucony",
-      "title": "OUTBREAK - Saucony Shock Capsule Campaign",
-      "description": "For the release of the Endorphin Pro 5, Speed 5 and Elite 2",
-      "year": 2026,
-      "client": "Saucony",
-      "category": "Commercial",
-      "featured": true,
-      "collapsed": false,
-      "thumbnail": null,
-      "videoUrl": "https://vimeo.com/1180456052",
-      "videoType": "vimeo",
-      "videoFile": null,
-      "aspectRatio": 1.78,
-      "credits": {
-        "left": [
-          {
-            "role": "Direction",
-            "name": "Basile Deschamps"
-          },
-          {
-            "role": "Music",
-            "name": "Basile Deschamps"
-          },
-          {
-            "role": "DOP",
-            "name": "DOP : JC Baravian"
-          }
-        ],
-        "right": []
-      },
-      "muxPlaybackId": "eI2aUFi02yymZbUhZOwGmKVmXpe6H02PSO01NbxbJ1xyMk",
+      "muxPlaybackId": "LOkCbQjWMq2r3PnGF4Gn019v7tkRXnAPd5RMsoySjW6c",
       "muxStatus": "ready",
-      "muxStreamUrl": "https://stream.mux.com/eI2aUFi02yymZbUhZOwGmKVmXpe6H02PSO01NbxbJ1xyMk.m3u8",
-      "muxPosterUrl": "https://image.mux.com/eI2aUFi02yymZbUhZOwGmKVmXpe6H02PSO01NbxbJ1xyMk/thumbnail.jpg?time=0.5"
+      "muxStreamUrl": "https://stream.mux.com/LOkCbQjWMq2r3PnGF4Gn019v7tkRXnAPd5RMsoySjW6c.m3u8",
+      "muxPosterUrl": "https://image.mux.com/LOkCbQjWMq2r3PnGF4Gn019v7tkRXnAPd5RMsoySjW6c/thumbnail.jpg?time=0.5",
+      "imagePosition": "left"
     }
   ],
   "heroOverlay": {
@@ -3263,5 +3231,5 @@
     "socialTwitter": null,
     "socialVimeo": "https://vimeo.com/user37669788"
   },
-  "_fetchedAt": "2026-05-20T11:16:17.284Z"
+  "_fetchedAt": "2026-05-20T13:33:10.137Z"
 }

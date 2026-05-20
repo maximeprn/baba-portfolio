@@ -40,16 +40,15 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
     client,
     category,
     imagePosition,
-    videoFile,
     muxStreamUrl,
     muxPosterUrl,
     thumbnail,
     aspectRatio = 1.78,
   } = film;
 
-  // Prefer Mux poster when present; fall back to the static thumbnail
-  // (legacy Blob film) so cards never have a blank background.
-  const posterUrl = muxPosterUrl || thumbnail || null;
+  // Poster priority: manual upload (if the editor set one) wins; otherwise
+  // use Mux's auto-generated thumbnail so cards always have a background.
+  const posterUrl = thumbnail || muxPosterUrl || null;
 
   const isVideoLeft = imagePosition === 'left';
   const variant = LAYOUT_VARIANTS[index % LAYOUT_VARIANTS.length];
@@ -212,9 +211,8 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
         >
           <video
             ref={videoRef}
-            // For Mux-backed films we attach via hls.js in the effect above.
-            // For legacy Blob films we still drive `src` directly here.
-            src={shouldLoad && !muxStreamUrl ? videoFile : undefined}
+            // src is left empty — hls.js attaches via MediaSource in the
+            // effect above (or sets src for Safari's native HLS).
             poster={posterUrl || undefined}
             loop
             playsInline

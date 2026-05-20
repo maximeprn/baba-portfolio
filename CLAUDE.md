@@ -86,10 +86,20 @@ The Sanity webhook lives at [Sanity Manage → API → Webhooks](https://www.san
 | Trigger events | `Create`, `Update`, `Delete` |
 | **Drafts** toggle | ☐ **UNCHECKED** — drafts auto-save on every keystroke; checking this floods Vercel |
 | **Versions** toggle | ☐ **UNCHECKED** — applies to releases / scheduled docs we don't use |
-| **Delay (seconds)** | `60` (or higher) — coalesces bursts of mutations into one webhook fire. Without this, every migration script run triggers N deploys (one per document); with delay, it's one deploy regardless of N. Tradeoff: regular publishes also wait the delay before deploying — acceptable for a portfolio. |
 | Filter (GROQ) | `_type in [<list of every singleton + collection type>]` |
 | HTTP method | POST |
 | URL | Vercel project deploy hook URL |
+
+**Sanity does NOT have a built-in webhook debounce.** Every document mutation fires its own webhook event. This is fine for normal one-off publishes, but a migration script that touches N documents triggers N webhook events → N Vercel deploys, which can hit the Vercel deploy hook 60/hour rate limit.
+
+**Workflow for running migration scripts** (anything that mutates 5+ documents in a row):
+
+1. Sanity Manage → API → Webhooks → toggle the webhook **disabled**
+2. Run the migration script (uses a Sanity transaction for atomicity)
+3. Toggle the webhook **enabled**
+4. Vercel → Deployments → ⋯ → **Redeploy** the latest main commit to pick up the new content
+
+Migration scripts in this repo (`cms:upload-photo-projects`, `cms:upload-hero-photos`, `cms:fix-photo-project-ranks`, `cms:seed`) all batch their mutations into a single Sanity transaction so the data write is atomic — but the webhook still fires per-document, so the toggle dance above is still required to keep Vercel deploys at one per migration run.
 
 **The GROQ filter is mandatory.** Without it, every asset upload — every image you drop into the Studio — creates a `sanity.imageAsset` document mutation, which fires the webhook, which triggers a Vercel rebuild. Uploading 100 photos at once = 100 rebuilds. The filter excludes `sanity.imageAsset` (and any other Sanity-internal type) by listing only the singleton types we care about.
 

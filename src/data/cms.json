@@ -1,6 +1,28 @@
 {
   "films": [
     {
+      "id": "9241be6f-37a3-4684-aa4f-8b95ead17f80",
+      "slug": "protea-a-portal-film",
+      "title": "PROTEA DREAMS - A Portal film by Basile Deschamps",
+      "description": "Directed, composed & edited by Basile Deschamps.",
+      "year": 2026,
+      "client": "Portal",
+      "category": "Branded Documentary",
+      "featured": true,
+      "collapsed": false,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/1186537438",
+      "aspectRatio": 1.7777777777777777,
+      "credits": {
+        "left": [],
+        "right": []
+      },
+      "muxPlaybackId": "jwywL7WtSqhu1H9TJuVnAuKH5lb3mNFMD9EXsjdzUaU",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/jwywL7WtSqhu1H9TJuVnAuKH5lb3mNFMD9EXsjdzUaU.m3u8",
+      "muxPosterUrl": "https://image.mux.com/jwywL7WtSqhu1H9TJuVnAuKH5lb3mNFMD9EXsjdzUaU/thumbnail.jpg?time=0.5"
+    },
+    {
       "id": "9cd36103-5158-4d59-a944-803184f513f9",
       "slug": "outbreak-saucony",
       "title": "OUTBREAK - Saucony Shock Capsule Campaign",
@@ -34,6 +56,146 @@
       "muxStatus": "ready",
       "muxStreamUrl": "https://stream.mux.com/eI2aUFi02yymZbUhZOwGmKVmXpe6H02PSO01NbxbJ1xyMk.m3u8",
       "muxPosterUrl": "https://image.mux.com/eI2aUFi02yymZbUhZOwGmKVmXpe6H02PSO01NbxbJ1xyMk/thumbnail.jpg?time=0.5"
+    },
+    {
+      "id": "film-bastille-maison-mara",
+      "slug": "bastille-maison-mara",
+      "title": "Bastille, Maison Mara",
+      "description": "A fashion film for Maison Mara, directed and shot by Basile Deschamps. Styling by Natasha Els, with Loren Humpfreys and Olivier Ntumba. Paris, quiet confidence, nothing overdone.",
+      "year": 2021,
+      "client": "Maison Mara",
+      "category": "Fashion Film",
+      "featured": true,
+      "collapsed": false,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/541582370",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction / DOP",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "Styling",
+            "name": "Natasha Els"
+          }
+        ],
+        "right": [
+          {
+            "role": "Cast",
+            "name": "Loren Humpfreys, Olivier Ntumba"
+          }
+        ]
+      },
+      "muxPlaybackId": "YOGoQ01goSKnHiILQ4Qa900mm5eRDAXiJqVgb15nrX4uc",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/YOGoQ01goSKnHiILQ4Qa900mm5eRDAXiJqVgb15nrX4uc.m3u8",
+      "muxPosterUrl": "https://image.mux.com/YOGoQ01goSKnHiILQ4Qa900mm5eRDAXiJqVgb15nrX4uc/thumbnail.jpg?time=0.5"
+    },
+    {
+      "id": "film-veja-condor-3",
+      "slug": "veja-condor-3",
+      "title": "Veja Condor 3",
+      "description": "A sport film built around the launch of the Condor 3. From marathon tarmac to mountain trail, directed, edited, and scored by Basile Deschamps.",
+      "year": 2025,
+      "client": "Veja",
+      "category": "Commercial",
+      "featured": false,
+      "collapsed": false,
+      "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/9b8174848a577073e73b1c85781b355dfad4f02f-1280x720.jpg",
+      "videoUrl": "https://player.vimeo.com/video/1062003612",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "Edit",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": [
+          {
+            "role": "Music",
+            "name": "Basile Deschamps"
+          }
+        ]
+      },
+      "muxPlaybackId": "qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg.m3u8",
+      "muxPosterUrl": "https://image.mux.com/qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg/thumbnail.jpg?time=0.5"
+    },
+    {
+      "id": "film-sacai-ss25",
+      "slug": "sacai-ss25",
+      "title": "Sacai SS25",
+      "description": "A backstage film shot during Sacai's Spring/Summer 2025 show in Paris. Directed, edited, and scored by Basile Deschamps, capturing the atmosphere around the collection before and after the runway.",
+      "year": 2025,
+      "client": "Sacai",
+      "category": "Fashion / Behind the Scenes",
+      "featured": true,
+      "collapsed": false,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/1047455821",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "Edit",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": [
+          {
+            "role": "Music",
+            "name": "Basile Deschamps"
+          }
+        ]
+      },
+      "muxPlaybackId": "1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig.m3u8",
+      "muxPosterUrl": "https://image.mux.com/1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig/thumbnail.jpg?time=0.5"
+    },
+    {
+      "id": "film-quentin-malriq",
+      "slug": "quentin-malriq",
+      "title": "Quentin Malriq, An Athlete Portrait by DISTANCE",
+      "description": "A film following middle-distance runner Quentin Malriq as he fights for Olympic selection. Made for ASICS, the portrait stays close to the daily grind. The margins are tiny and the stakes are everything.",
+      "year": 2023,
+      "client": "ASICS",
+      "category": "Documentary / Sport",
+      "featured": true,
+      "collapsed": false,
+      "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/71f5cbe29ada11a67ae78ac4a8979a7b37cd859f-1280x720.jpg",
+      "videoUrl": "https://player.vimeo.com/video/895840721",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": [
+          {
+            "role": "Production",
+            "name": "DISTANCE"
+          }
+        ]
+      },
+      "muxPlaybackId": "NwKvkp7WykiOu6DRfIJT3NAJJOuT01klYeL9rl02B9Lyk",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/NwKvkp7WykiOu6DRfIJT3NAJJOuT01klYeL9rl02B9Lyk.m3u8",
+      "muxPosterUrl": "https://image.mux.com/NwKvkp7WykiOu6DRfIJT3NAJJOuT01klYeL9rl02B9Lyk/thumbnail.jpg?time=0.5"
     },
     {
       "id": "film-decathlon-cocreation",
@@ -85,115 +247,7 @@
       "muxPlaybackId": "8c00w9HBZ3CyDFyyijtkC9QRj0102RyJhuUpnYf4Mj5hQ8",
       "muxStatus": "ready",
       "muxStreamUrl": "https://stream.mux.com/8c00w9HBZ3CyDFyyijtkC9QRj0102RyJhuUpnYf4Mj5hQ8.m3u8",
-      "muxPosterUrl": "https://image.mux.com/8c00w9HBZ3CyDFyyijtkC9QRj0102RyJhuUpnYf4Mj5hQ8/thumbnail.jpg?time=0.5",
-      "imagePosition": "left"
-    },
-    {
-      "id": "film-veja-condor-3",
-      "slug": "veja-condor-3",
-      "title": "Veja Condor 3",
-      "description": "A sport film built around the launch of the Condor 3. From marathon tarmac to mountain trail, directed, edited, and scored by Basile Deschamps.",
-      "year": 2025,
-      "client": "Veja",
-      "category": "Commercial",
-      "featured": false,
-      "collapsed": false,
-      "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/9b8174848a577073e73b1c85781b355dfad4f02f-1280x720.jpg",
-      "videoUrl": "https://player.vimeo.com/video/1062003612",
-      "aspectRatio": 1.78,
-      "credits": {
-        "left": [
-          {
-            "role": "Direction",
-            "name": "Basile Deschamps"
-          },
-          {
-            "role": "Edit",
-            "name": "Basile Deschamps"
-          }
-        ],
-        "right": [
-          {
-            "role": "Music",
-            "name": "Basile Deschamps"
-          }
-        ]
-      },
-      "muxPlaybackId": "qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg",
-      "muxStatus": "ready",
-      "muxStreamUrl": "https://stream.mux.com/qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg.m3u8",
-      "muxPosterUrl": "https://image.mux.com/qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg/thumbnail.jpg?time=0.5",
-      "imagePosition": "left"
-    },
-    {
-      "id": "film-sacai-ss25",
-      "slug": "sacai-ss25",
-      "title": "Sacai SS25",
-      "description": "A backstage film shot during Sacai's Spring/Summer 2025 show in Paris. Directed, edited, and scored by Basile Deschamps, capturing the atmosphere around the collection before and after the runway.",
-      "year": 2025,
-      "client": "Sacai",
-      "category": "Fashion / Behind the Scenes",
-      "featured": true,
-      "collapsed": false,
-      "thumbnail": null,
-      "videoUrl": "https://player.vimeo.com/video/1047455821",
-      "aspectRatio": 1.78,
-      "credits": {
-        "left": [
-          {
-            "role": "Direction",
-            "name": "Basile Deschamps"
-          },
-          {
-            "role": "Edit",
-            "name": "Basile Deschamps"
-          }
-        ],
-        "right": [
-          {
-            "role": "Music",
-            "name": "Basile Deschamps"
-          }
-        ]
-      },
-      "muxPlaybackId": "1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig",
-      "muxStatus": "ready",
-      "muxStreamUrl": "https://stream.mux.com/1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig.m3u8",
-      "muxPosterUrl": "https://image.mux.com/1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig/thumbnail.jpg?time=0.5",
-      "imagePosition": "right"
-    },
-    {
-      "id": "film-quentin-malriq",
-      "slug": "quentin-malriq",
-      "title": "Quentin Malriq, An Athlete Portrait by DISTANCE",
-      "description": "A film following middle-distance runner Quentin Malriq as he fights for Olympic selection. Made for ASICS, the portrait stays close to the daily grind. The margins are tiny and the stakes are everything.",
-      "year": 2023,
-      "client": "ASICS",
-      "category": "Documentary / Sport",
-      "featured": true,
-      "collapsed": false,
-      "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/71f5cbe29ada11a67ae78ac4a8979a7b37cd859f-1280x720.jpg",
-      "videoUrl": "https://player.vimeo.com/video/895840721",
-      "aspectRatio": 1.78,
-      "credits": {
-        "left": [
-          {
-            "role": "Direction",
-            "name": "Basile Deschamps"
-          }
-        ],
-        "right": [
-          {
-            "role": "Production",
-            "name": "DISTANCE"
-          }
-        ]
-      },
-      "muxPlaybackId": "NwKvkp7WykiOu6DRfIJT3NAJJOuT01klYeL9rl02B9Lyk",
-      "muxStatus": "ready",
-      "muxStreamUrl": "https://stream.mux.com/NwKvkp7WykiOu6DRfIJT3NAJJOuT01klYeL9rl02B9Lyk.m3u8",
-      "muxPosterUrl": "https://image.mux.com/NwKvkp7WykiOu6DRfIJT3NAJJOuT01klYeL9rl02B9Lyk/thumbnail.jpg?time=0.5",
-      "imagePosition": "right"
+      "muxPosterUrl": "https://image.mux.com/8c00w9HBZ3CyDFyyijtkC9QRj0102RyJhuUpnYf4Mj5hQ8/thumbnail.jpg?time=0.5"
     },
     {
       "id": "film-le-cnd-camping-2023",
@@ -220,41 +274,7 @@
       "muxPlaybackId": "gwVm8KP600OH02dTbHku2iTDl7apqeJdv9flv9zdQONtc",
       "muxStatus": "ready",
       "muxStreamUrl": "https://stream.mux.com/gwVm8KP600OH02dTbHku2iTDl7apqeJdv9flv9zdQONtc.m3u8",
-      "muxPosterUrl": "https://image.mux.com/gwVm8KP600OH02dTbHku2iTDl7apqeJdv9flv9zdQONtc/thumbnail.jpg?time=0.5",
-      "imagePosition": "left"
-    },
-    {
-      "id": "film-diversions-ep-teaser",
-      "slug": "diversions-ep-teaser",
-      "title": "DIVERSIONS EP by Antoine Bourachot, Teaser",
-      "description": "A Super 8 teaser for composer Antoine Bourachot's EP. Synthesisers, vintage gear, the quiet of a recording studio. Analog and warm.",
-      "year": 2023,
-      "client": "Antoine Bourachot",
-      "category": "Music / Short Film",
-      "featured": true,
-      "collapsed": false,
-      "thumbnail": null,
-      "videoUrl": "https://player.vimeo.com/video/863910150",
-      "aspectRatio": 1.78,
-      "credits": {
-        "left": [
-          {
-            "role": "Direction",
-            "name": "Basile Deschamps"
-          }
-        ],
-        "right": [
-          {
-            "role": "Artist",
-            "name": "Antoine Bourachot"
-          }
-        ]
-      },
-      "muxPlaybackId": "Jifz2h02fwdJoFIbs0102hAJZtpayk5LGA9Nu15jCrTNDw",
-      "muxStatus": "ready",
-      "muxStreamUrl": "https://stream.mux.com/Jifz2h02fwdJoFIbs0102hAJZtpayk5LGA9Nu15jCrTNDw.m3u8",
-      "muxPosterUrl": "https://image.mux.com/Jifz2h02fwdJoFIbs0102hAJZtpayk5LGA9Nu15jCrTNDw/thumbnail.jpg?time=0.5",
-      "imagePosition": "right"
+      "muxPosterUrl": "https://image.mux.com/gwVm8KP600OH02dTbHku2iTDl7apqeJdv9flv9zdQONtc/thumbnail.jpg?time=0.5"
     },
     {
       "id": "film-badre-documentary",
@@ -290,8 +310,39 @@
       "muxPlaybackId": "Bubbzudep01qwtZJ2x9oYJEIaJ4GRTRIeO9U01OU6z3X00",
       "muxStatus": "ready",
       "muxStreamUrl": "https://stream.mux.com/Bubbzudep01qwtZJ2x9oYJEIaJ4GRTRIeO9U01OU6z3X00.m3u8",
-      "muxPosterUrl": "https://image.mux.com/Bubbzudep01qwtZJ2x9oYJEIaJ4GRTRIeO9U01OU6z3X00/thumbnail.jpg?time=0.5",
-      "imagePosition": "left"
+      "muxPosterUrl": "https://image.mux.com/Bubbzudep01qwtZJ2x9oYJEIaJ4GRTRIeO9U01OU6z3X00/thumbnail.jpg?time=0.5"
+    },
+    {
+      "id": "film-diversions-ep-teaser",
+      "slug": "diversions-ep-teaser",
+      "title": "DIVERSIONS EP by Antoine Bourachot, Teaser",
+      "description": "A Super 8 teaser for composer Antoine Bourachot's EP. Synthesisers, vintage gear, the quiet of a recording studio. Analog and warm.",
+      "year": 2023,
+      "client": "Antoine Bourachot",
+      "category": "Music / Short Film",
+      "featured": true,
+      "collapsed": true,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/863910150",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": [
+          {
+            "role": "Artist",
+            "name": "Antoine Bourachot"
+          }
+        ]
+      },
+      "muxPlaybackId": "Jifz2h02fwdJoFIbs0102hAJZtpayk5LGA9Nu15jCrTNDw",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/Jifz2h02fwdJoFIbs0102hAJZtpayk5LGA9Nu15jCrTNDw.m3u8",
+      "muxPosterUrl": "https://image.mux.com/Jifz2h02fwdJoFIbs0102hAJZtpayk5LGA9Nu15jCrTNDw/thumbnail.jpg?time=0.5"
     },
     {
       "id": "film-assos-feno-suit",
@@ -318,8 +369,7 @@
       "muxPlaybackId": "RJPpHKntHyBjV014TuKHKJEZ201h02vU02jk4pMrJtzVJoI",
       "muxStatus": "ready",
       "muxStreamUrl": "https://stream.mux.com/RJPpHKntHyBjV014TuKHKJEZ201h02vU02jk4pMrJtzVJoI.m3u8",
-      "muxPosterUrl": "https://image.mux.com/RJPpHKntHyBjV014TuKHKJEZ201h02vU02jk4pMrJtzVJoI/thumbnail.jpg?time=0.5",
-      "imagePosition": "right"
+      "muxPosterUrl": "https://image.mux.com/RJPpHKntHyBjV014TuKHKJEZ201h02vU02jk4pMrJtzVJoI/thumbnail.jpg?time=0.5"
     },
     {
       "id": "film-showreel-2021",
@@ -332,7 +382,7 @@
       "featured": false,
       "collapsed": false,
       "thumbnail": null,
-      "videoUrl": "https://player.vimeo.com/video/562172132",
+      "videoUrl": "https://vimeo.com/562172132?fl=pl&fe=cm",
       "aspectRatio": 1.78,
       "credits": {
         "left": [
@@ -346,8 +396,7 @@
       "muxPlaybackId": "XJfMcPjTQ4V4yyUFV3gQmzQ8w8i9OrQ9tJ02hxWkcHrQ",
       "muxStatus": "ready",
       "muxStreamUrl": "https://stream.mux.com/XJfMcPjTQ4V4yyUFV3gQmzQ8w8i9OrQ9tJ02hxWkcHrQ.m3u8",
-      "muxPosterUrl": "https://image.mux.com/XJfMcPjTQ4V4yyUFV3gQmzQ8w8i9OrQ9tJ02hxWkcHrQ/thumbnail.jpg?time=0.5",
-      "imagePosition": "left"
+      "muxPosterUrl": "https://image.mux.com/XJfMcPjTQ4V4yyUFV3gQmzQ8w8i9OrQ9tJ02hxWkcHrQ/thumbnail.jpg?time=0.5"
     },
     {
       "id": "film-salomon-trail-running",
@@ -383,45 +432,7 @@
       "muxPlaybackId": "rWb8jchEgmB42ainKB5AwmuyuHJoUbLHx00P02wpMZPWc",
       "muxStatus": "ready",
       "muxStreamUrl": "https://stream.mux.com/rWb8jchEgmB42ainKB5AwmuyuHJoUbLHx00P02wpMZPWc.m3u8",
-      "muxPosterUrl": "https://image.mux.com/rWb8jchEgmB42ainKB5AwmuyuHJoUbLHx00P02wpMZPWc/thumbnail.jpg?time=0.5",
-      "imagePosition": "right"
-    },
-    {
-      "id": "film-bastille-maison-mara",
-      "slug": "bastille-maison-mara",
-      "title": "Bastille, Maison Mara",
-      "description": "A fashion film for Maison Mara, directed and shot by Basile Deschamps. Styling by Natasha Els, with Loren Humpfreys and Olivier Ntumba. Paris, quiet confidence, nothing overdone.",
-      "year": 2021,
-      "client": "Maison Mara",
-      "category": "Fashion Film",
-      "featured": true,
-      "collapsed": false,
-      "thumbnail": null,
-      "videoUrl": "https://player.vimeo.com/video/541582370",
-      "aspectRatio": 1.78,
-      "credits": {
-        "left": [
-          {
-            "role": "Direction / DOP",
-            "name": "Basile Deschamps"
-          },
-          {
-            "role": "Styling",
-            "name": "Natasha Els"
-          }
-        ],
-        "right": [
-          {
-            "role": "Cast",
-            "name": "Loren Humpfreys, Olivier Ntumba"
-          }
-        ]
-      },
-      "muxPlaybackId": "YOGoQ01goSKnHiILQ4Qa900mm5eRDAXiJqVgb15nrX4uc",
-      "muxStatus": "ready",
-      "muxStreamUrl": "https://stream.mux.com/YOGoQ01goSKnHiILQ4Qa900mm5eRDAXiJqVgb15nrX4uc.m3u8",
-      "muxPosterUrl": "https://image.mux.com/YOGoQ01goSKnHiILQ4Qa900mm5eRDAXiJqVgb15nrX4uc/thumbnail.jpg?time=0.5",
-      "imagePosition": "left"
+      "muxPosterUrl": "https://image.mux.com/rWb8jchEgmB42ainKB5AwmuyuHJoUbLHx00P02wpMZPWc/thumbnail.jpg?time=0.5"
     },
     {
       "id": "film-kamikwazi-locked-down",
@@ -453,8 +464,7 @@
       "muxPlaybackId": "X2iXdsVpNmh52Xj3cUbs2oke7sCi5KeGjXL0000KUadUU",
       "muxStatus": "ready",
       "muxStreamUrl": "https://stream.mux.com/X2iXdsVpNmh52Xj3cUbs2oke7sCi5KeGjXL0000KUadUU.m3u8",
-      "muxPosterUrl": "https://image.mux.com/X2iXdsVpNmh52Xj3cUbs2oke7sCi5KeGjXL0000KUadUU/thumbnail.jpg?time=0.5",
-      "imagePosition": "right"
+      "muxPosterUrl": "https://image.mux.com/X2iXdsVpNmh52Xj3cUbs2oke7sCi5KeGjXL0000KUadUU/thumbnail.jpg?time=0.5"
     },
     {
       "id": "film-hommage-back-to-1992-2",
@@ -490,8 +500,7 @@
       "muxPlaybackId": "F8pQN9REW7AOCH402Pzr00R00HJeDcMc00XblhDiC63y6sU",
       "muxStatus": "ready",
       "muxStreamUrl": "https://stream.mux.com/F8pQN9REW7AOCH402Pzr00R00HJeDcMc00XblhDiC63y6sU.m3u8",
-      "muxPosterUrl": "https://image.mux.com/F8pQN9REW7AOCH402Pzr00R00HJeDcMc00XblhDiC63y6sU/thumbnail.jpg?time=0.5",
-      "imagePosition": "left"
+      "muxPosterUrl": "https://image.mux.com/F8pQN9REW7AOCH402Pzr00R00HJeDcMc00XblhDiC63y6sU/thumbnail.jpg?time=0.5"
     },
     {
       "id": "film-hommage-back-to-1992-1",
@@ -518,8 +527,7 @@
       "muxPlaybackId": "kxb3IDk37b794DYlHmoO1hjVPCuNx2cFZB8NhQci02uY",
       "muxStatus": "ready",
       "muxStreamUrl": "https://stream.mux.com/kxb3IDk37b794DYlHmoO1hjVPCuNx2cFZB8NhQci02uY.m3u8",
-      "muxPosterUrl": "https://image.mux.com/kxb3IDk37b794DYlHmoO1hjVPCuNx2cFZB8NhQci02uY/thumbnail.jpg?time=0.5",
-      "imagePosition": "right"
+      "muxPosterUrl": "https://image.mux.com/kxb3IDk37b794DYlHmoO1hjVPCuNx2cFZB8NhQci02uY/thumbnail.jpg?time=0.5"
     },
     {
       "id": "film-hommage-late-16-collection",
@@ -551,8 +559,7 @@
       "muxPlaybackId": "LOkCbQjWMq2r3PnGF4Gn019v7tkRXnAPd5RMsoySjW6c",
       "muxStatus": "ready",
       "muxStreamUrl": "https://stream.mux.com/LOkCbQjWMq2r3PnGF4Gn019v7tkRXnAPd5RMsoySjW6c.m3u8",
-      "muxPosterUrl": "https://image.mux.com/LOkCbQjWMq2r3PnGF4Gn019v7tkRXnAPd5RMsoySjW6c/thumbnail.jpg?time=0.5",
-      "imagePosition": "left"
+      "muxPosterUrl": "https://image.mux.com/LOkCbQjWMq2r3PnGF4Gn019v7tkRXnAPd5RMsoySjW6c/thumbnail.jpg?time=0.5"
     }
   ],
   "heroOverlay": {
@@ -3232,5 +3239,5 @@
     "socialTwitter": null,
     "socialVimeo": "https://vimeo.com/user37669788"
   },
-  "_fetchedAt": "2026-05-20T13:47:32.312Z"
+  "_fetchedAt": "2026-05-20T14:20:51.771Z"
 }

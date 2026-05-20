@@ -70,7 +70,6 @@ const QUERY = `{
     previewMobileBreakpoint,
     previewAspectRatio,
     previewMaxHeight,
-    imagePosition,
     "photos": photos[]{
       "src": asset->url,
       alt,
@@ -91,7 +90,6 @@ const QUERY = `{
     "thumbnail": thumbnail.asset->url,
     videoUrl,
     aspectRatio,
-    imagePosition,
     credits[]{ side, role, name },
     "mux": videoMux.asset->{
       playbackId,
@@ -159,7 +157,6 @@ function flattenPhotoProject(project) {
     photos,
   };
   if (preview) out.preview = preview;
-  if (project.imagePosition) out.imagePosition = project.imagePosition;
   return out;
 }
 
@@ -210,7 +207,6 @@ function flattenFilm(film) {
       ? `https://image.mux.com/${muxPlaybackId}/thumbnail.jpg?time=0.5`
       : null,
   };
-  if (film.imagePosition) out.imagePosition = film.imagePosition;
   return out;
 }
 

@@ -12,16 +12,17 @@ const LAYOUT_VARIANTS = [
   { titlePl: '1.5rem', titlePr: '1rem',   titleMb: '3.5rem', descPl: '2.5rem', descPr: '0.5rem' },
 ];
 
-function FilmCard({ film, index = 0, onFilmClick }) {
+function FilmCard({ film, index = 0, mediaSide = 'left', onFilmClick }) {
   const {
     title,
     description,
     thumbnail,
     credits,
-    imagePosition,
   } = film;
 
-  const isImageLeft = imagePosition === 'left';
+  // `mediaSide` is supplied by the parent based on the site-wide
+  // `cardAlignment` setting (see src/utils/cardAlignment.js).
+  const isImageLeft = mediaSide === 'left';
   const handleClick = () => onFilmClick(film);
   const variant = LAYOUT_VARIANTS[index % LAYOUT_VARIANTS.length];
 

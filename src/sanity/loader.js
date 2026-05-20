@@ -38,6 +38,7 @@ const FALLBACK_SITE_SETTINGS = {
   navActiveStyle: 'bold-larger',
   navLinkSize: 16,
   navLinkActiveSize: 18,
+  cardAlignment: 'alternate',
   footerCopyright: 'Basile Deschamps. All rights reserved.',
   footerShowSocial: true,
 };

@@ -45,10 +45,6 @@ const styles = {
   primaryCard: {
     borderColor: 'var(--brand-primary, #156dff)',
   },
-  cautionCard: {
-    background: 'var(--card-tone-caution-bg-color, #3a2a08)',
-    borderColor: 'var(--card-tone-caution-border-color, #6a4a10)',
-  },
   button: {
     background: 'var(--brand-primary, #156dff)',
     color: '#fff',
@@ -82,7 +78,6 @@ const styles = {
     fontSize: 13,
     marginTop: 12,
   },
-  link: { color: 'inherit', textDecoration: 'underline' },
 };
 
 export default function DeployTool() {
@@ -152,27 +147,6 @@ export default function DeployTool() {
         )}
       </div>
 
-      <div style={{ ...styles.card, ...styles.cautionCard }}>
-        <h2 style={{ margin: '0 0 12px 0', fontSize: 16, fontWeight: 600 }}>
-          ⚠ Auto-webhook reminder
-        </h2>
-        <p style={{ ...styles.muted, marginBottom: 8 }}>
-          This tool is designed to <strong>replace</strong> the auto-webhook in Sanity Manage. If
-          both are active, every Publish triggers a deploy AND clicking here triggers a second one.
-        </p>
-        <p style={styles.muted}>
-          To use only manual deploys, go to{' '}
-          <a
-            href="https://www.sanity.io/manage/project/e9pgmdfm/api/webhooks"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={styles.link}
-          >
-            Sanity Manage → API → Webhooks
-          </a>{' '}
-          and toggle the webhook <strong>disabled</strong>.
-        </p>
-      </div>
     </div>
   );
 }

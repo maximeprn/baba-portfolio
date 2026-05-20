@@ -28,7 +28,7 @@ function FilmCard({ film, index = 0, mediaSide = 'left', onFilmClick }) {
 
   return (
     <article
-      className="w-full max-w-container bg-white border-t border-b border-border px-[5%] py-8 lg:py-3"
+      className="w-full max-w-container bg-white px-[5%] py-8 lg:py-3"
       style={{
         '--fc-title-pl': variant.titlePl,
         '--fc-title-pr': variant.titlePr,

@@ -44,7 +44,15 @@ const builder = imageUrlBuilder(client);
 const QUERY = `{
   "siteSettings": *[_type == "siteSettings" && _id == "siteSettings"][0],
   "heroOverlay":  *[_type == "heroOverlay"  && _id == "heroOverlay"][0],
-  "showreel":     *[_type == "showreel"     && _id == "showreel"][0],
+  "showreel":     *[_type == "showreel"     && _id == "showreel"][0]{
+    ...,
+    "mux": videoMux.asset->{
+      playbackId,
+      "status":   data.status,
+      "aspect":   data.aspect_ratio,
+      "duration": data.duration
+    }
+  },
   "heroPhotos":   *[_type == "heroPhotos"   && _id == "heroPhotos"][0],
   "photoProjects": *[_type == "photoProject"] | order(orderRank asc) {
     _id,
@@ -235,6 +243,18 @@ async function fetchCmsContent() {
   }
   if (data.showreel?.posterImage) {
     data.showreel.posterImageUrl = resolveImage(data.showreel.posterImage);
+  }
+
+  // Showreel Mux: surface playback URLs the same way films do.
+  if (data.showreel?.mux?.playbackId) {
+    const { playbackId, status } = data.showreel.mux;
+    const muxReady = status === 'ready';
+    data.showreel.muxPlaybackId = muxReady ? playbackId : null;
+    data.showreel.muxStatus = status ?? null;
+    data.showreel.muxStreamUrl = muxReady
+      ? `https://stream.mux.com/${playbackId}.m3u8`
+      : null;
+    data.showreel.muxPosterUrl = `https://image.mux.com/${playbackId}/thumbnail.jpg?time=0.5`;
   }
 
   // heroPhotos.photos is an array of image fields — flatten to plain URLs so

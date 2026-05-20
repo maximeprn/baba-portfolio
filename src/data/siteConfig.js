@@ -67,9 +67,14 @@ export const siteConfig = {
 
   showreel: {
     vimeoUrl: cmsShowreel.vimeoUrl,
-    // Pass through the videoShorts mapper so the autoplaying hero background
-    // streams the shortened teaser when one exists in public/videos/.
-    videoFile: shortVideo(cmsShowreel.videoFile),
+    // Legacy Blob path (kept as transitional fallback for browsers/states
+    // where the Mux asset isn't ready yet). Routed through shortVideo() so
+    // the runtime gets the teaser cut + Blob URL.
+    videoFile: cmsShowreel.videoFile ? shortVideo(cmsShowreel.videoFile) : null,
+    // Mux fields — prefer these when present.
+    muxStreamUrl: cmsShowreel.muxStreamUrl,
+    muxPosterUrl: cmsShowreel.muxPosterUrl,
+    posterImageUrl: cmsShowreel.posterImageUrl,
   },
 
   footer: {

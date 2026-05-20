@@ -5,7 +5,7 @@ export const showreel = defineType({
   title: 'Showreel',
   type: 'document',
   description:
-    'Main hero video. Vimeo URL drives the click-through modal; the file path drives the muted background loop.',
+    'Main hero video. Vimeo URL drives the click-through modal; the Mux upload drives the muted background loop.',
   fields: [
     defineField({
       name: 'vimeoUrl',
@@ -15,17 +15,25 @@ export const showreel = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'videoFile',
-      title: 'Hero background video file',
+      name: 'videoMux',
+      title: 'Hero background video (Mux)',
       description:
-        'Path under /videos/, e.g. /videos/Showreel 2021.mp4. The runtime swaps to a "- short.mp4" teaser cut when available.',
+        'Drag-and-drop the showreel preview here. Mux transcodes to adaptive bitrate HLS and serves it via its own CDN.',
+      type: 'mux.video',
+    }),
+    defineField({
+      name: 'videoFile',
+      title: 'Legacy video file path (Vercel Blob)',
+      description:
+        'Transitional fallback. Used only when the Mux upload above is empty. Will be removed once the hero video is on Mux.',
       type: 'string',
-      validation: (Rule) => Rule.required(),
+      readOnly: true,
     }),
     defineField({
       name: 'posterImage',
-      title: 'Poster image (optional)',
-      description: 'Fallback image shown while the video loads.',
+      title: 'Poster image (optional override)',
+      description:
+        'Leave blank to use a frame Mux picks automatically. Set this for a specific frame or stylised poster.',
       type: 'image',
     }),
   ],

@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
+import Hls from 'hls.js';
 import { siteConfig } from '../../data/siteConfig';
 import { heroOverlay } from '../../sanity/loader';
 import { fluidScale } from '../../utils/fluidScale';
@@ -344,6 +345,34 @@ function HeroSection({ onVideoClick, onReady }) {
     }
   };
 
+  // Mux HLS attachment: same pattern as FeaturedFilmCard. When a Mux
+  // stream URL is present, hls.js drives playback (or native HLS in Safari).
+  // Falls through to the legacy <video src=videoFile> path when no Mux yet.
+  useEffect(() => {
+    const muxUrl = siteConfig.showreel.muxStreamUrl;
+    if (!muxUrl) return;
+
+    const attach = (video) => {
+      if (!video) return null;
+      if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = muxUrl;
+        return null;
+      }
+      if (!Hls.isSupported()) return null;
+      const hls = new Hls({ capLevelToPlayerSize: true, maxBufferLength: 8 });
+      hls.loadSource(muxUrl);
+      hls.attachMedia(video);
+      return hls;
+    };
+
+    const desktopHls = attach(desktopVideoRef.current);
+    const mobileHls = attach(mobileVideoRef.current);
+    return () => {
+      desktopHls?.destroy();
+      mobileHls?.destroy();
+    };
+  }, []);
+
   // Non-Safari: unmute after 2.5s, re-mute if browser kills playback
   useEffect(() => {
     if (isSafari) return;
@@ -384,7 +413,8 @@ function HeroSection({ onVideoClick, onReady }) {
             <video
               ref={desktopVideoRef}
               data-hero-video
-              src={siteConfig.showreel.videoFile}
+              src={siteConfig.showreel.muxStreamUrl ? undefined : siteConfig.showreel.videoFile || undefined}
+              poster={siteConfig.showreel.muxPosterUrl || siteConfig.showreel.posterImageUrl || undefined}
               autoPlay
               loop
               muted
@@ -411,7 +441,8 @@ function HeroSection({ onVideoClick, onReady }) {
             <video
               ref={mobileVideoRef}
               data-hero-video
-              src={siteConfig.showreel.videoFile}
+              src={siteConfig.showreel.muxStreamUrl ? undefined : siteConfig.showreel.videoFile || undefined}
+              poster={siteConfig.showreel.muxPosterUrl || siteConfig.showreel.posterImageUrl || undefined}
               autoPlay
               loop
               muted

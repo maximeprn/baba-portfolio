@@ -93,6 +93,10 @@ const FALLBACK_SHOWREEL = {
   vimeoUrl: 'https://player.vimeo.com/video/989542038',
   videoFile: '/videos/Showreel 2021.mp4',
   posterImageUrl: null,
+  muxPlaybackId: null,
+  muxStatus: null,
+  muxStreamUrl: null,
+  muxPosterUrl: null,
 };
 
 // ---------------------------------------------------------------------------

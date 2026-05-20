@@ -38,6 +38,7 @@ import Mux from '@mux/mux-node';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = resolve(__dirname, '..');
 const BLOB_MANIFEST = resolve(PROJECT_ROOT, 'src/data/blobUrls.json');
+const VIDEO_SHORTS_PATH = resolve(PROJECT_ROOT, 'src/data/videoShorts.js');
 
 const PROJECT_ID = 'e9pgmdfm';
 const DATASET = 'production';
@@ -72,12 +73,21 @@ const blobManifest = existsSync(BLOB_MANIFEST)
   ? JSON.parse(readFileSync(BLOB_MANIFEST, 'utf-8'))
   : {};
 
+// Some films only have a "* - short.mp4" entry in blobUrls.json (the short
+// teaser cut), not the original full path. src/data/videoShorts.js maps the
+// original → short filename — same mapping the runtime uses to pick the
+// short variant for autoplay tiles.
+const { default: VIDEO_SHORTS } = await import(VIDEO_SHORTS_PATH);
+
 function resolveBlobUrl(videoFile) {
   if (!videoFile) return null;
   // Already a public URL (starts with https://) — use as-is.
   if (videoFile.startsWith('http')) return videoFile;
-  // Otherwise look it up in the manifest (e.g. "/videos/Veja Condor 3.mp4").
-  return blobManifest[videoFile] ?? null;
+  // Try the original path first, then the "* - short.mp4" sibling.
+  if (blobManifest[videoFile]) return blobManifest[videoFile];
+  const short = VIDEO_SHORTS[videoFile];
+  if (short && blobManifest[short]) return blobManifest[short];
+  return null;
 }
 
 async function waitForReady(assetId) {

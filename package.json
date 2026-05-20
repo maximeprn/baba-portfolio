@@ -15,6 +15,7 @@
     "cms:watch": "node scripts/watch-cms.mjs",
     "cms:upload-hero-photos": "node scripts/upload-hero-photos.mjs",
     "cms:upload-photo-projects": "node scripts/upload-photo-projects.mjs",
+    "cms:fix-photo-project-ranks": "node scripts/fix-photo-project-ranks.mjs",
     "studio:dev": "sanity dev",
     "studio:deploy": "sanity deploy"
   },

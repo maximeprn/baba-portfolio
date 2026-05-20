@@ -86,7 +86,8 @@ The Sanity webhook lives at [Sanity Manage → API → Webhooks](https://www.san
 | Trigger events | `Create`, `Update`, `Delete` |
 | **Drafts** toggle | ☐ **UNCHECKED** — drafts auto-save on every keystroke; checking this floods Vercel |
 | **Versions** toggle | ☐ **UNCHECKED** — applies to releases / scheduled docs we don't use |
-| Filter (GROQ) | `_type in [<list of every singleton type>]` |
+| **Delay (seconds)** | `60` (or higher) — coalesces bursts of mutations into one webhook fire. Without this, every migration script run triggers N deploys (one per document); with delay, it's one deploy regardless of N. Tradeoff: regular publishes also wait the delay before deploying — acceptable for a portfolio. |
+| Filter (GROQ) | `_type in [<list of every singleton + collection type>]` |
 | HTTP method | POST |
 | URL | Vercel project deploy hook URL |
 

@@ -27,6 +27,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { resolve, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createClient } from '@sanity/client';
+import { LexoRank } from 'lexorank';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = resolve(__dirname, '..');
@@ -77,7 +78,7 @@ async function uploadOrReuseAsset(filename) {
   return asset;
 }
 
-async function migrateProject(project, index, total) {
+async function buildProjectDoc(project, index, total, orderRank) {
   const docId = `photoProject-${project.slug}`;
   process.stdout.write(`  [${index + 1}/${total}] ${project.title} … `);
 
@@ -94,12 +95,6 @@ async function migrateProject(project, index, total) {
       alt: photo.alt ?? '',
     });
   }
-
-  // orderRank is what @sanity/orderable-document-list uses to sort the
-  // drag-to-reorder list. Lexicographically-comparable string; zero-padded
-  // numbers based on the legacy id give us a sensible initial order.
-  const rank = project.id ?? index + 1;
-  const orderRank = String(rank).padStart(8, '0');
 
   const doc = {
     _id: docId,
@@ -144,8 +139,8 @@ async function migrateProject(project, index, total) {
     doc.imagePosition = project.imagePosition;
   }
 
-  await client.createOrReplace(doc);
-  process.stdout.write(`✓ ${photoFields.length} photos\n`);
+  process.stdout.write(`built (${photoFields.length} photos)\n`);
+  return doc;
 }
 
 async function main() {
@@ -158,20 +153,46 @@ async function main() {
     process.exit(1);
   }
 
-  console.log('→ Migrating projects to Sanity …');
+  // Generate LexoRank values for each project so the drag-to-reorder plugin
+  // can produce valid "between" ranks when items are moved. Zero-padded ints
+  // would sort correctly with each other but break LexoRank's `between()`
+  // operation when the plugin generates new ranks for dragged items.
+  console.log('→ Generating LexoRank values for orderRank …');
+  let rank = LexoRank.middle();
+  const orderRanks = photoProjects.map((_, i) => {
+    const value = rank.toString();
+    if (i < photoProjects.length - 1) rank = rank.genNext();
+    return value;
+  });
+
+  console.log('→ Uploading assets + building project docs …');
+  const docs = [];
   for (let i = 0; i < photoProjects.length; i += 1) {
-    await migrateProject(photoProjects[i], i, photoProjects.length);
+    const doc = await buildProjectDoc(photoProjects[i], i, photoProjects.length, orderRanks[i]);
+    docs.push(doc);
   }
 
+  // Commit all 22 projects in ONE atomic transaction so Sanity sees this as
+  // a single batch instead of 22 separate API calls. The webhook still fires
+  // per-document mutation — set a "Delay" of ~60s on the Sanity webhook
+  // (Sanity Manage → API → Webhooks) so the burst is coalesced into a single
+  // Vercel deploy. See CLAUDE.md → "Sanity webhook config".
+  console.log('→ Committing transaction (1 atomic write for all projects) …');
+  const tx = client.transaction();
+  for (const doc of docs) tx.createOrReplace(doc);
+  await tx.commit();
+
   console.log('');
-  console.log(`✓ Done. ${photoProjects.length} projects migrated.`);
+  console.log(`✓ Done. ${docs.length} projects migrated in 1 transaction.`);
   console.log(`  ${assetByFilename.size} unique image assets uploaded (or already existed).`);
+  console.log('');
+  console.log('IMPORTANT — to avoid one Vercel deploy per project, set "Delay"');
+  console.log('on the Sanity webhook to at least 60 seconds. Sanity will coalesce');
+  console.log('the burst of 22 mutations into a single webhook fire.');
   console.log('');
   console.log('Next steps:');
   console.log('  1. `npm run cms:fetch` to refresh src/data/cms.json with the new project data.');
   console.log('  2. Open /admin → 📷 Photo projects → verify project list + edit titles/descriptions.');
-  console.log('  3. UPDATE THE SANITY WEBHOOK GROQ FILTER to include "photoProject":');
-  console.log('       _type in ["siteSettings", "heroOverlay", "showreel", "heroPhotos", "photoProject"]');
 }
 
 main().catch((err) => {

@@ -30,9 +30,10 @@ function Films() {
   const [selectedFilm, setSelectedFilm] = useState(null);
 
   // Single-expanded enforcement for collapsed cards.
-  // expandedCollapsedId: id of the card currently expanded (null if none).
+  // _expandedCollapsedId: id of the expanded card. Read only via the functional
+  //   setState updater below, so the bound value itself is intentionally unused.
   // closeSignals: per-card counter; incrementing it tells that card to auto-close.
-  const [expandedCollapsedId, setExpandedCollapsedId] = useState(null);
+  const [_expandedCollapsedId, setExpandedCollapsedId] = useState(null);
   const [closeSignals, setCloseSignals] = useState({});
 
   const handleCollapsedWillExpand = useCallback((id) => {

@@ -19,6 +19,10 @@ const SmoothScrollContext = createContext(null);
 /**
  * Hook to use smooth scroll functions
  */
+// Context module: this hook is exported alongside its provider, the standard
+// React-context pattern. Splitting it into its own file purely to satisfy
+// Fast Refresh isn't worth the import churn.
+// eslint-disable-next-line react-refresh/only-export-components
 export function useSmoothScrollContext() {
   const context = useContext(SmoothScrollContext);
   if (!context) {
@@ -213,34 +217,6 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
     if (delta !== 0) {
       data.target = Math.max(0, Math.min(data.target + delta, maxScroll));
     }
-
-    if (!data.isScrolling) {
-      data.isScrolling = true;
-      data.rafId = requestAnimationFrame(updateScroll);
-    }
-  }, [updateScroll]);
-
-
-  // Handle touch events for mobile
-  const touchStartRef = useRef(0);
-
-  const handleTouchStart = useCallback((e) => {
-    touchStartRef.current = e.touches[0].clientY;
-  }, []);
-
-  const handleTouchMove = useCallback((e) => {
-    const content = contentRef.current;
-    if (!content) return;
-
-    e.preventDefault();
-
-    const data = scrollDataRef.current;
-    const touchY = e.touches[0].clientY;
-    const delta = touchStartRef.current - touchY;
-    touchStartRef.current = touchY;
-
-    const maxScroll = content.scrollHeight - window.innerHeight;
-    data.target = Math.max(0, Math.min(data.target + delta, maxScroll));
 
     if (!data.isScrolling) {
       data.isScrolling = true;
@@ -481,6 +457,11 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
 
     window.addEventListener('resize', handleResize);
 
+    // Snapshot the data ref for the cleanup closure. exhaustive-deps wants
+    // ref values the cleanup touches captured at effect-run time;
+    // scrollDataRef.current is a stable object, so this is equivalent.
+    const data = scrollDataRef.current;
+
     // Cleanup
     return () => {
       document.body.style.overflow = '';
@@ -499,7 +480,6 @@ export function SmoothScrollProvider({ children, smoothness = 0.08 }) {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('resize', handleResize);
 
-      const data = scrollDataRef.current;
       if (data.rafId) {
         cancelAnimationFrame(data.rafId);
       }

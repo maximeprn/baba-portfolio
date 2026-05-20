@@ -102,17 +102,14 @@ export default function DeployTool() {
       setMessage(
         'VITE_VERCEL_DEPLOY_HOOK_URL is not set in the JS bundle. Locally: check .env has the line and restart `npm run dev`. In Vercel: confirm the var is set for Production AND trigger one redeploy so the new bundle picks it up.',
       );
-      // eslint-disable-next-line no-console
       console.warn('[DeployTool] URL is empty:', { urlHint, raw: DEPLOY_HOOK_URL });
       return;
     }
     setStatus('deploying');
     setMessage('');
-    // eslint-disable-next-line no-console
     console.log('[DeployTool] POST →', urlHint);
     try {
       const response = await fetch(DEPLOY_HOOK_URL, { method: 'POST' });
-      // eslint-disable-next-line no-console
       console.log('[DeployTool] fetch →', response.status, response.ok ? 'ok' : 'not ok');
 
       if (!response.ok) {
@@ -140,7 +137,6 @@ export default function DeployTool() {
         });
       }, 1000);
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('[DeployTool] fetch failed →', err);
       setStatus('error');
       const isLikelyCorsBlock =
@@ -155,7 +151,6 @@ export default function DeployTool() {
 
   const isDeploying = status === 'deploying';
   const isError = status === 'error';
-  const isSuccess = status === 'success';
   const isCoolingDown = cooldownLeft > 0;
   const buttonDisabled = isDeploying || isCoolingDown;
   const buttonLabel = isDeploying

@@ -86,28 +86,46 @@ export default function DeployTool() {
   const [lastDeployedAt, setLastDeployedAt] = useState(null);
 
   const handleDeploy = useCallback(async () => {
+    // Sanitize the URL for safe logging — keep host + last 8 chars so we can
+    // see what we're hitting without leaking the full secret in the console.
+    const urlHint = DEPLOY_HOOK_URL
+      ? `${new URL(DEPLOY_HOOK_URL).origin}/…${DEPLOY_HOOK_URL.slice(-8)}`
+      : '(empty)';
+
     if (!DEPLOY_HOOK_URL) {
       setStatus('error');
       setMessage(
-        'VITE_VERCEL_DEPLOY_HOOK_URL is not set. Add it to your Vercel project env vars (Settings → Environment Variables) and trigger one rebuild so the Studio bundle picks it up.',
+        'VITE_VERCEL_DEPLOY_HOOK_URL is not set in the JS bundle. Locally: check .env has the line and restart `npm run dev`. In Vercel: confirm the var is set for Production AND trigger one redeploy so the new bundle picks it up.',
       );
+      // eslint-disable-next-line no-console
+      console.warn('[DeployTool] URL is empty:', { urlHint, raw: DEPLOY_HOOK_URL });
       return;
     }
     setStatus('deploying');
     setMessage('');
+    // eslint-disable-next-line no-console
+    console.log('[DeployTool] POST →', urlHint);
     try {
-      const response = await fetch(DEPLOY_HOOK_URL, { method: 'POST' });
-      if (!response.ok) {
-        const body = await response.text().catch(() => '');
-        throw new Error(`Vercel responded ${response.status}: ${body || 'no body'}`);
-      }
+      // Vercel deploy hooks don't always send `Access-Control-Allow-Origin`,
+      // so we use `mode: 'no-cors'` — the POST reaches Vercel (build triggers)
+      // but the JS can't read the response. We accept this and rely on the
+      // user verifying in Vercel → Deployments.
+      const response = await fetch(DEPLOY_HOOK_URL, { method: 'POST', mode: 'no-cors' });
+      // eslint-disable-next-line no-console
+      console.log('[DeployTool] fetch resolved →', response.type, response.status);
       setStatus('success');
-      setMessage('Vercel build queued. Check Vercel → Deployments for progress.');
+      setMessage(
+        `Build request sent to ${urlHint}. Verify in Vercel → Deployments that a new build started in the next ~10s. (Opaque response — we can't read the status code back.)`,
+      );
       setLastDeployedAt(new Date());
-      setTimeout(() => setStatus('idle'), 8000);
+      setTimeout(() => setStatus('idle'), 12000);
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[DeployTool] fetch failed →', err);
       setStatus('error');
-      setMessage(err.message || 'Unknown error');
+      setMessage(
+        `Fetch to ${urlHint} threw: ${err.message || 'Unknown error'}. Common causes: wrong/expired deploy hook URL, network issue, or browser ad-blocker intercepting api.vercel.com.`,
+      );
     }
   }, []);
 

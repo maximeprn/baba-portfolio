@@ -1,43 +1,6 @@
 {
   "films": [
     {
-      "id": "film-veja-condor-3",
-      "slug": "veja-condor-3",
-      "title": "Veja Condor 3",
-      "description": "A sport film built around the launch of the Condor 3. From marathon tarmac to mountain trail, directed, edited, and scored by Basile Deschamps.",
-      "year": 2025,
-      "client": "Veja",
-      "category": "Commercial",
-      "featured": true,
-      "collapsed": false,
-      "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/9b8174848a577073e73b1c85781b355dfad4f02f-1280x720.jpg",
-      "videoUrl": "https://player.vimeo.com/video/1062003612",
-      "aspectRatio": 1.78,
-      "credits": {
-        "left": [
-          {
-            "role": "Direction",
-            "name": "Basile Deschamps"
-          },
-          {
-            "role": "Edit",
-            "name": "Basile Deschamps"
-          }
-        ],
-        "right": [
-          {
-            "role": "Music",
-            "name": "Basile Deschamps"
-          }
-        ]
-      },
-      "muxPlaybackId": "qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg",
-      "muxStatus": "ready",
-      "muxStreamUrl": "https://stream.mux.com/qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg.m3u8",
-      "muxPosterUrl": "https://image.mux.com/qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg/thumbnail.jpg?time=0.5",
-      "imagePosition": "left"
-    },
-    {
       "id": "9cd36103-5158-4d59-a944-803184f513f9",
       "slug": "outbreak-saucony",
       "title": "OUTBREAK - Saucony Shock Capsule Campaign",
@@ -71,43 +34,6 @@
       "muxStatus": "ready",
       "muxStreamUrl": "https://stream.mux.com/eI2aUFi02yymZbUhZOwGmKVmXpe6H02PSO01NbxbJ1xyMk.m3u8",
       "muxPosterUrl": "https://image.mux.com/eI2aUFi02yymZbUhZOwGmKVmXpe6H02PSO01NbxbJ1xyMk/thumbnail.jpg?time=0.5"
-    },
-    {
-      "id": "film-sacai-ss25",
-      "slug": "sacai-ss25",
-      "title": "Sacai SS25",
-      "description": "A backstage film shot during Sacai's Spring/Summer 2025 show in Paris. Directed, edited, and scored by Basile Deschamps, capturing the atmosphere around the collection before and after the runway.",
-      "year": 2025,
-      "client": "Sacai",
-      "category": "Fashion / Behind the Scenes",
-      "featured": true,
-      "collapsed": false,
-      "thumbnail": null,
-      "videoUrl": "https://player.vimeo.com/video/1047455821",
-      "aspectRatio": 1.78,
-      "credits": {
-        "left": [
-          {
-            "role": "Direction",
-            "name": "Basile Deschamps"
-          },
-          {
-            "role": "Edit",
-            "name": "Basile Deschamps"
-          }
-        ],
-        "right": [
-          {
-            "role": "Music",
-            "name": "Basile Deschamps"
-          }
-        ]
-      },
-      "muxPlaybackId": "1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig",
-      "muxStatus": "ready",
-      "muxStreamUrl": "https://stream.mux.com/1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig.m3u8",
-      "muxPosterUrl": "https://image.mux.com/1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig/thumbnail.jpg?time=0.5",
-      "imagePosition": "right"
     },
     {
       "id": "film-decathlon-cocreation",
@@ -161,6 +87,80 @@
       "muxStreamUrl": "https://stream.mux.com/8c00w9HBZ3CyDFyyijtkC9QRj0102RyJhuUpnYf4Mj5hQ8.m3u8",
       "muxPosterUrl": "https://image.mux.com/8c00w9HBZ3CyDFyyijtkC9QRj0102RyJhuUpnYf4Mj5hQ8/thumbnail.jpg?time=0.5",
       "imagePosition": "left"
+    },
+    {
+      "id": "film-veja-condor-3",
+      "slug": "veja-condor-3",
+      "title": "Veja Condor 3",
+      "description": "A sport film built around the launch of the Condor 3. From marathon tarmac to mountain trail, directed, edited, and scored by Basile Deschamps.",
+      "year": 2025,
+      "client": "Veja",
+      "category": "Commercial",
+      "featured": false,
+      "collapsed": false,
+      "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/9b8174848a577073e73b1c85781b355dfad4f02f-1280x720.jpg",
+      "videoUrl": "https://player.vimeo.com/video/1062003612",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "Edit",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": [
+          {
+            "role": "Music",
+            "name": "Basile Deschamps"
+          }
+        ]
+      },
+      "muxPlaybackId": "qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg.m3u8",
+      "muxPosterUrl": "https://image.mux.com/qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg/thumbnail.jpg?time=0.5",
+      "imagePosition": "left"
+    },
+    {
+      "id": "film-sacai-ss25",
+      "slug": "sacai-ss25",
+      "title": "Sacai SS25",
+      "description": "A backstage film shot during Sacai's Spring/Summer 2025 show in Paris. Directed, edited, and scored by Basile Deschamps, capturing the atmosphere around the collection before and after the runway.",
+      "year": 2025,
+      "client": "Sacai",
+      "category": "Fashion / Behind the Scenes",
+      "featured": true,
+      "collapsed": false,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/1047455821",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "Edit",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": [
+          {
+            "role": "Music",
+            "name": "Basile Deschamps"
+          }
+        ]
+      },
+      "muxPlaybackId": "1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig.m3u8",
+      "muxPosterUrl": "https://image.mux.com/1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig/thumbnail.jpg?time=0.5",
+      "imagePosition": "right"
     },
     {
       "id": "film-quentin-malriq",
@@ -329,8 +329,8 @@
       "year": 2021,
       "client": "Personal",
       "category": "Showreel",
-      "featured": true,
-      "collapsed": true,
+      "featured": false,
+      "collapsed": false,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/562172132",
       "aspectRatio": 1.78,
@@ -395,7 +395,7 @@
       "client": "Maison Mara",
       "category": "Fashion Film",
       "featured": true,
-      "collapsed": true,
+      "collapsed": false,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/541582370",
       "aspectRatio": 1.78,
@@ -3191,6 +3191,7 @@
     "_rev": "qreaEEKCEqJb6GObKlLGSE",
     "_type": "showreel",
     "_updatedAt": "2026-05-19T16:05:45Z",
+    "mux": null,
     "videoFile": "/videos/Showreel 2021.mp4",
     "vimeoUrl": "https://player.vimeo.com/video/989542038"
   },
@@ -3231,5 +3232,5 @@
     "socialTwitter": null,
     "socialVimeo": "https://vimeo.com/user37669788"
   },
-  "_fetchedAt": "2026-05-20T13:33:10.137Z"
+  "_fetchedAt": "2026-05-20T13:47:32.312Z"
 }

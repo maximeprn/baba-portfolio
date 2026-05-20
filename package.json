@@ -18,7 +18,7 @@
     "cms:fix-photo-project-ranks": "node scripts/fix-photo-project-ranks.mjs",
     "cms:upload-films": "node scripts/upload-films.mjs",
     "cms:fix-film-ranks": "node scripts/fix-film-ranks.mjs",
-    "cms:migrate-blob-to-mux": "node scripts/migrate-blob-to-mux.mjs",
+    "cms:migrate-blob-to-mux": "node --env-file-if-exists=.env scripts/migrate-blob-to-mux.mjs",
     "studio:dev": "sanity dev",
     "studio:deploy": "sanity deploy"
   },

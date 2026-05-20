@@ -19,6 +19,11 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+# Catch-all: any file ending in .env (e.g. mux-access-token-*.env that some
+# providers offer as a download). The `!.env.example` exception keeps the
+# template file trackable.
+*.env
+!.env.example
 
 # Editor & OS Files
 # =================

@@ -72,10 +72,10 @@
           }
         ]
       },
-      "muxPlaybackId": null,
-      "muxStatus": null,
-      "muxStreamUrl": null,
-      "muxPosterUrl": null,
+      "muxPlaybackId": "1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig.m3u8",
+      "muxPosterUrl": "https://image.mux.com/1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig/thumbnail.jpg?time=0.5",
       "imagePosition": "right"
     },
     {
@@ -127,10 +127,10 @@
           }
         ]
       },
-      "muxPlaybackId": null,
-      "muxStatus": null,
-      "muxStreamUrl": null,
-      "muxPosterUrl": null,
+      "muxPlaybackId": "8c00w9HBZ3CyDFyyijtkC9QRj0102RyJhuUpnYf4Mj5hQ8",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/8c00w9HBZ3CyDFyyijtkC9QRj0102RyJhuUpnYf4Mj5hQ8.m3u8",
+      "muxPosterUrl": "https://image.mux.com/8c00w9HBZ3CyDFyyijtkC9QRj0102RyJhuUpnYf4Mj5hQ8/thumbnail.jpg?time=0.5",
       "imagePosition": "left"
     },
     {
@@ -162,10 +162,10 @@
           }
         ]
       },
-      "muxPlaybackId": null,
-      "muxStatus": null,
-      "muxStreamUrl": null,
-      "muxPosterUrl": null,
+      "muxPlaybackId": "NwKvkp7WykiOu6DRfIJT3NAJJOuT01klYeL9rl02B9Lyk",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/NwKvkp7WykiOu6DRfIJT3NAJJOuT01klYeL9rl02B9Lyk.m3u8",
+      "muxPosterUrl": "https://image.mux.com/NwKvkp7WykiOu6DRfIJT3NAJJOuT01klYeL9rl02B9Lyk/thumbnail.jpg?time=0.5",
       "imagePosition": "right"
     },
     {
@@ -326,10 +326,10 @@
         ],
         "right": []
       },
-      "muxPlaybackId": null,
-      "muxStatus": null,
-      "muxStreamUrl": null,
-      "muxPosterUrl": null,
+      "muxPlaybackId": "XJfMcPjTQ4V4yyUFV3gQmzQ8w8i9OrQ9tJ02hxWkcHrQ",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/XJfMcPjTQ4V4yyUFV3gQmzQ8w8i9OrQ9tJ02hxWkcHrQ.m3u8",
+      "muxPosterUrl": "https://image.mux.com/XJfMcPjTQ4V4yyUFV3gQmzQ8w8i9OrQ9tJ02hxWkcHrQ/thumbnail.jpg?time=0.5",
       "imagePosition": "left"
     },
     {
@@ -404,10 +404,10 @@
           }
         ]
       },
-      "muxPlaybackId": null,
-      "muxStatus": null,
-      "muxStreamUrl": null,
-      "muxPosterUrl": null,
+      "muxPlaybackId": "YOGoQ01goSKnHiILQ4Qa900mm5eRDAXiJqVgb15nrX4uc",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/YOGoQ01goSKnHiILQ4Qa900mm5eRDAXiJqVgb15nrX4uc.m3u8",
+      "muxPosterUrl": "https://image.mux.com/YOGoQ01goSKnHiILQ4Qa900mm5eRDAXiJqVgb15nrX4uc/thumbnail.jpg?time=0.5",
       "imagePosition": "left"
     },
     {
@@ -508,10 +508,10 @@
         ],
         "right": []
       },
-      "muxPlaybackId": null,
-      "muxStatus": null,
-      "muxStreamUrl": null,
-      "muxPosterUrl": null,
+      "muxPlaybackId": "kxb3IDk37b794DYlHmoO1hjVPCuNx2cFZB8NhQci02uY",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/kxb3IDk37b794DYlHmoO1hjVPCuNx2cFZB8NhQci02uY.m3u8",
+      "muxPosterUrl": "https://image.mux.com/kxb3IDk37b794DYlHmoO1hjVPCuNx2cFZB8NhQci02uY/thumbnail.jpg?time=0.5",
       "imagePosition": "right"
     },
     {
@@ -548,6 +548,43 @@
       "muxStreamUrl": null,
       "muxPosterUrl": null,
       "imagePosition": "left"
+    },
+    {
+      "id": "9cd36103-5158-4d59-a944-803184f513f9",
+      "slug": "outbreak-saucony",
+      "title": "OUTBREAK - Saucony Shock Capsule Campaign",
+      "description": "For the release of the Endorphin Pro 5, Speed 5 and Elite 2",
+      "year": 2026,
+      "client": "Saucony",
+      "category": "Commercial",
+      "featured": true,
+      "collapsed": false,
+      "thumbnail": null,
+      "videoUrl": "https://vimeo.com/1180456052",
+      "videoType": "vimeo",
+      "videoFile": null,
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "Music",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "DOP",
+            "name": "DOP : JC Baravian"
+          }
+        ],
+        "right": []
+      },
+      "muxPlaybackId": "eI2aUFi02yymZbUhZOwGmKVmXpe6H02PSO01NbxbJ1xyMk",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/eI2aUFi02yymZbUhZOwGmKVmXpe6H02PSO01NbxbJ1xyMk.m3u8",
+      "muxPosterUrl": "https://image.mux.com/eI2aUFi02yymZbUhZOwGmKVmXpe6H02PSO01NbxbJ1xyMk/thumbnail.jpg?time=0.5"
     }
   ],
   "heroOverlay": {
@@ -3226,5 +3263,5 @@
     "socialTwitter": null,
     "socialVimeo": "https://vimeo.com/user37669788"
   },
-  "_fetchedAt": "2026-05-20T10:25:33.088Z"
+  "_fetchedAt": "2026-05-20T11:16:17.284Z"
 }

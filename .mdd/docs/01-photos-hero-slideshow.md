@@ -2,14 +2,17 @@
 id: 01-photos-hero-slideshow
 title: Photos Hero — Flashing Photo Slideshow
 edition: BABA
-depends_on: []
+depends_on:
+  - 08-cms-hero-photos
 source_files:
   - src/components/photos/FloatingGalleryHero.jsx
-  - src/data/heroPhotos.js
+  - src/sanity/loader.js  # heroPhotos export — CMS-backed; see doc 08 for schema + upload script
+  - src/data/heroPhotos.js  # legacy fallback only, returned by the loader when CMS array is empty
   - src/components/ui/HeroSection.jsx  # exports HeroBioOverlay (shared with Films hero)
 known_issues:
   - "advance() silently returns after 20 retries; rare frozen-frame on mobile if many landscapes in a row (audit 2026-05-04 N6, still open as of 2026-05-05)"
   - "prefersReducedMotion is read once at hook mount and not reactive — toggling the OS setting does not update behavior until the page remounts (audit 2026-05-05)"
+  - "Photo list source switched from a hardcoded JS array to a CMS singleton (Stage 3 / doc 08) on 2026-05-20. Component import path moved from src/data/heroPhotos to src/sanity/loader. The legacy data file remains as the loader's fallback only."
 ---
 
 # 01 — Photos Hero — Flashing Photo Slideshow

@@ -19,10 +19,26 @@ npm run dev
 - `npm run preview` — Preview production build locally
 - `npm run lint` — ESLint check (zero warnings policy)
 - `npx playwright test` — Run E2E tests
-- `npm run cms:fetch` — Pull latest published content from Sanity → `src/data/cms.json`
-- `npm run cms:watch` — Live-reload local dev when Sanity content changes (run alongside `npm run dev`)
-- `npm run cms:seed` — Seed/reset CMS singletons (needs `SANITY_WRITE_TOKEN`)
+- `npm run cms:fetch` — Pull latest published content from Sanity → `src/data/cms.json` (read-only, no token)
+- `npm run cms:watch` — Live-reload local dev when Sanity content changes (run alongside `npm run dev`; WebSocket subscription)
+- `npm run cms:seed` — Idempotent seed of the 3 site singletons (siteSettings, heroOverlay, showreel). Run ONCE for a fresh project or to reset. Needs `SANITY_WRITE_TOKEN`.
+- `npm run cms:upload-hero-photos` — One-shot: upload every file from `public/img/BABA PHOTOS/` to Sanity + write the `heroPhotos` singleton. Re-runs are cheap (SHA1 dedup). Needs `SANITY_WRITE_TOKEN`. See [.mdd/docs/08-cms-hero-photos.md](.mdd/docs/08-cms-hero-photos.md).
+- `npm run cms:upload-photo-projects` — One-shot: read `src/data/photoProjects.js` and create 22 `photoProject` docs in Sanity. Idempotent (pinned doc IDs). Needs `SANITY_WRITE_TOKEN`. See [.mdd/docs/09-cms-photo-projects.md](.mdd/docs/09-cms-photo-projects.md).
+- `npm run cms:fix-photo-project-ranks` — Re-assigns every photoProject's `orderRank` to a fresh LexoRank value. Run when drag-to-reorder in Studio is producing flaky results (a sign the ranks aren't LexoRank-compatible). Needs `SANITY_WRITE_TOKEN`.
 - `npm run studio:deploy` — Deploy a hosted backup studio to `basiledeschamps.sanity.studio`
+
+**When to run each script** — quick reference:
+
+| Situation | Command |
+|---|---|
+| Fresh clone, first-time setup | `cms:seed` → `cms:upload-hero-photos` → `cms:upload-photo-projects` |
+| Sanity content changed, want it locally | `cms:fetch` (or `cms:watch` for live reload) |
+| Drag-to-reorder behaving weirdly | `cms:fix-photo-project-ranks` |
+| Adding a new photo to the slideshow | Upload in Studio via `/admin → 🖼️ Hero photos` (no script needed) |
+| Adding a new photo project | Create in Studio via `/admin → 📷 Photo projects` (no script needed) |
+| Bulk re-import from legacy `photoProjects.js` | `cms:upload-photo-projects` (overwrites Sanity docs — manual edits lost) |
+
+Before running any `cms:upload-*` or `cms:fix-*` script: leave the Sanity auto-webhook disabled (default) so the N mutations don't fire N Vercel builds. After the script finishes, click the Studio **🚀 Deploy** tool to publish the changes.
 
 ## Architecture
 

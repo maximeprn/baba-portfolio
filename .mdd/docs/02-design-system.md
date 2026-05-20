@@ -6,10 +6,13 @@ depends_on: []
 source_files:
   - src/styles/index.css
   - tailwind.config.js
-  - src/data/siteConfig.js
+  - src/utils/fluidScale.js  # shared clamp() helper for nav links + hero overlay text
+  - src/data/siteConfig.js   # compatibility shim — most fields stream from src/sanity/loader.js (see doc 07)
   - public/fonts/
 test_files: []
-known_issues: []
+known_issues:
+  - "src/data/siteConfig.js is no longer the source of truth — it's a compatibility shim around src/sanity/loader.js (see doc 07). A few fields are still hardcoded there: artist.tagline, artist.shortBio, artist.title, contact.{email,phone,location}, navigation arrays. Components import siteConfig with no awareness of the CMS shift."
+  - "Fluid typography helper at src/utils/fluidScale.js — added 2026-05-19 (PR #11 era). Used by Navigation.jsx (nav link sizes) and HeroSection.jsx (hero overlay text sizes + positional offsets). Pattern: clamp(base × mobileRatio, base/10 vw, base). mobileRatio = 0.85 for text, 0.4 for hero overlay offsets."
 ---
 
 # 02 — BABA Portfolio Design System

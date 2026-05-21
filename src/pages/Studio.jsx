@@ -5,8 +5,9 @@
  * and the entire UI; we just provide the config object and let it own the
  * mounted DOM.
  *
- * NOTE: the Studio is a heavy bundle (~3MB gzipped) — code-split this in
- * App.jsx via React.lazy() so it doesn't bloat the public site.
+ * NOTE: the Studio is a heavy bundle (~6MB raw / ~1.95MB gzipped, measured
+ * 2026-05-21) — code-split this in App.jsx via React.lazy() so it doesn't
+ * bloat the public site.
  */
 
 import { Studio } from 'sanity';

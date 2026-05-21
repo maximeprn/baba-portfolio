@@ -21,7 +21,8 @@ source_files:
 routes: []
 models:
   - sanity:photoProject (collection, drag-orderable)
-test_files: []
+test_files:
+  - tests/e2e/cms-photos-cdn.spec.js
 known_issues:
   - "@sanity/orderable-document-list uses LexoRank strings for `orderRank`. Initial backfill MUST use real LexoRank values (e.g. via `LexoRank.middle().genNext()`) — zero-padded ints like '00000001' don't compare correctly with LexoRank's `between()` operation and the drag-to-reorder will silently snap items back to their original position. If new docs ever get a non-LexoRank `orderRank`, run `npm run cms:fix-photo-project-ranks` to backfill."
   - "@hello-pangea/dnd (used internally by the orderable plugin) logs 'Droppable: unsupported nested scroll container detected' in dev. Visual drag still works in our setup; the warning is noise."
@@ -110,7 +111,6 @@ Fields are grouped into two tabs:
 | `previewMobileBreakpoint` | number (px) | Max-width below which the mobile pattern applies. The original 5 featured projects used `1349` so the side-by-side comparison collapsed on tablets too. |
 | `previewAspectRatio` | string | Optional CSS aspect-ratio override (e.g. `"5 / 4"`). Leave blank to derive from the lead photo + biggest slot. |
 | `previewMaxHeight` | string | Optional CSS max-height cap (e.g. `"60vh"`). |
-| `imagePosition` | enum('', 'left', 'right') | Override the auto left/right alternation for featured cards. Blank = auto. |
 
 #### Hidden field
 
@@ -176,9 +176,10 @@ Architecture section).
     - `previewMobilePhotoIndices: [0]`
     - `previewMobileBreakpoint: 1349` (collapses on tablets too)
     - `previewMaxHeight: '60vh'`
-12. **Per-project image position.** `imagePosition: 'left' | 'right'`
-    overrides the auto-alternating left/right featured-card layout
-    (computed at render time by index in the featured array).
+12. **No per-project image position.** Featured-card left/right placement is
+    computed at render time by index in the featured array — it alternates
+    automatically. An `imagePosition` override field existed in an earlier
+    draft and was removed; do not re-add it without a rendering contract.
 
 ### Migration
 

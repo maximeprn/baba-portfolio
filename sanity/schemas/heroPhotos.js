@@ -27,7 +27,9 @@ export const heroPhotos = defineType({
           ],
         },
       ],
-      validation: (Rule) => Rule.min(1).error('Add at least one photo so the slideshow has something to render.'),
+      // Warning, not error: an empty array is tolerated because the build
+      // falls back to the legacy hardcoded list (see src/sanity/loader.js).
+      validation: (Rule) => Rule.min(1).warning('A slideshow usually has at least one photo.'),
     }),
   ],
   preview: {

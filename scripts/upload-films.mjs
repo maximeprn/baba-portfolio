@@ -8,9 +8,10 @@
  * to Sanity and attaches it. Films without an existing poster get a null
  * thumbnail (Basile uploads in Studio later).
  *
- * Videos stay on Vercel Blob — only the `/videos/<file>.mp4` path string is
- * stored in the CMS, NOT a Sanity file asset (Sanity free tier is 100 MB per
- * file; films exceed that).
+ * Preview videos are NOT migrated by this script — the `film` schema stores
+ * them in Mux (`videoMux`, type `mux.video`). After a re-import, attach each
+ * preview by drag-and-drop in Studio (/admin → Films → Preview video), or run
+ * `cms:migrate-blob-to-mux` if legacy Blob videos still need importing.
  *
  * Idempotent: pins each document ID to `film-<slug>` so re-running overwrites
  * cleanly. Existing manual edits in Studio are lost.
@@ -91,6 +92,9 @@ async function buildFilmDoc(entry, index, total, orderRank) {
   const docId = `film-${entry.slug}`;
   process.stdout.write(`  [${index + 1}/${total}] ${entry.title} … `);
 
+  // Field set mirrors the current `film` schema (sanity/schemas/film.js):
+  // identity → story → credits → videoUrl → visible/collapsed → aspectRatio.
+  // The preview video (`videoMux`) is attached in Studio, not here.
   const doc = {
     _id: docId,
     _type: 'film',
@@ -100,17 +104,13 @@ async function buildFilmDoc(entry, index, total, orderRank) {
     year: entry.year ?? null,
     client: entry.client ?? '',
     category: entry.category ?? '',
-    featured: entry.featured ?? true,
+    visible: entry.visible !== false,
     collapsed: entry.collapsed ?? false,
     videoUrl: entry.videoUrl ?? null,
-    videoType: entry.videoType ?? 'vimeo',
-    videoFile: entry.videoFile ?? null,
     aspectRatio: typeof entry.aspectRatio === 'number' ? entry.aspectRatio : 1.78,
     credits: creditsToArray(entry.credits),
     orderRank,
   };
-
-  if (entry.imagePosition) doc.imagePosition = entry.imagePosition;
 
   if (entry.thumbnail) {
     const asset = await uploadOrReuseAsset(entry.thumbnail);

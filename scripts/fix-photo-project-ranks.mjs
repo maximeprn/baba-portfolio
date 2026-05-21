@@ -12,8 +12,9 @@
  * This script:
  *   1. Fetches all photoProjects in their current displayed order.
  *   2. Generates fresh LexoRank values spread evenly across the rank space.
- *   3. Patches each doc's orderRank field in ONE atomic transaction
- *      (Sanity webhook will fire once if Delay is set on the webhook).
+ *   3. Patches each doc's orderRank field in ONE atomic transaction.
+ *      (Sanity has no webhook debounce — keep the auto-webhook disabled and
+ *      use the Studio Deploy tool afterwards. See CLAUDE.md.)
  *
  * After running: drag-to-reorder in Studio should be deterministic.
  *

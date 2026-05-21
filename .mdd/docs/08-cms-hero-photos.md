@@ -19,7 +19,8 @@ source_files:
 routes: []
 models:
   - sanity:heroPhotos (singleton)
-test_files: []
+test_files:
+  - tests/e2e/cms-photos-cdn.spec.js
 known_issues:
   - "Asset SHA1 dedup means re-uploading the same files is cheap, but the script doesn't currently delete stale Sanity asset documents that are no longer referenced. Asset bloat in the dataset over time. Manual cleanup via Sanity's media library."
   - "src/data/heroPhotos.js (legacy fallback) is still bundled into the public site even though the CMS now drives the slideshow. Keep it until you're fully confident the CMS won't return an empty list; remove in a future cleanup."

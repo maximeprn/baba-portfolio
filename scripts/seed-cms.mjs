@@ -53,11 +53,16 @@ const SITE_SETTINGS = {
   socialTwitter: null,
   socialBehance: null,
   navActiveStyle: 'bold-larger',
+  navLinkSize: 16,
+  navLinkActiveSize: 18,
   footerCopyright: 'Basile Deschamps. All rights reserved.',
   footerShowSocial: true,
   // ogImage intentionally omitted — upload via the Studio after seeding
 };
 
+// Field shape mirrors the current heroOverlayItem schema (docs 13 + 14):
+// positions are fixed insets from `anchor` (no offsetX/offsetY), and size is
+// the named `textSize` scale with automatic phone/tablet shrink.
 const HERO_OVERLAY = {
   _id: 'heroOverlay',
   _type: 'heroOverlay',
@@ -67,9 +72,9 @@ const HERO_OVERLAY = {
       _type: 'heroOverlayItem',
       text: 'Basile Deschamps is a film director and photographer based in Paris.',
       anchor: 'top-left',
-      offsetX: 32,
-      offsetY: 100,
       size: 'body',
+      textSize: 'md',
+      autoShrinkSmallScreens: true,
       link: { _type: 'object', type: 'none' },
       mobileVisible: true,
       stackWithSiblings: true,
@@ -80,9 +85,9 @@ const HERO_OVERLAY = {
       _type: 'heroOverlayItem',
       text: 'Selected clients include Salomon, Parel Studios, Lorette Colé Duprat, On, Asics, Pag, Specialized, Veja.',
       anchor: 'top-left',
-      offsetX: 32,
-      offsetY: 145,
       size: 'body',
+      textSize: 'md',
+      autoShrinkSmallScreens: true,
       link: { _type: 'object', type: 'none' },
       mobileVisible: true,
       stackWithSiblings: true,
@@ -93,9 +98,9 @@ const HERO_OVERLAY = {
       _type: 'heroOverlayItem',
       text: '+33 (0)6 17 91 79 89',
       anchor: 'bottom-left',
-      offsetX: 32,
-      offsetY: 40,
       size: 'contact',
+      textSize: 'md',
+      autoShrinkSmallScreens: true,
       link: { _type: 'object', type: 'phone', value: '+33617917989' },
       mobileVisible: true,
       stackWithSiblings: true,
@@ -105,9 +110,9 @@ const HERO_OVERLAY = {
       _type: 'heroOverlayItem',
       text: 'basiledeschamps3@gmail.com',
       anchor: 'bottom-left',
-      offsetX: 240,
-      offsetY: 40,
       size: 'contact',
+      textSize: 'md',
+      autoShrinkSmallScreens: true,
       link: { _type: 'object', type: 'email', value: 'basiledeschamps3@gmail.com' },
       mobileVisible: true,
       stackWithSiblings: true,
@@ -123,10 +128,10 @@ const SHOWREEL = {
 };
 
 async function seed() {
-  // Commit all three singletons in ONE transaction so the burst of mutations
-  // hits Sanity together. With a "Delay" of ~60s on the Sanity webhook
-  // (recommended in CLAUDE.md), this coalesces to a single Vercel deploy
-  // instead of three.
+  // Commit all three singletons in ONE atomic transaction. Sanity has no
+  // webhook debounce, so this still fires 3 webhook events — keep the
+  // auto-webhook DISABLED while seeding and use the Studio Deploy tool
+  // afterwards (see CLAUDE.md → "Sanity webhook config").
   console.log('→ Seeding singletons in one transaction (createOrReplace will overwrite existing values)…');
   await client
     .transaction()

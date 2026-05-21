@@ -6,7 +6,7 @@ depends_on:
   - 07-cms-foundation
   - 10-cms-films
   - 11-cms-video-uploads
-status: PLANNED — implementation not yet started (2026-05-20)
+status: SHIPPED — Mux plugin wired, videoMux on film + showreel, migration script live (2026-05-21)
 source_files:
   - sanity.config.js                          # modify (register mux plugin)
   - sanity/schemas/film.js                    # modify (videoFile → videoMux)
@@ -29,9 +29,15 @@ known_issues: []
 
 # 12 — CMS Video Uploads via Mux
 
+> **SHIPPED.** Implemented as described. As-built note: `muxInput` is
+> configured with `max_resolution_tier: '1080p'` and `encoding_tier: 'smart'`
+> (not the `720p` floated in the plan below) — `sanity.config.js` and
+> `scripts/migrate-blob-to-mux.mjs` are the source of truth. `videoMux` is on
+> both `film` and `showreel`.
+
 ## Purpose
 
-Replace the manual `ffmpeg → public/videos/*.mp4 → upload-videos-to-blob.mjs` pipeline with an in-Studio drag-and-drop. Basile drops a raw export into the `film` document, Mux transcodes to 720p with adaptive bitrate streaming (HLS), and the runtime serves via Mux's CDN — no Vercel Fast Data Transfer consumed for video bytes.
+Replace the manual `ffmpeg → public/videos/*.mp4 → upload-videos-to-blob.mjs` pipeline with an in-Studio drag-and-drop. Basile drops a raw export into the `film` document, Mux transcodes (up to 1080p) with adaptive bitrate streaming (HLS), and the runtime serves via Mux's CDN — no Vercel Fast Data Transfer consumed for video bytes.
 
 ## Architecture
 
@@ -188,4 +194,6 @@ Once the code merges:
 
 ## Known issues
 
-(populated during implementation)
+- None as built. The `showreel` schema keeps `videoFile` as a read-only
+  transitional fallback alongside `videoMux`; it can be dropped once the hero
+  background video is confirmed on Mux.

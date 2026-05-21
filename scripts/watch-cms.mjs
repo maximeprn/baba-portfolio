@@ -3,9 +3,10 @@
  * Live CMS watcher for local dev.
  *
  * Subscribes to Sanity's real-time mutation stream (WebSocket via @sanity/client)
- * and re-runs the fetcher every time one of the three singletons changes in the
- * published dataset. Drafts (autosave) are filtered out by the query — only
- * published mutations trigger a refetch.
+ * and re-runs the fetcher every time any published content document changes —
+ * all four singletons plus the photoProject and film collections. Drafts
+ * (autosave) are filtered out by the query so only published mutations trigger
+ * a refetch.
  *
  * Run alongside `npm run dev`:
  *
@@ -32,9 +33,20 @@ const client = createClient({
   useCdn: false, // CDN doesn't push live updates — use the API directly.
 });
 
-// Published-only query: drafts have _id prefixed with "drafts.", which this
-// pattern excludes naturally.
-const QUERY = '*[_id in ["siteSettings", "heroOverlay", "showreel"]]';
+// Every content type the fetcher reads. Must stay in sync with the GROQ
+// projection in fetch-cms-content.mjs (and the Sanity webhook filter).
+const WATCHED_TYPES = [
+  'siteSettings',
+  'heroOverlay',
+  'showreel',
+  'heroPhotos',
+  'photoProject',
+  'film',
+];
+
+// Published-only query: draft documents have an `_id` under the "drafts."
+// path, so excluding that path drops autosave noise — only Publish refetches.
+const QUERY = '*[_type in $types && !(_id in path("drafts.**"))]';
 
 let inFlight = false;
 let pendingRerun = false;
@@ -65,7 +77,7 @@ runFetcher('initial sync');
 console.log('[cms:watch] connecting to Sanity mutation stream…');
 
 const subscription = client
-  .listen(QUERY, {}, { includeResult: false, visibility: 'query' })
+  .listen(QUERY, { types: WATCHED_TYPES }, { includeResult: false, visibility: 'query' })
   .subscribe({
     next: (event) => {
       const id = event.documentId ?? 'unknown';

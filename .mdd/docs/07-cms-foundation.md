@@ -33,7 +33,8 @@ models:
   - sanity:siteSettings (singleton)
   - sanity:heroOverlay (singleton)
   - sanity:showreel (singleton)
-test_files: []
+test_files:
+  - tests/e2e/cms-studio.spec.js
 known_issues:
   - "Doc 07 was split from a single monolithic CMS doc on 2026-05-20. heroPhotos and photoProject have their own docs (08, 09). When adding a new schema, also create a new doc."
   - "`src/data/siteConfig.js` STILL has hardcoded fields not yet moved to CMS: `artist.tagline`, `artist.shortBio`, `artist.title`, `contact.email`, `contact.phone`, `contact.location`, `navigation.left/center/right` arrays, `footer.links`. The hero overlay handles contact display; siteConfig values are largely unused by components but kept for shape compatibility."
@@ -144,8 +145,14 @@ Grouped into 5 tabs in the Studio for editorial clarity.
 ### `heroOverlay` (singleton)
 
 Drives the floating text items rendered on top of both heroes (Films `/`
-and Photos `/photos`). The rendering component is `HeroBioOverlay` inside
-[src/components/ui/HeroSection.jsx](../../src/components/ui/HeroSection.jsx).
+and Photos `/photos`). The rendering component is `HeroBioOverlay` in
+[src/components/ui/HeroOverlay.jsx](../../src/components/ui/HeroOverlay.jsx).
+
+> **The `heroOverlayItem` shape has evolved.** Positioning moved from per-item
+> pixel offsets to fixed insets, and sizing moved to a named per-screen scale.
+> See [13-hero-overlay-mobile](13-hero-overlay-mobile.md) and
+> [14-hero-overlay-sizing](14-hero-overlay-sizing.md) for the canonical model —
+> the table below reflects the **current** schema.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -156,22 +163,25 @@ and Photos `/photos`). The rendering component is `HeroBioOverlay` inside
 | Field | Type | Notes |
 |---|---|---|
 | `text` | string (required) | The visible string. |
-| `anchor` | enum<9 corners> | `top-left` / `top-center` / `top-right` / `middle-left` / `middle-center` / `middle-right` / `bottom-left` / `bottom-center` / `bottom-right` |
-| `offsetX`, `offsetY` | number (px) | Distance from the anchor sides. Wrapped in `fluidScale(px, { mobileRatio: 0.4 })` so mobile offsets shrink to ~40 % of desktop. |
-| `size` | enum('body', 'contact') | `body` = bio styling (text-lg md:text-[28px] via fluidScale). `contact` = uppercase tracking-wide (text-base md:text-[25px]). |
-| `link` | object \| null | `{ type: 'none' \| 'email' \| 'phone' \| 'url', value: string }`. Phone numbers get a `tel:` href with non-digits stripped; emails get `mailto:`; URLs get `target="_blank" rel="noopener noreferrer"`. |
-| `maxWidth` | number (px) \| null | Caps the item's width so long text wraps. Recommended ~720 for bio/sentence items, leave blank for short ones. |
-| `mobileVisible` | boolean (default true) | When false, adds `hidden md:block` so the item is desktop-only. |
-| `stackWithSiblings` | boolean (default false) | Adjacent flagged items with the SAME anchor are grouped into one `flex-row flex-wrap` container at the first item's anchor + offsets. Items go inline when there's room; wrap to vertical (stack) when not. A non-flagged item OR a change of anchor breaks the chain. |
-| `stackRowGap` | number (px, default 24) | When this item is the **first** in a stack, sets the gap between wrapped rows. Ignored on later items. Default is bigger than line-height so paragraph separation stays visible when items wrap on mobile. |
+| `anchor` | enum<6 anchors> | `top-left` / `top-right` / `middle-left` / `middle-right` / `bottom-left` / `bottom-right`. No center anchors — overlay text is never centered. Drives a fixed-inset position; there are no offsets. |
+| `size` | enum('body', 'contact') | "Style" in Studio. Casing/tracking only: `body` = normal, `contact` = uppercase + wide tracking. |
+| `textSize` | enum('xs','sm','md','lg','xl') | Named computer/base size scale → 18/22/25/28/34px. |
+| `autoShrinkSmallScreens` | boolean (default true) | On → phone/tablet sizes derive automatically via `fluidScale`. Off → editor sets `phoneSize`/`tabletSize` explicitly. |
+| `phoneSize` / `tabletSize` | enum('xs'…'xl') | Shown only when auto-shrink is off. |
+| `link` | object \| null | `{ type: 'none' \| 'email' \| 'phone' \| 'url', value: string }`. Phone → `tel:` (non-digits stripped); email → `mailto:`; url → `target="_blank" rel="noopener noreferrer"`. |
+| `maxWidth` | number (px) \| null | Caps the item's width so long text wraps. ~720 for bio/sentence items. |
+| `mobileVisible` | boolean (default true) | When false, the item is hidden on phones. |
+| `stackWithSiblings` | boolean (default false) | Adjacent flagged items with the SAME anchor merge into one `flex-row flex-wrap` container. The row gap is proportional to the text size (no editable gap field). |
+| `offsetX` / `offsetY` / `stackRowGap` | (retired) | Kept `hidden: true` in the schema only so older documents don't show "unknown field" warnings. The renderer ignores them. |
 
 ### `showreel` (singleton)
 
 | Field | Type | Notes |
 |---|---|---|
-| `vimeoUrl` | url | `https://player.vimeo.com/video/<id>` used in the click-through modal. |
-| `videoFile` | string | Path under `/videos/`. The runtime swaps to a `- short.mp4` teaser cut when available (via `src/data/videoShorts.js`). |
-| `posterImage` | image \| null | Currently unused; reserved for a static fallback. |
+| `vimeoUrl` | url | Vimeo link used in the click-through modal. |
+| `videoMux` | `mux.video` | Hero background video — drag-and-drop into Studio, Mux transcodes to ABR HLS. See [doc 12](12-cms-video-uploads-mux.md). |
+| `videoFile` | string (read-only) | Legacy Vercel Blob path. Transitional fallback used only when `videoMux` is empty. |
+| `posterImage` | image \| null | Optional poster-frame override. Blank → a frame Mux picks automatically. |
 
 ## API Endpoints
 
@@ -189,7 +199,7 @@ No runtime HTTP endpoints. Three categories of "URL surface":
 - 🚀 **Deploy** (custom — `sanity/tools/DeployTool.jsx`). POSTs to the Vercel deploy hook from `VITE_VERCEL_DEPLOY_HOOK_URL`. 90-second cool-down on the button after each click to avoid Vercel's silent dedupe.
 
 **Sanity HTTP endpoints called from the build:**
-- `https://<projectId>.api.sanity.io/v2024-12-01/data/query/production?query=…` — GROQ projection of all 5 doc types, dereferenced image assets.
+- `https://<projectId>.api.sanity.io/v2024-12-01/data/query/production?query=…` — one GROQ projection covering all 6 doc types (4 singletons + `photoProject` + `film`), with dereferenced image + Mux assets.
 
 ## Business Rules
 
@@ -224,16 +234,16 @@ No runtime HTTP endpoints. Three categories of "URL surface":
 
 ### Hero overlay rendering
 
-8. **Anchor → CSS positioning.** `top-left` → `top: …; left: …;`. Center
-   anchors compose `translateX/Y(calc(-50% + offset))`. All offsets are
-   pushed through `fluidScale(px, { mobileRatio: 0.4 })` so they shrink on
-   mobile.
+8. **Anchor → CSS positioning.** Each `anchor` maps to a **fixed inset** —
+   `2.5rem` from the horizontal edge, `9rem` top (clears the nav), `2.5rem`
+   bottom; middle anchors centre vertically. There are no per-item offsets.
+   Per-screen text size is resolved by `resolveOverlayFontSize(item, tier)`.
+   Full detail in [doc 14](14-hero-overlay-sizing.md); mobile auto-safe zones
+   in [doc 13](13-hero-overlay-mobile.md).
 9. **Stack rules.** Adjacent items with `stackWithSiblings: true` AND the
-   same `anchor` merge into one `flex flex-row flex-wrap items-center`
-   container at the first item's anchor + offsets. The container's
-   horizontal extent is bounded with a `STACK_VIEWPORT_PADDING = 16 px`
-   on the opposite side so `flex-wrap` actually has something to wrap
-   against. Row gap defaults to 24 px or the first item's `stackRowGap`.
+   same `anchor` merge into one `flex-row flex-wrap` container. The row gap is
+   proportional to the text size (`stackRowGapPx`, ≈0.55× the base px) — there
+   is no editable gap field.
 10. **Link types.** `email` → `mailto:`. `phone` → `tel:` with non-digits
     stripped from the value. `url` → external link with
     `target="_blank" rel="noopener noreferrer"`. Phone-typed items also
@@ -248,7 +258,7 @@ No runtime HTTP endpoints. Three categories of "URL surface":
     the filter MUST list every schema type so `sanity.imageAsset`
     uploads don't trigger N rebuilds:
     ```groq
-    _type in ["siteSettings", "heroOverlay", "showreel", "heroPhotos", "photoProject"]
+    _type in ["siteSettings", "heroOverlay", "showreel", "heroPhotos", "photoProject", "film"]
     ```
 13. **Manual migration script flow** (when running `cms:upload-*` or
     `cms:fix-*`): the script writes a single Sanity transaction with N

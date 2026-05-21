@@ -2,9 +2,10 @@
 /**
  * Build-time CMS content fetcher.
  *
- * Reads the three singleton documents from Sanity and writes them, plus
- * resolved image asset URLs, to src/data/cms.json. The site imports that
- * file at build time so the static bundle ships with content baked in.
+ * Reads all four singletons (siteSettings, heroOverlay, showreel, heroPhotos)
+ * plus the photoProject and film collections from Sanity, and writes them —
+ * with resolved image asset URLs — to src/data/cms.json. The site imports
+ * that file at build time so the static bundle ships with content baked in.
  *
  * Fail-soft: if Sanity is unreachable (or the dataset is empty), the existing
  * src/data/cms.json snapshot is reused and the build continues. The script

@@ -139,7 +139,7 @@ export const heroPhotos = (() => {
  *
  * The CMS fetcher writes `photoProjects` as an array of objects already in
  * the legacy shape (id, slug, title, description, year, client, category,
- * featured, photos[{src, alt, aspectRatio}], preview, imagePosition?).
+ * featured, visible, photos[{src, alt, aspectRatio}], preview).
  * If the CMS array is empty (e.g. dataset not yet migrated), fall back to
  * the legacy `src/data/photoProjects.js` data so the page never goes blank.
  */
@@ -159,8 +159,8 @@ export const getProjectBySlug = (slug) => photoProjects.find((p) => p.slug === s
  * Films for the homepage.
  *
  * The CMS fetcher writes `films` already in the legacy shape (id, slug,
- * title, description, year, client, category, featured, collapsed,
- * thumbnail, videoUrl, aspectRatio, credits{left,right}, imagePosition?)
+ * title, description, year, client, category, visible, collapsed,
+ * thumbnail, videoUrl, aspectRatio, credits{left,right})
  * plus the Mux fields (muxPlaybackId, muxStatus, muxStreamUrl, muxPosterUrl).
  *
  * Falls back to the legacy `src/data/films.js` array if the CMS array

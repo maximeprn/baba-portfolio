@@ -1,6 +1,11 @@
 /**
- * Read-only Sanity client. Used by the build-time fetcher and any potential
- * runtime use (currently the site reads from src/data/cms.json instead).
+ * Read-only Sanity client.
+ *
+ * Not currently imported anywhere: the build-time fetcher
+ * (scripts/fetch-cms-content.mjs) constructs its own client, and at runtime
+ * the site reads the pre-fetched src/data/cms.json snapshot instead of
+ * querying Sanity. Kept as the canonical read-only client surface for any
+ * future runtime Sanity use (e.g. live preview / on-demand queries).
  */
 
 import { createClient } from '@sanity/client';

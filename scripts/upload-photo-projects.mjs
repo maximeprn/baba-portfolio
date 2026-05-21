@@ -135,9 +135,6 @@ async function buildProjectDoc(project, index, total, orderRank) {
   if (project.preview?.maxHeight) {
     doc.previewMaxHeight = project.preview.maxHeight;
   }
-  if (project.imagePosition) {
-    doc.imagePosition = project.imagePosition;
-  }
 
   process.stdout.write(`built (${photoFields.length} photos)\n`);
   return doc;
@@ -172,11 +169,11 @@ async function main() {
     docs.push(doc);
   }
 
-  // Commit all 22 projects in ONE atomic transaction so Sanity sees this as
-  // a single batch instead of 22 separate API calls. The webhook still fires
-  // per-document mutation — set a "Delay" of ~60s on the Sanity webhook
-  // (Sanity Manage → API → Webhooks) so the burst is coalesced into a single
-  // Vercel deploy. See CLAUDE.md → "Sanity webhook config".
+  // Commit all projects in ONE atomic transaction so Sanity sees this as a
+  // single batch instead of N separate API calls. Sanity still fires one
+  // webhook event per document mutation (it has no debounce) — keep the
+  // auto-webhook DISABLED while running this and use the Studio Deploy tool
+  // afterwards. See CLAUDE.md → "Sanity webhook config".
   console.log('→ Committing transaction (1 atomic write for all projects) …');
   const tx = client.transaction();
   for (const doc of docs) tx.createOrReplace(doc);

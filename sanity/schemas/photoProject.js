@@ -6,9 +6,11 @@ import { orderRankField } from '@sanity/orderable-document-list';
  * the /photos page. NOT a singleton: this is a collection. Each project
  * has its own document. Editing UX is split into two groups:
  *   - "Content"  → fields Basile owns: title, copy, photos, year, etc.
- *   - "Layout"   → developer-only knobs (preview pattern, image position)
+ *   - "Layout"   → developer-only knobs (preview pattern + mobile fallback)
  *
- * Order on the page is controlled by `displayOrder` (lower = earlier).
+ * Order on the page is controlled by drag-and-drop in the Studio list view:
+ * @sanity/orderable-document-list manages the hidden `orderRank` field and
+ * the fetcher sorts by it ascending.
  */
 
 const CATEGORY_SUGGESTIONS = [

@@ -121,10 +121,10 @@ function HeroSection({ onVideoClick, onReady }) {
 
   return (
     <section className="relative w-full" aria-label="Hero section">
-      {/* DESKTOP: Sticky full-bleed video. The +150px keeps the documented
+      {/* DESKTOP: Full-bleed video. The +150px keeps the documented
           scroll-to-reveal allowance below the hero (see memory: hero-150px-intentional). */}
       <div className="hidden md:block relative w-full" style={{ height: 'calc(100svh + 150px)' }}>
-        <div className="sticky top-0 h-[100svh] w-full">
+        <div className="h-[100svh] w-full">
           <div className="relative w-full h-full overflow-hidden" style={{ containerType: 'inline-size' }}>
             <video
               ref={desktopVideoRef}
@@ -147,12 +147,15 @@ function HeroSection({ onVideoClick, onReady }) {
         </div>
       </div>
 
-      {/* MOBILE/TABLET: Sticky full-bleed video — mirrors the desktop pattern so
-          the bio + contact overlay pins through the 150px scroll-reveal window
-          (see memory: hero-150px-intentional). Native sticky (no JS), so no
-          scroll-event lag → no jitter. */}
+      {/* MOBILE/TABLET: Full-bleed video — same plain-block layout as the
+          desktop hero. NOT sticky: under native scroll a sticky inner pin
+          would hold the hero at the viewport top while the absolute-positioned
+          nav scrolls away above it, detaching the two. As a plain block the
+          hero + nav scroll away together as one unit — matching desktop, where
+          the smooth-scroll transform makes sticky inert anyway. The +150px is
+          the scroll-to-reveal allowance (see memory: hero-150px-intentional). */}
       <div className="md:hidden relative w-full" style={{ height: 'calc(100svh + 150px)' }}>
-        <div className="sticky top-0 h-[100svh] w-full">
+        <div className="h-[100svh] w-full">
           <div className="relative w-full h-full overflow-hidden" onClick={handleHeroVideoClick} style={{ containerType: 'inline-size' }}>
             <video
               ref={mobileVideoRef}

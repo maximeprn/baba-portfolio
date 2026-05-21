@@ -156,13 +156,13 @@ function Photos() {
           <>
             <div className="h-32" aria-hidden="true" />
             <TitleSection title="Other Projects" />
-            {otherProjects.map((project, idx) => (
-              // Phone-only spacing: the band stacks title + meta on phones
-              // and would feel cramped between adjacent projects. mb-[12px]
-              // gives a small gap; from 768px up the band is a tight
-              // 36px row so we keep its zero-margin rhythm.
-              <div key={project.id} className="w-full mb-[12px] md:mb-0 last:mb-0">
+            {/* Phone shows the collapsed bands two-up; tablet/desktop keep
+                the single-column tight list. An expanded band breaks out to
+                full width via col-span-2 on its <article>. */}
+            <div className="grid w-full grid-cols-2 md:grid-cols-1 gap-x-2 gap-y-[12px] md:gap-0">
+              {otherProjects.map((project, idx) => (
                 <CollapsedPhotoCard
+                  key={project.id}
                   project={project}
                   index={idx}
                   onPhotoClick={handlePhotoClick}
@@ -170,8 +170,8 @@ function Photos() {
                   onDidCollapse={handleDidCollapse}
                   closeSignal={closeSignals[project.id] || 0}
                 />
-              </div>
-            ))}
+              ))}
+            </div>
           </>
         )}
 

@@ -340,7 +340,7 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
             ? `Collapse ${title} film details`
             : undefined
       }
-      className={`w-full bg-white relative ${phase === 'collapsed' ? 'cursor-pointer' : ''} ${phase === 'expanded' ? 'cursor-pointer group' : ''}`}
+      className={`w-full bg-white relative ${phase === 'collapsed' ? 'cursor-pointer' : ''} ${phase === 'expanded' ? 'cursor-pointer group' : ''} ${phase !== 'collapsed' ? 'col-span-2 md:col-span-1' : ''}`}
       style={{
         overflow: phase !== 'expanded' ? 'hidden' : undefined,
       }}

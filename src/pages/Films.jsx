@@ -120,19 +120,20 @@ function Films() {
         <div className="h-32" aria-hidden="true" />
         <TitleSection title="Other Projects" />
 
-        {films.filter(f => f.collapsed).map((film, index) => (
-          // Phone-only spacing: the band stacks title + meta on phones and
-          // would feel cramped between adjacent projects. mb-[12px] gives a
-          // small gap; from 768px up the band is a tight 36px row so we
-          // keep its zero-margin rhythm. Matches the Photos page wrapper.
-          <div key={film.id} className="w-full mb-[12px] md:mb-0 last:mb-0">
+        {/* Phone shows the collapsed bands two-up; tablet/desktop keep the
+            single-column tight list. Row gap = the phone-tuned 12px; from
+            md the list is a tight 36px-row rhythm (gap-0). An expanded band
+            breaks out to full width via col-span-2 on its <article>. */}
+        <div className="grid w-full grid-cols-2 md:grid-cols-1 gap-x-2 gap-y-[12px] md:gap-0">
+          {films.filter(f => f.collapsed).map((film, index) => (
             <CollapsedFilmCard
+              key={film.id}
               film={film}
               index={index}
               onFilmClick={handleFilmClick}
             />
-          </div>
-        ))}
+          ))}
+        </div>
 
         <div className="h-20" aria-hidden="true" />
       </div>

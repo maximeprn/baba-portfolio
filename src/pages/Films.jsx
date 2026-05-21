@@ -122,10 +122,10 @@ function Films() {
 
         {films.filter(f => f.collapsed).map((film, index) => (
           // Phone-only spacing: the band stacks title + meta on phones and
-          // would feel cramped between adjacent projects. mb-6 gives a
-          // visible gap; from 768px up the band is a tight 36px row so we
+          // would feel cramped between adjacent projects. mb-[12px] gives a
+          // small gap; from 768px up the band is a tight 36px row so we
           // keep its zero-margin rhythm. Matches the Photos page wrapper.
-          <div key={film.id} className="w-full mb-6 md:mb-0 last:mb-0">
+          <div key={film.id} className="w-full mb-[12px] md:mb-0 last:mb-0">
             <CollapsedFilmCard
               film={film}
               index={index}

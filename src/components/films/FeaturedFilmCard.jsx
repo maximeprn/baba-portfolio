@@ -290,7 +290,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
 
           {/* DESCRIPTION */}
           <div className="ffc-desc relative w-full overflow-hidden">
-            <p className="font-header text-xs tracking-[0.08em] leading-6 text-primary">
+            <p className="font-header text-[12.5px] md:text-xs tracking-[0.08em] leading-6 text-primary">
               {description}
             </p>
           </div>

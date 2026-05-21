@@ -434,19 +434,19 @@ function CollapsedPhotoCard({
               tallest one's height. Each <p> is itself a flex container
               (md:flex md:items-center) so its text sits vertically centred
               within that equal-height box. */}
-          <div className="flex flex-col md:flex-row gap-2 md:gap-6 px-4 py-2 md:min-h-[36px]">
-            <p className={`flex-1 md:flex md:items-center font-header font-medium tracking-[1.8px] uppercase ${variant.titlePl}`}>
-              <span className="inline-block px-2 py-0.5 text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
+          <div className="flex flex-col md:flex-row gap-[3px] md:gap-6 px-4 py-2 md:min-h-[36px]">
+            <p className={`flex-1 md:flex md:items-center font-header font-semibold md:font-medium tracking-[1.8px] uppercase ${variant.titlePl}`}>
+              <span className="inline-block px-2 py-0.5 text-[13.5px] md:text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 {title}
               </span>
             </p>
             <p className="font-body tracking-[0.6px] hidden md:flex md:items-center">
-              <span className="inline-block px-2 py-0.5 text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
+              <span className="inline-block px-2 py-0.5 text-[11.5px] md:text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 {firstSentence}
               </span>
             </p>
             <p className={`flex-1 md:flex md:items-center md:justify-end font-header font-medium tracking-[1.5px] md:text-right uppercase whitespace-pre-wrap ${variant.metaPr}`}>
-              <span className="inline-block px-2 py-0.5 text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
+              <span className="inline-block px-2 py-0.5 text-[10.5px] md:text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 {year}  •  {category}
               </span>
             </p>

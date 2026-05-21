@@ -158,10 +158,10 @@ function Photos() {
             <TitleSection title="Other Projects" />
             {otherProjects.map((project, idx) => (
               // Phone-only spacing: the band stacks title + meta on phones
-              // and would feel cramped between adjacent projects. mb-6
-              // gives a visible gap; from 768px up the band is a tight
+              // and would feel cramped between adjacent projects. mb-[12px]
+              // gives a small gap; from 768px up the band is a tight
               // 36px row so we keep its zero-margin rhythm.
-              <div key={project.id} className="w-full mb-6 md:mb-0 last:mb-0">
+              <div key={project.id} className="w-full mb-[12px] md:mb-0 last:mb-0">
                 <CollapsedPhotoCard
                   project={project}
                   index={idx}

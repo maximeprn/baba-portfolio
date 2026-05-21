@@ -395,7 +395,7 @@ function CollapsedPhotoCard({
             ? `Collapse ${title} photo gallery`
             : undefined
       }
-      className={`w-full bg-white relative ${phase === 'collapsed' ? 'cursor-pointer' : ''} ${phase === 'expanded' ? 'cursor-pointer group' : ''} ${phase !== 'collapsed' ? 'col-span-2 md:col-span-3 cards:col-span-4' : ''}`}
+      className={`w-full bg-white relative ${phase === 'collapsed' ? 'cursor-pointer' : ''} ${phase === 'expanded' ? 'cursor-pointer group' : ''} ${phase !== 'collapsed' ? 'col-span-2 md:col-span-3 lg:col-span-4' : ''}`}
       style={{
         // clip-path (not overflow:hidden) so the sticky gallery header
         // continues to treat the viewport as its scroll ancestor on mobile.

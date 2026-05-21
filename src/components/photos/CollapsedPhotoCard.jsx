@@ -417,14 +417,16 @@ function CollapsedPhotoCard({
           }}
         >
           {/* Stacked at every width — title, then the year • category
-              subtitle underneath. This is the phone layout, now kept on
+              subtitle underneath. This is the phone layout, kept on
               tablet + desktop too (the page lays the cards out in a
               3-column grid). The description sentence stays mounted but
-              hidden. Font sizes step up md → lg so the bands read at the
-              right scale on the wider grid; phone sizes are untouched. */}
-          <div className="flex flex-col gap-[3px] px-4 py-2">
+              hidden. Card text uses the phone sizes at every breakpoint
+              (title 13.5px over subtitle 10.5px — the title stays the
+              larger of the two); md+ drops the horizontal padding so the
+              bands sit flush to the left of their column. */}
+          <div className="flex flex-col gap-[3px] px-4 md:px-0 py-2">
             <p className="flex-1 font-header font-semibold tracking-[1.8px] uppercase">
-              <span className="inline-block px-2 py-0.5 text-[13.5px] md:text-sm lg:text-base leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
+              <span className="inline-block px-2 py-0.5 text-[13.5px] leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 {title}
               </span>
             </p>
@@ -434,7 +436,7 @@ function CollapsedPhotoCard({
               </span>
             </p>
             <p className="flex-1 font-header font-medium tracking-[1.5px] uppercase whitespace-pre-wrap">
-              <span className="inline-block px-2 py-0.5 text-[10.5px] md:text-xs lg:text-sm leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
+              <span className="inline-block px-2 py-0.5 text-[10.5px] leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 <CardSubtitle parts={[year, category]} separator="  •  " />
               </span>
             </p>

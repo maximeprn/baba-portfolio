@@ -395,7 +395,7 @@ function CollapsedPhotoCard({
             ? `Collapse ${title} photo gallery`
             : undefined
       }
-      className={`w-full bg-white relative ${phase === 'collapsed' ? 'cursor-pointer' : ''} ${phase === 'expanded' ? 'cursor-pointer group' : ''} ${phase !== 'collapsed' ? 'col-span-2 md:col-span-1' : ''}`}
+      className={`w-full bg-white relative ${phase === 'collapsed' ? 'cursor-pointer' : ''} ${phase === 'expanded' ? 'cursor-pointer group' : ''} ${phase !== 'collapsed' ? 'col-span-2 md:col-span-3' : ''}`}
       style={{
         // clip-path (not overflow:hidden) so the sticky gallery header
         // continues to treat the viewport as its scroll ancestor on mobile.
@@ -403,12 +403,10 @@ function CollapsedPhotoCard({
         clipPath: phase !== 'expanded' ? 'inset(0)' : undefined,
       }}
     >
-      {/* Collapsed band overlay — same visual + variant padding pattern as
-          CollapsedFilmCard. Three independent hover chips (group/row).
+      {/* Collapsed band overlay — same visual + padding pattern as
+          CollapsedFilmCard. Independent hover chips (group/row).
           `relative` at every width when collapsed: it sizes the article,
-          so a band whose text wraps to two lines grows to fit instead of
-          clipping into its neighbour. py-2 + md:min-h-[36px] keep a
-          one-line row at ≈36 px. */}
+          so the stacked title + subtitle grow the band to fit. */}
       {showOverlay && (
         <div
           className={`${phase === 'collapsed' ? 'relative group/row' : 'absolute'} top-0 left-0 right-0 bg-white z-10`}
@@ -418,23 +416,25 @@ function CollapsedPhotoCard({
             opacity: overlayHidden ? 0 : 1,
           }}
         >
-          {/* items-stretch (default): the 3 column boxes all stretch to the
-              tallest one's height. Each <p> is itself a flex container
-              (md:flex md:items-center) so its text sits vertically centred
-              within that equal-height box. */}
-          <div className="flex flex-col md:flex-row gap-[3px] md:gap-6 px-4 py-2 md:min-h-[36px]">
-            <p className="flex-1 md:flex md:items-center font-header font-semibold md:font-medium tracking-[1.8px] uppercase">
-              <span className="inline-block px-2 py-0.5 text-[13.5px] md:text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
+          {/* Stacked at every width — title, then the year • category
+              subtitle underneath. This is the phone layout, now kept on
+              tablet + desktop too (the page lays the cards out in a
+              3-column grid). The description sentence stays mounted but
+              hidden. Font sizes step up md → lg so the bands read at the
+              right scale on the wider grid; phone sizes are untouched. */}
+          <div className="flex flex-col gap-[3px] px-4 py-2">
+            <p className="flex-1 font-header font-semibold tracking-[1.8px] uppercase">
+              <span className="inline-block px-2 py-0.5 text-[13.5px] md:text-sm lg:text-base leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 {title}
               </span>
             </p>
-            <p className="font-body tracking-[0.6px] hidden md:flex md:items-center">
-              <span className="inline-block px-2 py-0.5 text-[11.5px] md:text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
+            <p className="font-body tracking-[0.6px] hidden">
+              <span className="inline-block px-2 py-0.5 text-[11.5px] leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 {firstSentence}
               </span>
             </p>
-            <p className="flex-1 md:flex md:items-center md:justify-end font-header font-medium tracking-[1.5px] md:text-right uppercase whitespace-pre-wrap">
-              <span className="inline-block px-2 py-0.5 text-[10.5px] md:text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
+            <p className="flex-1 font-header font-medium tracking-[1.5px] uppercase whitespace-pre-wrap">
+              <span className="inline-block px-2 py-0.5 text-[10.5px] md:text-xs lg:text-sm leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 <CardSubtitle parts={[year, category]} separator="  •  " />
               </span>
             </p>

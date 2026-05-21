@@ -153,7 +153,7 @@ function HeroSection({ onVideoClick, onReady }) {
           scroll-event lag → no jitter. */}
       <div className="md:hidden relative w-full" style={{ height: 'calc(100svh + 150px)' }}>
         <div className="sticky top-0 h-[100svh] w-full">
-          <div className="relative w-full h-full overflow-hidden" onClick={onVideoClick} style={{ containerType: 'inline-size' }}>
+          <div className="relative w-full h-full overflow-hidden" onClick={handleHeroVideoClick} style={{ containerType: 'inline-size' }}>
             <video
               ref={mobileVideoRef}
               data-hero-video

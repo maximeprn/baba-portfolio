@@ -10,7 +10,8 @@ function TitleSection({ title, borderTop = false }) {
       }`}
     >
       {/* 38.25px = 34px base × 1.125 global type scale — see .mdd/docs/16 */}
-      <h2 className="font-body font-bold text-[38.25px] leading-none tracking-normal uppercase">
+      {/* ml-4 on mobile aligns the title with the card thumbnails' px-4 inset */}
+      <h2 className="font-body font-bold text-[34.25px] md:text-[38.25px] leading-none tracking-normal uppercase ml-4 md:ml-0">
         {title}
       </h2>
     </div>

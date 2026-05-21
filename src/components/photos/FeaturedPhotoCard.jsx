@@ -572,7 +572,7 @@ function FeaturedPhotoCard({
                 {category}
               </div>
               {description && (
-                <p className="mt-4 font-header text-xs tracking-[0.08em] leading-6 text-primary">
+                <p className="mt-4 font-header text-[12.5px] md:text-xs tracking-[0.08em] leading-6 text-primary">
                   {description}
                 </p>
               )}

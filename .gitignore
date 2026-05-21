@@ -62,6 +62,11 @@ yarn-error.log*
 # Original video files - too large for git
 content/
 
+# Local video staging area — these are encoded clips waiting to be
+# uploaded to Mux via the Studio; they are not served from /public and
+# must never enter git history.
+public/videos/Ready for Upload/
+
 # Playwright test artifacts
 playwright-report/
 test-results/

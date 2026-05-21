@@ -67,20 +67,23 @@ Other font folders exist in `/public/fonts/` (`AmericanTypewriter`, `Helvetica N
 
 ### Scale
 
-Defined in `index.css:148-157`.
+Defined in `index.css` (`--text-*` custom properties). The site root font
+size is **18px** — a +12.5% global type scale (see
+[16-global-type-scale](16-global-type-scale.md)); the px column is the
+rendered size at that root.
 
 | Token | rem | px | Usage |
 |-------|-----|-----|-------|
-| `--text-xs` | 0.75rem | 12 | Small labels, mobile nav |
-| `--text-sm` | 0.875rem | 14 | Captions, credits |
-| `--text-base` | 1rem | 16 | Body text default |
-| `--text-lg` | 1.125rem | 18 | Slightly larger body, project titles |
-| `--text-xl` | 1.25rem | 20 | Navigation, subheadings |
-| `--text-2xl` | 1.5rem | 24 | Section headings |
-| `--text-3xl` | 1.875rem | 30 | Page titles |
-| `--text-4xl` | 2.25rem | 36 | Large headings |
-| `--text-subheading` | 1.25rem | 20 | "REINVENTING THE FRAME" tagline |
-| `--text-hero` | 8.75rem | **140** | _Retired._ Originally for the BASILE DESCHAMPS hero wordmark; the hero was redesigned (commit `0e6bcbb`) to a bio + contact overlay. Token still defined in `index.css` but no longer consumed. Slated for removal. |
+| `--text-xs` | 0.75rem | 13.5 | Small labels |
+| `--text-sm` | 0.875rem | 15.75 | Captions, credits |
+| `--text-base` | 1rem | 18 | Body text default |
+| `--text-lg` | 1.125rem | 20.25 | Slightly larger body, project titles |
+| `--text-xl` | 1.25rem | 22.5 | Subheadings |
+| `--text-2xl` | 1.5rem | 27 | Section headings |
+| `--text-3xl` | 1.875rem | 33.75 | Page titles |
+| `--text-4xl` | 2.25rem | 40.5 | Large headings |
+| `--text-subheading` | 1.25rem | 22.5 | "REINVENTING THE FRAME" tagline |
+| `--text-hero` | 8.75rem | **157.5** | _Retired._ Originally for the BASILE DESCHAMPS hero wordmark; the hero was redesigned (commit `0e6bcbb`) to a bio + contact overlay. Token still defined in `index.css` but no longer consumed. Slated for removal. |
 
 ### Letter-spacing & weight
 
@@ -101,27 +104,33 @@ The site has no logomark, badge, or icon. The canonical brand expression is the 
 
 ## Spacing & Layout
 
-### Spacing scale (`index.css:167-175`)
+### Spacing scale (`index.css`)
+
+In rem, so it grows with the 18px type scale (see
+[16-global-type-scale](16-global-type-scale.md)); px is at the 18px root.
 
 | Token | rem | px |
 |-------|-----|-----|
-| `--spacing-xs` | 0.25 | 4 |
-| `--spacing-sm` | 0.5 | 8 |
-| `--spacing-md` | 1 | 16 |
-| `--spacing-lg` | 1.5 | 24 |
-| `--spacing-xl` | 2 | 32 |
-| `--spacing-2xl` | 3 | 48 |
-| `--spacing-3xl` | 4 | 64 |
-| `--spacing-section` | 5 | 80 |
-| `--spacing-content` | 2.5 | 40 |
+| `--spacing-xs` | 0.25 | 4.5 |
+| `--spacing-sm` | 0.5 | 9 |
+| `--spacing-md` | 1 | 18 |
+| `--spacing-lg` | 1.5 | 27 |
+| `--spacing-xl` | 2 | 36 |
+| `--spacing-2xl` | 3 | 54 |
+| `--spacing-3xl` | 4 | 72 |
+| `--spacing-section` | 5 | 90 |
+| `--spacing-content` | 2.5 | 45 |
 
 ### Layout constants
 
+Pinned in **px** (not rem) so the page canvas stays a fixed width while
+the type scale grows — see [16-global-type-scale](16-global-type-scale.md).
+
 | Token | Value | Note |
 |-------|-------|------|
-| `--max-width-container` | 90rem (1440px) | Top-level page container |
-| `--max-width-content` | 45.625rem (730px) | Hero image / text column |
-| `--nav-height` | 5rem (80px) | Sticky top nav |
+| `--max-width-container` | 1440px | Top-level page container |
+| `--max-width-content` | 730px | Hero image / text column |
+| `--nav-height` | 80px | Sticky top nav |
 
 ### Breakpoints
 

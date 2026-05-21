@@ -9,7 +9,8 @@ function TitleSection({ title, borderTop = false }) {
         borderTop ? ' border-t border-black' : ''
       }`}
     >
-      <h2 className="font-body font-bold text-[34px] leading-none tracking-normal uppercase">
+      {/* 38.25px = 34px base × 1.125 global type scale — see .mdd/docs/16 */}
+      <h2 className="font-body font-bold text-[38.25px] leading-none tracking-normal uppercase">
         {title}
       </h2>
     </div>

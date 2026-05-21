@@ -40,6 +40,12 @@ const FALLBACK_SITE_SETTINGS = {
   navLinkActiveSize: 18,
   footerCopyright: 'Basile Deschamps. All rights reserved.',
   footerShowSocial: true,
+  // Featured film/photo section title hover.
+  //   featuredTitleHoverEffect:       'invert' (B&W chip) | 'grow' (scale + bold)
+  //   featuredTitleHoverWholeSection: true = hover anywhere on the section;
+  //                                   false = hover the title text only.
+  featuredTitleHoverEffect: 'invert',
+  featuredTitleHoverWholeSection: true,
 };
 
 // Safety-net content used only when cms.json has no heroOverlay. Positions

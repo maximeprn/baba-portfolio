@@ -17,6 +17,7 @@ import { flushSync } from 'react-dom';
 import PhotoCardPreview from './PhotoCardPreview';
 import ExpandedPhotoGallery from './ExpandedPhotoGallery';
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
+import { siteSettings } from '../../sanity/loader';
 
 const OPEN_DURATION_MS  = 1200;
 const CLOSE_DURATION_MS = 600;
@@ -46,6 +47,9 @@ function FeaturedPhotoCard({
 }) {
   const [phase, setPhase] = useState('collapsed'); // 'collapsed' | 'animating-open' | 'expanded' | 'animating-close'
   const [overlayVisible, setOverlayVisible] = useState(false);
+  // Title B&W invert — active while the pointer is anywhere within the
+  // section. See .mdd/docs/15-section-title-hover-zones.md.
+  const [titleHovered, setTitleHovered] = useState(false);
 
   const articleRef         = useRef(null);
   const previewWrapRef     = useRef(null);
@@ -70,6 +74,13 @@ function FeaturedPhotoCard({
       onDidCollapse?.(id);
     }
   }, [phase, onDidCollapse, id]);
+
+  // Clear the title hover on every transition out of the collapsed
+  // phase, so the title can't re-appear inverted when the card later
+  // collapses back under a stationary pointer.
+  useEffect(() => {
+    if (phase !== 'collapsed') setTitleHovered(false);
+  }, [phase]);
 
   // Closing-tail overlay reveal scheduler.
   useEffect(() => {
@@ -447,6 +458,34 @@ function FeaturedPhotoCard({
     }
   }, [handleArticleClick]);
 
+  // Whole-section title hover. mouseover/mouseout bubble to the
+  // <article>: a mouseover from any descendant means the pointer is in
+  // the section, and mouseout only clears once relatedTarget is outside
+  // the <article>. See .mdd/docs/15-section-title-hover-zones.md.
+  const handleHoverOver = () => setTitleHovered(true);
+  const handleHoverOut = (e) => {
+    if (!articleRef.current?.contains(e.relatedTarget)) setTitleHovered(false);
+  };
+
+  // Title hover styling — two independent CMS choices: the trigger
+  // (whole section, JS-driven via titleHovered — vs the title text only,
+  // CSS :hover) and the effect ('invert' = B&W chip on the <span>;
+  // 'grow' = scale + bolder on the <h3>, like the active nav link).
+  const hoverWholeSection = siteSettings.featuredTitleHoverWholeSection !== false;
+  const hoverGrow = siteSettings.featuredTitleHoverEffect === 'grow';
+  let titleH3Class = '';
+  let titleSpanClass = '';
+  if (hoverGrow) {
+    titleH3Class = hoverWholeSection
+      ? `origin-left transition-transform ${titleHovered ? 'scale-[1.125] font-semibold' : ''}`
+      : 'origin-left transition-transform hover:scale-[1.125] hover:font-semibold';
+  } else if (hoverWholeSection) {
+    titleSpanClass = titleHovered ? 'bg-gray-900 text-white' : '';
+  } else {
+    titleSpanClass = 'hover:bg-gray-900 hover:text-white';
+  }
+  const titleHoveredAttr = hoverWholeSection ? String(titleHovered) : undefined;
+
   const isInteractive    = phase === 'collapsed' || phase === 'expanded';
   const showPreview      = phase === 'collapsed' || phase === 'animating-close';
   const showGallery      = phase !== 'collapsed';
@@ -457,8 +496,11 @@ function FeaturedPhotoCard({
       ref={articleRef}
       data-featured-photo-card
       data-project-slug={project.slug}
+      data-title-hovered={titleHoveredAttr}
       onClick={isInteractive ? handleArticleClick : undefined}
       onKeyDown={isInteractive ? handleKeyDown : undefined}
+      onMouseOver={hoverWholeSection ? handleHoverOver : undefined}
+      onMouseOut={hoverWholeSection ? handleHoverOut : undefined}
       onTransitionEnd={handleTransitionEnd}
       role={isInteractive ? 'button' : undefined}
       tabIndex={isInteractive ? 0 : undefined}
@@ -513,8 +555,12 @@ function FeaturedPhotoCard({
             {/* Text half — no stopPropagation: clicking the title or any
                 text bubbles to the article and triggers expand/collapse. */}
             <div className="w-full md:w-[47%] flex flex-col">
-              <h3 className="font-header text-lg md:text-2xl font-medium tracking-widest uppercase leading-tight">
-                <span className="px-2 py-0.5 box-decoration-clone transition-colors duration-150 hover:bg-gray-900 hover:text-white">
+              <h3
+                className={`font-header text-lg md:text-2xl font-medium tracking-widest uppercase leading-tight ${titleH3Class}`}
+              >
+                <span
+                  className={`px-2 py-0.5 box-decoration-clone transition-colors duration-150 ${titleSpanClass}`}
+                >
                   {title}
                 </span>
               </h3>
@@ -526,7 +572,7 @@ function FeaturedPhotoCard({
                 {category}
               </div>
               {description && (
-                <p className="mt-4 font-header text-xs tracking-[0.15em] leading-6 text-primary">
+                <p className="mt-4 font-header text-xs tracking-[0.08em] leading-6 text-primary">
                   {description}
                 </p>
               )}

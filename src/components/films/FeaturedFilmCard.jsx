@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import Hls from 'hls.js';
 
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
+import { siteSettings } from '../../sanity/loader';
 
 // Per-element padding + margin-bottom variants. Cycled by index for a
 // "slightly random but intentional" feel. Desktop-only — see ffc-* rules
@@ -56,6 +57,28 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
   const videoRef = useRef(null);
   const wrapperRef = useRef(null);
   const [isInView, setIsInView] = useState(false);
+  // Title B&W invert — active while the pointer is anywhere within the
+  // section. The CMS toggle `featuredTitleHoverWholeSection` (default on)
+  // can scope it back to the title text only. See .mdd/docs/15.
+  const [titleHovered, setTitleHovered] = useState(false);
+  // Title hover styling — two independent CMS choices: the trigger
+  // (whole section, JS-driven via titleHovered — vs the title text only,
+  // CSS :hover) and the effect ('invert' = B&W chip on the <span>;
+  // 'grow' = scale + bolder on the <h3>, like the active nav link).
+  const hoverWholeSection = siteSettings.featuredTitleHoverWholeSection !== false;
+  const hoverGrow = siteSettings.featuredTitleHoverEffect === 'grow';
+  let titleH3Class = '';
+  let titleSpanClass = '';
+  if (hoverGrow) {
+    titleH3Class = hoverWholeSection
+      ? `origin-left transition-transform ${titleHovered ? 'scale-[1.125] font-semibold' : ''}`
+      : 'origin-left transition-transform hover:scale-[1.125] hover:font-semibold';
+  } else if (hoverWholeSection) {
+    titleSpanClass = titleHovered ? 'bg-gray-900 text-white' : '';
+  } else {
+    titleSpanClass = 'hover:bg-gray-900 hover:text-white';
+  }
+  const titleHoveredAttr = hoverWholeSection ? String(titleHovered) : undefined;
   const { addScrollListener } = useSmoothScrollContext();
 
   useEffect(() => {
@@ -155,6 +178,16 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
     e?.stopPropagation?.();
     onFilmClick(film);
   };
+
+  // Whole-section title hover. mouseover/mouseout bubble to the
+  // <article>: a mouseover from any descendant means the pointer is in
+  // the section, and mouseout only clears once relatedTarget is outside
+  // the <article> — so the state stays stable as the pointer crosses
+  // inner element boundaries. See .mdd/docs/15-section-title-hover-zones.md.
+  const handleHoverOver = () => setTitleHovered(true);
+  const handleHoverOut = (e) => {
+    if (!wrapperRef.current?.contains(e.relatedTarget)) setTitleHovered(false);
+  };
   const handleVideoReady = (e) => {
     e.target.controls = false;
     e.target.removeAttribute('controls');
@@ -164,7 +197,12 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
   return (
     <article
       ref={wrapperRef}
-      className="film-card w-full bg-white"
+      data-featured-film-card
+      data-title-hovered={titleHoveredAttr}
+      onClick={handleClick}
+      onMouseOver={hoverWholeSection ? handleHoverOver : undefined}
+      onMouseOut={hoverWholeSection ? handleHoverOut : undefined}
+      className="film-card w-full bg-white cursor-pointer"
       style={{
         '--section-padding-top': variant.paddingTop,
         '--section-padding-bottom': variant.paddingBottom,
@@ -184,10 +222,11 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
       {/* TITLE — mobile only, above the video */}
       <header className="px-4 lg:hidden">
         <h3
-          onClick={handleClick}
-          className="font-header text-lg font-medium tracking-widest uppercase cursor-pointer leading-tight mb-4 group/ffc-title-m"
+          className={`font-header text-lg font-medium tracking-widest uppercase leading-tight mb-4 ${titleH3Class}`}
         >
-          <span className="px-2 py-0.5 box-decoration-clone transition-colors duration-150 group-hover/ffc-title-m:bg-gray-900 group-hover/ffc-title-m:text-white">
+          <span
+            className={`px-2 py-0.5 box-decoration-clone transition-colors duration-150 ${titleSpanClass}`}
+          >
             {title}
           </span>
         </h3>
@@ -198,8 +237,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
       >
         {/* VIDEO */}
         <div
-          onClick={handleClick}
-          className="w-full overflow-hidden cursor-pointer"
+          className="w-full overflow-hidden"
           style={{
             aspectRatio,
             ...(posterUrl ? {
@@ -224,19 +262,18 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
           />
         </div>
 
-        {/* TEXT CONTENT — stopPropagation so reading text doesn't collapse an enclosing card.
+        {/* TEXT CONTENT — the whole section is click-to-open via the
+            article's onClick, so this column no longer stops propagation.
             Per-element padding + margin-bottom come from CSS vars + lg-only rules in index.css. */}
-        <div
-          className="flex flex-col justify-center min-w-0 items-start"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="flex flex-col justify-center min-w-0 items-start">
           {/* TITLE — desktop only (mobile title is overlaid on video) */}
           <header className="hidden lg:block ffc-title">
             <h3
-              onClick={handleClick}
-              className="font-header text-lg font-medium tracking-widest uppercase cursor-pointer leading-tight group/ffc-title-d"
+              className={`font-header text-lg font-medium tracking-widest uppercase leading-tight ${titleH3Class}`}
             >
-              <span className="px-2 py-0.5 box-decoration-clone transition-colors duration-150 group-hover/ffc-title-d:bg-gray-900 group-hover/ffc-title-d:text-white">
+              <span
+                className={`px-2 py-0.5 box-decoration-clone transition-colors duration-150 ${titleSpanClass}`}
+              >
                 {title}
               </span>
             </h3>
@@ -253,7 +290,7 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
 
           {/* DESCRIPTION */}
           <div className="ffc-desc relative w-full overflow-hidden">
-            <p className="font-header text-xs tracking-[0.15em] leading-6 text-primary">
+            <p className="font-header text-xs tracking-[0.08em] leading-6 text-primary">
               {description}
             </p>
           </div>

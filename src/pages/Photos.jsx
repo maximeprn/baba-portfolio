@@ -158,10 +158,12 @@ function Photos() {
             <TitleSection title="Other Projects" />
             {/* 1rem gap below the Other Projects title */}
             <div className="h-4" aria-hidden="true" />
-            {/* Phone shows the collapsed bands two-up; tablet/desktop keep
-                the single-column tight list. An expanded band breaks out to
-                full width via col-span-2 on its <article>. */}
-            <div className="grid w-full grid-cols-2 md:grid-cols-1 gap-x-2 gap-y-[12px] md:gap-0">
+            {/* Phone shows the collapsed bands two-up (unchanged); tablet
+                (md) lays them out three-up, and desktop (lg, ≥1024px) goes
+                four-up. Same stacked title + subtitle card throughout. An
+                expanded band breaks out to full width via col-span-2 /
+                md:col-span-3 / lg:col-span-4 on its <article>. */}
+            <div className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-[12px] md:gap-x-6 md:gap-y-4">
               {otherProjects.map((project) => (
                 <CollapsedPhotoCard
                   key={project.id}

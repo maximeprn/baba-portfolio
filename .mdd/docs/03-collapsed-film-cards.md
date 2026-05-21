@@ -12,7 +12,7 @@ test_files:
   - tests/e2e/collapsed-film-cards.spec.js
 known_issues:
   - "Desktop open uses a snap-trick that can transiently over-scroll the smooth-scroll content during the 1200 ms shutter. The page background is white, so the brief white-on-white gap is not visible."
-  - "Mobile centres the video AFTER the open shutter (native scroll cannot snap-trick) — a brief second phase, not concurrent with the expand."
+  - "Mobile centres the video BEFORE the open shutter, mirroring CollapsedPhotoCard's scroll-then-expand. It cannot snap-trick (native smooth-scroll clamps to the live document height), so it pins the document to its post-expand height via body.minHeight for the duration of the open."
   - "The video-centre scroll inherits SmoothScrollContext's ease residual: it settles ~1–2 px shy of an exact centre."
 ---
 
@@ -37,11 +37,11 @@ Films.jsx
 CollapsedFilmCard.jsx (per-instance, fully self-contained state machine)
   phase: 'collapsed' → 'animating' → 'expanded' → 'closing' → 'collapsed'
   ├─ handleOpen                 ← pins height, swaps phase to 'animating'
-  ├─ useLayoutEffect[animating] ← desktop snap-trick: centre the video + open
-  │                               shutter; mobile: shutter only
+  ├─ useLayoutEffect[animating] ← centre the video, THEN open shutter
+  │                               (desktop snap-trick / mobile body.minHeight)
   ├─ handleClose                ← pins height, swaps phase to 'closing'
   ├─ useLayoutEffect[closing]   ← content fade + scroll band to y=0 + shutter
-  ├─ handleTransitionEnd        ← terminal flip; mobile centres the video here
+  ├─ handleTransitionEnd        ← terminal phase flip (open scroll already done)
   └─ useLayoutEffect[phase]     ← settles inline style.height / opacity
 ```
 
@@ -75,7 +75,7 @@ const OVERLAY_REVEAL_DELAY_MS  = Math.max(0, CLOSE_DURATION_MS - OVERLAY_TRANSIT
 
 1. Re-pins the article to `collapsedHeight` and reads `scrollHeight` for the target height.
 2. **Desktop — snap-trick.** The video's centre sits deep in the page; `SmoothScrollContext.scrollTo` clamps to the *current* `maxScroll`, which — while the card is still collapsed — is too small and would chop the target. So, inside one `requestAnimationFrame`: grow the article to `targetHeight` (the document reaches its post-expand size) → measure the video and call `scrollTo(videoCentre − viewportHeight/2, { ease: 0.05 })` (now the target survives the clamp) → snap the article back to `collapsedHeight` → start the real `OPEN_TRANSITION`. The snapped states never paint. The smooth-scroll and the height shutter then run concurrently and settle together with the video centred.
-3. **Mobile.** A native smooth-scroll race-conditions with the document growing under it, so mobile cannot snap-trick. It runs the open shutter alone; `handleTransitionEnd` centres the video afterwards, once the document is already at full height (so the native scroll is not clamped short).
+3. **Mobile.** A native smooth-scroll clamps to the live document height, so mobile cannot snap-trick. Instead it mirrors `CollapsedPhotoCard`'s scroll-then-expand: measure the video centre (its absolute document position is the same collapsed or expanded — expanding only grows the article below its fixed top) → pin the document to its post-expand height via `document.body.style.minHeight` so the native smooth-scroll can reach the centre target and hold there → `scrollTo(videoCentre − viewportHeight/2)` → once the scroll settles, start the `OPEN_TRANSITION` shutter, which grows the article into the reserved space. The effect cleanup restores `body.minHeight`.
 
 ### Close path
 

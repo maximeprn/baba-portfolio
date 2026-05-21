@@ -132,22 +132,29 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
   }, [phase, getScrollPosition, scrollTo]);
 
   // After the swap to 'animating' commits: scroll the preview video's
-  // vertical centre to the viewport's vertical centre and play the open
-  // height shutter.
+  // vertical centre to the viewport's vertical centre, THEN play the
+  // open height shutter — scroll first, expand second, on every
+  // breakpoint (mirrors CollapsedPhotoCard's scroll-then-expand open).
   //
-  // Desktop uses a snap-trick. The centre target sits deep in the page,
-  // and SmoothScrollContext.scrollTo clamps to the CURRENT maxScroll —
-  // which, while the card is still collapsed, is too small, so the
-  // target would be chopped short. So: temporarily grow the article to
-  // its expanded height (the document reaches its post-expand size),
-  // call scrollTo (now the target survives the clamp), snap the article
-  // back to collapsed, then start the real height transition — all in
-  // one rAF so the snapped states never paint.
+  // The video's absolute document position is identical whether the
+  // card is collapsed or expanded: expanding only grows the article
+  // *below* its fixed top, and overflow:hidden clips the body without
+  // reflowing it. So the centre target can be measured up-front, while
+  // the card is still collapsed.
   //
-  // Mobile (native scroll) can't snap-trick: a native smooth-scroll
-  // race-conditions with the document growing under it. Mobile runs the
-  // shutter first and centres the video afterwards (handleTransitionEnd),
-  // once the document is already at full height.
+  // Desktop snap-trick: SmoothScrollContext.scrollTo clamps to the
+  // CURRENT maxScroll, too small while the card is collapsed. So grow
+  // the article to its expanded height, call scrollTo (the target now
+  // survives the clamp), snap the article back to collapsed, then start
+  // the height transition — all in one rAF so the snapped states never
+  // paint.
+  //
+  // Mobile (native scroll) can't snap-trick — a native smooth-scroll
+  // clamps to the live document height. Instead it pins the document to
+  // its post-expand height via body.minHeight for the duration of the
+  // open, so the scroll reaches the centre target and holds there while
+  // the shutter grows the article into that reserved space. The effect
+  // cleanup restores body.minHeight.
   useLayoutEffect(() => {
     if (phase !== 'animating') return;
     const container = containerRef.current;
@@ -161,14 +168,46 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
     let cancelled = false;
 
     if (!isDesktop) {
-      const rafId = requestAnimationFrame(() => {
+      // Centre the preview video; fall back to top-aligning the article.
+      const video = container.querySelector('video');
+      let targetScroll;
+      if (video) {
+        const vr = video.getBoundingClientRect();
+        targetScroll = Math.max(
+          0,
+          vr.top + getScrollPosition() + vr.height / 2 - window.innerHeight / 2,
+        );
+      } else {
+        targetScroll = Math.max(
+          0,
+          container.getBoundingClientRect().top + getScrollPosition(),
+        );
+      }
+
+      // Reserve the post-expand document height up-front so the native
+      // smooth-scroll can reach the centre target — it would otherwise
+      // clamp to the still-collapsed document — and holds there while
+      // the shutter grows the article into that reserved space. The
+      // article is pinned to collapsedHeight right now, so this delta is
+      // exact. Restored in the cleanup below.
+      const expandedDocHeight =
+        document.documentElement.scrollHeight + (targetHeight - collapsedHeight);
+      document.body.style.minHeight = `${expandedDocHeight}px`;
+
+      // Scroll the video to centre FIRST; once the native smooth-scroll
+      // settles, play the height shutter.
+      scrollTo(targetScroll).then(() => {
         if (cancelled) return;
-        container.style.transition = OPEN_TRANSITION;
-        container.style.height = `${targetHeight}px`;
+        requestAnimationFrame(() => {
+          if (cancelled) return;
+          container.style.transition = OPEN_TRANSITION;
+          container.style.height = `${targetHeight}px`;
+        });
       });
+
       return () => {
         cancelled = true;
-        cancelAnimationFrame(rafId);
+        document.body.style.minHeight = '';
       };
     }
 
@@ -264,29 +303,16 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
 
   const handleTransitionEnd = useCallback((e) => {
     if (e.target !== containerRef.current || e.propertyName !== 'height') return;
+    // The open scroll now runs BEFORE the shutter (see useLayoutEffect
+    // [animating]) — both breakpoints just flip to the terminal phase here.
     if (phase === 'animating') {
       setPhase('expanded');
       isAnimatingRef.current = false;
-      // Mobile centres the video now — the document is at full height so
-      // the native scroll isn't clamped short (see the open useLayoutEffect).
-      if (!isDesktop) {
-        const container = containerRef.current;
-        const video = container?.querySelector('video');
-        if (video) {
-          const vr = video.getBoundingClientRect();
-          scrollTo(
-            Math.max(
-              0,
-              vr.top + getScrollPosition() + vr.height / 2 - window.innerHeight / 2,
-            ),
-          );
-        }
-      }
     } else if (phase === 'closing') {
       setPhase('collapsed');
       isAnimatingRef.current = false;
     }
-  }, [phase, isDesktop, getScrollPosition, scrollTo]);
+  }, [phase]);
 
   const handleArticleClick = useCallback((e) => {
     if (phase === 'collapsed') {

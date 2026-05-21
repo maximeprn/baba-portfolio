@@ -565,15 +565,15 @@
   "heroOverlay": {
     "_createdAt": "2026-05-19T16:05:43Z",
     "_id": "heroOverlay",
-    "_rev": "n9md8RGrJQEGd6mdCRpIDJ",
+    "_rev": "n9md8RGrJQEGd6mdCS4qUT",
     "_system": {
       "base": {
         "id": "heroOverlay",
-        "rev": "Zxrj8tcFvJIi44e6XE6ga0"
+        "rev": "n9md8RGrJQEGd6mdCS4jvI"
       }
     },
     "_type": "heroOverlay",
-    "_updatedAt": "2026-05-20T16:26:27Z",
+    "_updatedAt": "2026-05-20T17:05:30Z",
     "items": [
       {
         "_key": "bio",
@@ -585,7 +585,7 @@
         },
         "mobileVisible": true,
         "offsetX": 40,
-        "offsetY": 145,
+        "offsetY": 155,
         "size": "body",
         "stackRowGap": 40,
         "stackWithSiblings": true,
@@ -602,7 +602,7 @@
         },
         "mobileVisible": true,
         "offsetX": 40,
-        "offsetY": 200,
+        "offsetY": 190,
         "size": "body",
         "stackWithSiblings": true,
         "text": "Selected clients include Salomon, Parel Studios, Lorette Colé Duprat, On, Asics, Pag, Specialized, Veja.",
@@ -647,15 +647,15 @@
   "heroPhotos": {
     "_createdAt": "2026-05-19T18:16:08Z",
     "_id": "heroPhotos",
-    "_rev": "qreaEEKCEqJb6GObKm1ngg",
+    "_rev": "xX9YeQzdQC2WYPtGdgVCI4",
     "_system": {
       "base": {
         "id": "heroPhotos",
-        "rev": "MX8ZVHSGJki14Hclm4qcKR"
+        "rev": "n9md8RGrJQEGd6mdCSY1hg"
       }
     },
     "_type": "heroPhotos",
-    "_updatedAt": "2026-05-19T18:31:15Z",
+    "_updatedAt": "2026-05-20T18:22:06Z",
     "photos": [
       {
         "_key": "photo-0-1350-jpg",
@@ -721,24 +721,6 @@
         }
       },
       {
-        "_key": "photo-8-x903-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-6eefbcbad554ad331b7b9a0dfa91a993f0bc352f-1080x903-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-9-x903-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-d4f0afa396c2bb27d50f6dbae4cbf520799e3e7c-1080x903-jpg",
-          "_type": "reference"
-        }
-      },
-      {
         "_key": "photo-10-x903-jpg",
         "_type": "image",
         "alt": "",
@@ -766,38 +748,11 @@
         }
       },
       {
-        "_key": "photo-13-x671-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-4bb5b1cfb3dc83451db71f8ba7894ff59ae1c555-1036x671-jpg",
-          "_type": "reference"
-        }
-      },
-      {
         "_key": "photo-14-x671-jpg",
         "_type": "image",
         "alt": "",
         "asset": {
           "_ref": "image-7248c2fb3be8654410a4764a10a5375162a70ba1-1036x671-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-15-x700-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-d0613e27bcf55cc849712a205286f8443cacddb9-1080x700-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-16-x671-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-fccb4fcadeea774b3ca903bf49df3f0f565a6459-1036x671-jpg",
           "_type": "reference"
         }
       },
@@ -928,15 +883,6 @@
         }
       },
       {
-        "_key": "photo-31-1384-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-3be86a3b967d16c42014aed5c71ba59690d16805-1080x1384-jpg",
-          "_type": "reference"
-        }
-      },
-      {
         "_key": "photo-32-1384-jpg",
         "_type": "image",
         "alt": "",
@@ -960,33 +906,6 @@
         "alt": "",
         "asset": {
           "_ref": "image-08f12700ac0b4db1e8ffcfbda9c0bbb89f4644e5-1080x1384-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-35-1207-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-7b603ae2895228979e1b17dd01f58a20c0d7863f-1080x1207-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-36-1206-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-5ad63eff971b3ac2674113f11edd1b5cc4b9fc52-1080x1206-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-37-1207-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-9d5f0930e87887b1906de43dbc3892d150414bc1-1080x1207-jpg",
           "_type": "reference"
         }
       },
@@ -1045,65 +964,11 @@
         }
       },
       {
-        "_key": "photo-44-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-836f2d81fe74a4f49fde0510008b433ba2f37efe-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-45-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-72f42d96477b9530bf88e80756cfc9109b829793-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-46-x900-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-43f20a14ce4db16ec87ad36fbaff92b3439c7387-720x900-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-47-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-c6c155381e4386905a2e9300d9b6e00a109baa8d-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-48-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-5580eab8140946d20f94d15a742c3ba3c580c007-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
         "_key": "photo-49-1350-jpg",
         "_type": "image",
         "alt": "",
         "asset": {
           "_ref": "image-56fcfd323c160369968f17a9b17c6894173382f9-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-50-x813-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-305ff3f20aac84d087b082da90aa28a608f22a9b-1007x813-jpg",
           "_type": "reference"
         }
       },
@@ -1158,60 +1023,6 @@
         "alt": "",
         "asset": {
           "_ref": "image-98434e10c004e38c99316156bd74d82c08364d5a-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-57-x809-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-9c9450df772aed0ea4600dd189b70885588b13ed-809x809-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-58-x799-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-6ee8a6bc2e1814c5590fa500652321b4ae322351-799x799-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-59-1080-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-767a85f0308a6328d4f7c058c2823c9da0cfdd09-1080x1080-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-60-1080-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-959b80b9620b293b202e90266c22dfc3a7de8f24-1080x1080-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-61-1080-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-89018e829bb506c4681ceb291b61d88c0ac6ea7f-1080x1080-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-62-1080-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-a0b795c207c94b05f687569a01089267ca457335-1080x1080-jpg",
           "_type": "reference"
         }
       },
@@ -1423,15 +1234,6 @@
         }
       },
       {
-        "_key": "photo-86-1080-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-ecd0cd07495c2ab7e0a9261dda80281c5e067003-1080x1080-jpg",
-          "_type": "reference"
-        }
-      },
-      {
         "_key": "photo-87-1350-jpg",
         "_type": "image",
         "alt": "",
@@ -1567,15 +1369,6 @@
         }
       },
       {
-        "_key": "photo-102-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-26701b43e3af4fd7b8d2babd4540dd83d59ef50d-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
         "_key": "photo-103-1350-jpg",
         "_type": "image",
         "alt": "",
@@ -1666,15 +1459,6 @@
         }
       },
       {
-        "_key": "photo-113-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-34bf29b7b2b5ca37b6c8ddd65cf5e7aa7b2a09bd-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
         "_key": "photo-114-1350-jpg",
         "_type": "image",
         "alt": "",
@@ -1723,14 +1507,6 @@
         "alt": ""
       },
       {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/6eefbcbad554ad331b7b9a0dfa91a993f0bc352f-1080x903.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/d4f0afa396c2bb27d50f6dbae4cbf520799e3e7c-1080x903.jpg",
-        "alt": ""
-      },
-      {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/eaffd94617e0d7c6b1b692be2e286ed92198c9f2-1080x903.jpg",
         "alt": ""
       },
@@ -1743,19 +1519,7 @@
         "alt": ""
       },
       {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/4bb5b1cfb3dc83451db71f8ba7894ff59ae1c555-1036x671.jpg",
-        "alt": ""
-      },
-      {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/7248c2fb3be8654410a4764a10a5375162a70ba1-1036x671.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/d0613e27bcf55cc849712a205286f8443cacddb9-1080x700.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/fccb4fcadeea774b3ca903bf49df3f0f565a6459-1036x671.jpg",
         "alt": ""
       },
       {
@@ -1815,10 +1579,6 @@
         "alt": ""
       },
       {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/3be86a3b967d16c42014aed5c71ba59690d16805-1080x1384.jpg",
-        "alt": ""
-      },
-      {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/f849564e7dc25f1f3d782bbaf7a7b34f2f6cca29-1080x1384.jpg",
         "alt": ""
       },
@@ -1828,18 +1588,6 @@
       },
       {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/08f12700ac0b4db1e8ffcfbda9c0bbb89f4644e5-1080x1384.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/7b603ae2895228979e1b17dd01f58a20c0d7863f-1080x1207.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/5ad63eff971b3ac2674113f11edd1b5cc4b9fc52-1080x1206.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/9d5f0930e87887b1906de43dbc3892d150414bc1-1080x1207.jpg",
         "alt": ""
       },
       {
@@ -1867,31 +1615,7 @@
         "alt": ""
       },
       {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/836f2d81fe74a4f49fde0510008b433ba2f37efe-1080x1350.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/72f42d96477b9530bf88e80756cfc9109b829793-1080x1350.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/43f20a14ce4db16ec87ad36fbaff92b3439c7387-720x900.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/c6c155381e4386905a2e9300d9b6e00a109baa8d-1080x1350.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/5580eab8140946d20f94d15a742c3ba3c580c007-1080x1350.jpg",
-        "alt": ""
-      },
-      {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/56fcfd323c160369968f17a9b17c6894173382f9-1080x1350.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/305ff3f20aac84d087b082da90aa28a608f22a9b-1007x813.jpg",
         "alt": ""
       },
       {
@@ -1916,30 +1640,6 @@
       },
       {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/98434e10c004e38c99316156bd74d82c08364d5a-1080x1350.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/9c9450df772aed0ea4600dd189b70885588b13ed-809x809.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/6ee8a6bc2e1814c5590fa500652321b4ae322351-799x799.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/767a85f0308a6328d4f7c058c2823c9da0cfdd09-1080x1080.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/959b80b9620b293b202e90266c22dfc3a7de8f24-1080x1080.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/89018e829bb506c4681ceb291b61d88c0ac6ea7f-1080x1080.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/a0b795c207c94b05f687569a01089267ca457335-1080x1080.jpg",
         "alt": ""
       },
       {
@@ -2035,10 +1735,6 @@
         "alt": ""
       },
       {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/ecd0cd07495c2ab7e0a9261dda80281c5e067003-1080x1080.jpg",
-        "alt": ""
-      },
-      {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/ca4d10e1a6c0152f4027f950a25327bc7935c9f7-1080x1350.jpg",
         "alt": ""
       },
@@ -2099,10 +1795,6 @@
         "alt": ""
       },
       {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/26701b43e3af4fd7b8d2babd4540dd83d59ef50d-1080x1350.jpg",
-        "alt": ""
-      },
-      {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/41d5ee7a64799c50a8e46ca3d1c29562f2343c34-1080x1350.jpg",
         "alt": ""
       },
@@ -2140,10 +1832,6 @@
       },
       {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/97924051bfd63560baecef1e16bd1f07d54033b6-1080x1350.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/34bf29b7b2b5ca37b6c8ddd65cf5e7aa7b2a09bd-1080x1350.jpg",
         "alt": ""
       },
       {
@@ -3288,5 +2976,5 @@
     "socialTwitter": null,
     "socialVimeo": "https://vimeo.com/user37669788"
   },
-  "_fetchedAt": "2026-05-20T16:29:50.698Z"
+  "_fetchedAt": "2026-05-21T06:03:21.097Z"
 }

@@ -124,9 +124,14 @@ function Photos() {
       {/* HERO */}
       <FloatingGalleryHero />
 
-      {/* FEATURED PROJECTS */}
-      <div className="flex flex-col items-center w-full md:px-[100px]">
-        <div className="h-10 md:h-16" aria-hidden="true" />
+      {/* POST-HERO CONTENT — the content itself (the sections / cards) is
+          capped at 1400px wide. The column is max-w-[1600px] = 1400px of
+          content + the 2×100px side gutter; it is centred, so on screens
+          wider than that the surplus becomes equal left/right margin. */}
+      <div className="flex flex-col items-center w-full max-w-[1600px] md:px-[100px]">
+        {/* Hero → first section gap. Tablet (768–1024px) gets a wider
+            120px breather; phone and desktop keep their values. */}
+        <div className="h-10 md:h-[120px] lg:h-16" aria-hidden="true" />
 
         {featuredProjects.map((project, idx) => (
           <div key={project.id} className="py-2.5 w-full max-w-[1320px]">
@@ -152,10 +157,10 @@ function Photos() {
             <div className="h-32" aria-hidden="true" />
             <TitleSection title="Other Projects" />
             {otherProjects.map((project, idx) => (
-              // Mobile-only spacing: the band stacks title + meta and used
-              // to feel cramped between adjacent projects. mb-6 gives a
-              // visible gap; on desktop the band is a tight 36px row so
-              // we keep its zero-margin rhythm.
+              // Phone-only spacing: the band stacks title + meta on phones
+              // and would feel cramped between adjacent projects. mb-6
+              // gives a visible gap; from 768px up the band is a tight
+              // 36px row so we keep its zero-margin rhythm.
               <div key={project.id} className="w-full mb-6 md:mb-0 last:mb-0">
                 <CollapsedPhotoCard
                   project={project}

@@ -1,165 +1,121 @@
 ---
 id: 03-collapsed-film-cards
-title: Collapsed Film Cards — Shutter Expand/Collapse with Single-Expand Enforcement
+title: Collapsed Film Cards — Shutter Expand/Collapse, Video-Centred Open
 edition: BABA
 depends_on: [02-design-system]
 source_files:
   - src/components/films/CollapsedFilmCard.jsx
   - src/components/films/FeaturedFilmCard.jsx
   - src/pages/Films.jsx
-test_files: []
+  - tailwind.config.js  # the `cards` (1350px) breakpoint
+test_files:
+  - tests/e2e/collapsed-film-cards.spec.js
 known_issues:
-  - "Rapid back-to-back clicks across cards leave A's open animation in flight when B is clicked; A's close is queued via pendingCloseRef until A reaches 'expanded'. Acceptable steady-state but not optimized."
-  - "When the auto-close target (A) is below the newly-clicked card (B) in document order, no scroll adjustment is made (correct), but the smooth-scroll glide may still feel slightly off on very tall expanded layouts due to non-A page reflow."
-  - "On touch devices, the X close indicator is always visible (no hover-reveal). Users tap the X or anywhere on the expanded card's whitespace to close — affordance is implicit."
+  - "Desktop open uses a snap-trick that can transiently over-scroll the smooth-scroll content during the 1200 ms shutter. The page background is white, so the brief white-on-white gap is not visible."
+  - "Mobile centres the video AFTER the open shutter (native scroll cannot snap-trick) — a brief second phase, not concurrent with the expand."
+  - "The video-centre scroll inherits SmoothScrollContext's ease residual: it settles ~1–2 px shy of an exact centre."
 ---
 
-# 03 — Collapsed Film Cards: Shutter Expand/Collapse
+# 03 — Collapsed Film Cards: Shutter Expand/Collapse, Video-Centred Open
 
 ## Purpose
 
-The **Other Projects** section on the Films page lists secondary film entries as compact one-line bands. Clicking a band expands it into a full `FeaturedFilmCard` view via a 1200ms shutter animation and re-centers the viewport on the video. A small X indicator at the bottom of the expanded view (revealed on hover) plus any whitespace click triggers the inverse 600ms close. Only one card may be expanded at a time — opening a second card causes the first to auto-close in parallel, with the new card's scroll target precomputed so it lands centered when both animations settle.
+The **Other Projects** section on the Films page lists secondary film entries as compact one-line bands. Clicking a band expands it into a full `FeaturedFilmCard` via a 1200 ms height shutter, scrolling the page so the **preview video's vertical centre lands at the viewport's vertical centre**. A small X indicator at the bottom of the expanded view (revealed on hover) plus any whitespace click triggers the inverse 600 ms close.
+
+`CollapsedFilmCard` borrows `CollapsedPhotoCard`'s open/close **technique** (the expanded body is mounted only while open; same shutter timing and band-overlay slide) but differs from it deliberately in two ways:
+
+1. **No single-expand.** Film cards are independent — opening one does **not** collapse the others. Several can be open at once; each is collapsed only by the user clicking it. (Photos enforces single-expand; Films does not.)
+2. **Open scroll target.** A film's expanded body is a single preview video, so the open centres that video in the viewport. (Photos' body is a tall gallery, so it scrolls the gallery top to y=0.)
 
 ## Architecture
 
 ```
 Films.jsx
-  ├─ state: expandedCollapsedId        ← which card is currently expanded (or null)
-  ├─ state: closeSignals { id: count } ← bumping a card's count auto-closes it
-  ├─ handleCollapsedWillExpand(id)     ← fires on click; bumps prev's signal, sets expanded id
-  └─ handleCollapsedDidCollapse(id)    ← fires when a card lands in 'collapsed'; clears expanded id
+  └─ renders one independent <CollapsedFilmCard> per collapsed film.
+     No single-expand orchestrator — no expandedId / closeSignals state.
 
-CollapsedFilmCard.jsx (per-instance state machine)
+CollapsedFilmCard.jsx (per-instance, fully self-contained state machine)
   phase: 'collapsed' → 'animating' → 'expanded' → 'closing' → 'collapsed'
-  ├─ handleOpen      ← entry from collapsed; computes target height + scroll, starts shutter open
-  ├─ handleClose     ← entry from expanded; starts reverse shutter
-  ├─ handleTransitionEnd  ← terminal-state flip; drains pendingCloseRef if a close was queued mid-open
-  └─ useLayoutEffect[phase]  ← cleans up inline style.height / data-* attrs in same paint as React commit
+  ├─ handleOpen                 ← pins height, swaps phase to 'animating'
+  ├─ useLayoutEffect[animating] ← desktop snap-trick: centre the video + open
+  │                               shutter; mobile: shutter only
+  ├─ handleClose                ← pins height, swaps phase to 'closing'
+  ├─ useLayoutEffect[closing]   ← content fade + scroll band to y=0 + shutter
+  ├─ handleTransitionEnd        ← terminal flip; mobile centres the video here
+  └─ useLayoutEffect[phase]     ← settles inline style.height / opacity
 ```
 
-Each `CollapsedFilmCard` owns its own animation state. The parent (`Films.jsx`) orchestrates **only** which card is "the" expanded one and signals others to close — it does not control the animation itself.
+The expanded body (`FeaturedFilmCard` + a close-X indicator) is rendered **only while `phase !== 'collapsed'`** (`showContent`) — the mount-on-open technique borrowed from `CollapsedPhotoCard`'s `showGallery`. There is no always-mounted hidden body.
 
 ## State Machine
 
 | Phase | Meaning | DOM state |
 |---|---|---|
-| `'collapsed'` | Idle single-row band | Article `md:h-9` (36px desktop), overflow:hidden. Overlay rendered as the visible row. `contentRef` is `position:absolute top-0 left-0 right-0` + `visibility:hidden` (no pixels rendered) |
-| `'animating'` | Open in progress | Article inline `style.height` transitioning collapsed→target with `OPEN_TRANSITION` (1200ms). Overlay sliding up + fading out (500ms). `contentRef` becomes visible and in-flow |
-| `'expanded'` | Stable expanded view | Article `style.height = 'auto'`. Overlay unmounted. Close indicator (a 12px X svg, no text label) sits at the bottom of `contentRef`. Article also gets the `group` class for hover-reveal of the X. |
-| `'closing'` | Close in progress | Article transitioning expanded→collapsed with `CLOSE_TRANSITION` (600ms). Overlay re-mounts at `translateY(-100%)` opacity 0; cross-fades in over the **last 500ms** of the close so it lands fully visible exactly when the height transition ends |
+| `'collapsed'` | Idle band | Article height driven by its in-flow `relative` overlay (≈36 px one-line row; grows when text wraps). Expanded body not mounted. |
+| `'animating'` | Open in progress | Expanded body mounted in flow. Article inline `style.height` transitioning collapsed→target with `OPEN_TRANSITION` (1200 ms). Overlay sliding up + fading out. |
+| `'expanded'` | Stable expanded view | Article `style.height = 'auto'`. Overlay unmounted. Close-X indicator visible at the bottom of the body; article carries `group` for the X hover-reveal. |
+| `'closing'` | Close in progress | Article transitioning expanded→collapsed (600 ms). Body fades to opacity 0 (200 ms). Overlay re-mounts and cross-fades back in over the close tail. |
 
-## Animation Constants (`CollapsedFilmCard.jsx` top of file)
+## Animation Constants
 
 ```js
 const OPEN_DURATION_MS  = 1200;
-const CLOSE_DURATION_MS = 600; // 2× faster than open — snappy dismissal.
-const OPEN_TRANSITION   = `height ${OPEN_DURATION_MS}ms cubic-bezier(0.4, 0, 0.2, 1)`;
-const CLOSE_TRANSITION  = `height ${CLOSE_DURATION_MS}ms cubic-bezier(0.4, 0, 0.2, 1)`;
-const OVERLAY_TRANSITION_MS   = 500;
-const OVERLAY_REVEAL_DELAY_MS = Math.max(0, CLOSE_DURATION_MS - OVERLAY_TRANSITION_MS); // = 100ms
+const CLOSE_DURATION_MS = 600;  // 2× faster than open — snappy dismissal.
+const EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
+const CONTENT_FADE_OUT_MS     = 200;
+const OVERLAY_TRANSITION_MS    = 500;
+const OVERLAY_REVEAL_DELAY_MS  = Math.max(0, CLOSE_DURATION_MS - OVERLAY_TRANSITION_MS); // 100
 ```
-
-Both directions share the same `cubic-bezier(0.4, 0, 0.2, 1)` curve. The asymmetric duration (open is deliberate, close is snappy) is intentional UX.
 
 ## Business Rules
 
-### Open path (`handleOpen`)
+### Open path — video-centred
 
-1. Guard: only fires if `phase === 'collapsed'` and `isAnimatingRef.current === false`.
-2. Calls `onWillExpand?.(film.id)` so the parent can auto-close any other expanded card.
-3. Measures `content.scrollHeight` and `container.offsetHeight` for target/start heights.
-4. Publishes `data-cfc-eh` (expanded height) and `data-cfc-ch` (collapsed height) on the article — siblings opening later use these to correct their scroll targets.
-5. Sets phase `'animating'`, schedules a rAF for the snap-trick.
-6. Inside the rAF:
-   - Snap-trick: sets `style.height = targetHeight`, forces reflow, measures the video's `getBoundingClientRect()` to compute the scroll target.
-   - **Sibling-delta correction:** sums `(expH − colH)` for any sibling with `data-cfc-eh` whose viewport top is above ours. Subtracts that sum from `targetScroll` so smooth-scroll glides directly to the post-collapse-of-other-cards centered position.
-   - Calls `scrollTo(targetScroll, { ease: 0.05 })`.
-   - Snaps back to `collapsedHeight`, sets `transition = OPEN_TRANSITION`, sets `style.height = targetHeight` to start the actual open animation.
-7. `handleTransitionEnd` fires when the height transition completes; phase goes to `'expanded'`. If `pendingCloseRef.current` was set (because a close was requested mid-open), `handleClose` is fired in the next rAF.
+`handleOpen` measures the collapsed height, pins the article to it, and swaps phase to `'animating'`. The `useLayoutEffect[animating]` then:
 
-### Close path (`handleClose`)
+1. Re-pins the article to `collapsedHeight` and reads `scrollHeight` for the target height.
+2. **Desktop — snap-trick.** The video's centre sits deep in the page; `SmoothScrollContext.scrollTo` clamps to the *current* `maxScroll`, which — while the card is still collapsed — is too small and would chop the target. So, inside one `requestAnimationFrame`: grow the article to `targetHeight` (the document reaches its post-expand size) → measure the video and call `scrollTo(videoCentre − viewportHeight/2, { ease: 0.05 })` (now the target survives the clamp) → snap the article back to `collapsedHeight` → start the real `OPEN_TRANSITION`. The snapped states never paint. The smooth-scroll and the height shutter then run concurrently and settle together with the video centred.
+3. **Mobile.** A native smooth-scroll race-conditions with the document growing under it, so mobile cannot snap-trick. It runs the open shutter alone; `handleTransitionEnd` centres the video afterwards, once the document is already at full height (so the native scroll is not clamped short).
 
-1. Guard: only fires if `phase === 'expanded'` and `isAnimatingRef.current === false`.
-2. Reads `expandedHeight = container.offsetHeight`. Target = `collapsedHeightRef.current` (saved during open) with desktop fallback of 36px (`md:h-9`).
-3. Sets phase `'closing'`, schedules a rAF that flips the transition to `CLOSE_TRANSITION` and `style.height = targetHeight`.
-4. A separate `useEffect` keyed on phase schedules a `setTimeout(setClosingOverlayVisible(true), OVERLAY_REVEAL_DELAY_MS)` so the collapsed-text overlay slides in (translateY(-100%) → 0, opacity 0 → 1, 500ms ease-out) over the **tail** of the close window — landing at full opacity exactly at t=600ms when the height transition ends.
-5. `handleTransitionEnd` flips phase to `'collapsed'` and clears the inline height in the `useLayoutEffect` (which runs in the same paint frame as React's commit, preventing one-frame layout flashes).
+### Close path
+
+`handleClose` pins the article to its expanded height and swaps phase to `'closing'`. The `useLayoutEffect[closing]` fades the body to opacity 0 (200 ms), scrolls the collapsed band's top to viewport y=0, and plays the `CLOSE_TRANSITION` height shutter. The band overlay slides back in over the close tail (`OVERLAY_REVEAL_DELAY_MS`) so it lands fully visible exactly at t = 600 ms.
+
+### No single-expand
+
+Each `CollapsedFilmCard` owns its complete state. There is no parent orchestrator, no `closeSignal`, no cross-card event. Opening a card never touches any other card; the user collapses each one itself by clicking it.
+
+### Scroll lock during animation
+
+While `phase` is `'animating'` or `'closing'`, a `useEffect` keyed on `phase` disables *user* scrolling so a manual scroll — or an inertial fling on mobile — cannot fight the programmatic open/close scroll. `setScrollLocked(true)` gates the desktop smooth-scroll's wheel/key handlers; a `touchmove` listener (`{ passive: false }`, `preventDefault`) covers mobile native scroll. Programmatic `scrollTo` is unaffected by either. Keyed on `phase` (not a transition event), so the unlock cleanup always runs.
 
 ### Reduced motion
 
-`window.matchMedia('(prefers-reduced-motion: reduce)').matches` short-circuits both paths to instant phase flips with no animation. Overlay state still resets correctly.
-
-### Single-expand enforcement (parent `Films.jsx`)
-
-When any card calls `onWillExpand(id)`:
-
-```jsx
-const handleCollapsedWillExpand = (id) => {
-  setExpandedCollapsedId((prev) => {
-    if (prev !== null && prev !== id) {
-      // Bump the previous card's closeSignal counter — that card watches its own
-      // closeSignal prop in a useEffect and calls handleClose when the value changes.
-      setCloseSignals((sigs) => ({ ...sigs, [prev]: (sigs[prev] || 0) + 1 }));
-    }
-    return id;
-  });
-};
-```
-
-When a card's close signal arrives **mid-open** (phase `'animating'`), the close is queued via `pendingCloseRef.current = true` and fired automatically on transition-end so the card never strands in a half-open state.
-
-When a card lands in `'collapsed'` it fires `onDidCollapse(id)`. The parent clears `expandedCollapsedId` only if the closing card matches.
-
-### Centering math (sibling-delta)
-
-Without correction: when card B is clicked while card A is expanded above, `handleOpen`'s scroll target is computed against a layout where A is still expanded. After A's close completes, A has shrunk by `Δ = expandedHeight − collapsedHeight` and B's video sits Δ pixels above viewport center.
-
-With correction: the data-attribute pair `data-cfc-eh` / `data-cfc-ch` published during `handleOpen` exposes each in-flight card's heights. B's rAF queries `[data-cfc-eh]` siblings, sums Δ for those positioned above (`siblingTop < containerTop`), and subtracts from `targetScroll`. Smooth-scroll glides directly to the post-collapse centered position — no two-phase scroll, A's close animation untouched.
+`reducedMotion()` short-circuits `handleOpen` / `handleClose` to instant phase flips (open scrolls the article top to y=0 instantly; no video-centre snap-trick).
 
 ### Click areas (when expanded)
 
 | Region | Behavior |
 |---|---|
-| Video tile (FeaturedFilmCard) | Opens FilmModal — `stopPropagation` prevents the article-level close handler from firing |
-| Title (`<h3>`) | Opens FilmModal — `stopPropagation` |
-| Text column (description, metadata) | Inert — `onClick={e => e.stopPropagation()}` so reading text doesn't collapse |
-| Close indicator strip (X + Collapse label area) | Closes via `handleClose` |
-| Anywhere else on the article | Closes via the article's `onClick={handleArticleClick}` |
+| Video tile / title (FeaturedFilmCard) | Opens FilmModal — `stopPropagation` prevents the article-level close |
+| Text column (description, metadata) | Inert — `stopPropagation` |
+| Close-X indicator strip | Closes via `handleClose` |
+| Anywhere else on the article | Closes via the article's `onClick` |
 
-### Hover affordances (desktop, `(hover: hover)`)
+## Layout & Spacing — the collapsed band
 
-| Surface | Hover behavior |
-|---|---|
-| Collapsed band | The outer overlay carries `group/row`. Each of the three text elements (title, first sentence, year • category) is wrapped in its own `<span>` carrying `group-hover/row:bg-gray-900 group-hover/row:text-white` — so on hover the band shows **three separate black-on-white pills**, not a single band-wide invert. Trigger is band-wide; visual is per-element. |
-| Inner flex (collapsed) | 16px horizontal padding (`px-4`) so the chips breathe inside the band |
-| Expanded card (article) | Class `group` is added — used to gate the X icon's reveal |
-| X svg | `md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300` — invisible by default, fades in on article hover |
-| Indicator strip | Currently the strip itself is the click target with the X icon centered; the standalone "Collapse" label has been removed from the implementation |
+The collapsed band has three responsive tiers (identical to `CollapsedPhotoCard`):
 
-### Description first sentence
-
-The middle column on the collapsed band uses a regex slice: `description.match(/^[^.!?]+[.!?]/)?.[0] || description`. Falls back to the full string if no terminator exists. Replaces the prior "first 5 words + …" cut.
-
-### Symmetric padding
-
-`contentRef` carries an unconditional `pt-[52px]`. The 52px equals the close-indicator stack (`pt-2` 8 + 12px X + `pb-8` 32). Net effect: top space above the video matches the bottom space the X indicator carves out. Because the padding lives on `contentRef`, it's part of `content.scrollHeight` from the very first measurement — no end-of-animation snap.
-
-### Subpixel-leak fix on collapsed `contentRef`
-
-`contentRef` while `phase === 'collapsed'` carries `invisible` (`visibility: hidden`). The article clips at 36px, but the underlying FeaturedFilmCard's video edge sits at y=32 inside contentRef. Without `invisible`, a 1px subpixel leak under the smooth-scroll transform could expose the video edge below the band. `visibility: hidden` keeps `scrollHeight` valid for measurement while suppressing all painting under the article.
-
-## Layout & Spacing
-
-- Article: `w-full bg-white relative`. Adds `cursor-pointer md:h-9` when collapsed; `cursor-pointer group` when expanded.
-- Article overflow: `'hidden'` while non-expanded, undefined while expanded (so the article can size to `auto` content).
-- Overlay (the visible collapsed row): `relative md:absolute top-0 left-0 right-0 bg-white z-10`. Inner flex: `flex-col md:flex-row md:items-center gap-2 md:gap-6 px-4 py-2 md:py-0 md:h-9`.
-- Hover invert is on the **outer overlay** (so the entire band inverts uniformly, not just the inner text).
+- **Phones (< 768 px)** — `flex-col`, stacked, left-aligned title + metadata; description sentence `hidden`; `mb-6` gap between bands.
+- **768 px – 1350 px** — `md:flex-row` 3-zone row, `items-stretch` so the three column boxes share the tallest one's height, each `<p>` a flex container (`md:flex md:items-center`) for vertical centring. One-line row ≈36 px (`py-2` + `md:min-h-[36px]`); grows when text wraps. No per-card stagger offsets.
+- **≥ 1350 px** — same plus the per-card `cards:pl-*` / `cards:pr-*` drift offsets (the custom Tailwind `cards` screen).
 
 ## Dependencies
 
-- **02-design-system** — relies on the documented motion tokens, `cubic-bezier(0.4, 0, 0.2, 1)` shutter curve, and the strict B&W palette for the hover invert.
-- **`SmoothScrollContext`** (`src/context/SmoothScrollContext.jsx`) — `scrollTo({ ease })` and `getScrollPosition()` drive the open scroll-to-center and the sibling-delta-corrected variant.
-- **`FeaturedFilmCard`** — rendered as the expanded body. The `handleClick` (video) and the text-column wrapper both `stopPropagation` so the enclosing CollapsedFilmCard's close handler doesn't fire on internal interactions.
+- **02-design-system** — motion tokens, `cubic-bezier(0.4, 0, 0.2, 1)` shutter curve, B&W hover-invert palette.
+- **`SmoothScrollContext`** — `scrollTo({ ease, instant })` and `getScrollPosition()` drive the open/close scroll; the desktop snap-trick works around `scrollTo`'s call-time `maxScroll` clamp.
+- **`FeaturedFilmCard`** — rendered as the expanded body, unchanged. Its preview video is the element the open scroll centres.
+- **`tailwind.config.js`** — the `cards` screen (`1350px`).
 
 ## Known Issues
 

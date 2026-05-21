@@ -16,6 +16,7 @@
  */
 
 import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
+import { flushSync } from 'react-dom';
 
 import ExpandedPhotoGallery from './ExpandedPhotoGallery';
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
@@ -29,13 +30,15 @@ const GALLERY_FADE_OUT_MS  = 200;
 const OVERLAY_TRANSITION_MS = 500;
 const OVERLAY_REVEAL_DELAY_MS = Math.max(0, CLOSE_DURATION_MS - OVERLAY_TRANSITION_MS);
 
-// md:-prefixed classes so the staggered horizontal offset only kicks in
-// on desktop (where it's a stylistic rhythm). On mobile the band is
-// stacked, the offset is meaningless and just pushed text out of place.
+// Per-card horizontal drift for the collapsed row — cycled by index so
+// each band sits slightly differently. `cards:`-prefixed (≥1350 px) so
+// the stagger only appears in the fully-composed desktop layout. Between
+// 768 px and 1350 px the row is a plain 3-zone layout with no stagger;
+// on phones the band stacks.
 const COLLAPSED_VARIANTS = [
-  { titlePl: 'md:pl-6', metaPr: 'md:pr-2' },
-  { titlePl: 'md:pl-2', metaPr: 'md:pr-8' },
-  { titlePl: 'md:pl-8', metaPr: 'md:pr-4' },
+  { titlePl: 'cards:pl-6', metaPr: 'cards:pr-2' },
+  { titlePl: 'cards:pl-2', metaPr: 'cards:pr-8' },
+  { titlePl: 'cards:pl-8', metaPr: 'cards:pr-4' },
 ];
 
 function reducedMotion() {
@@ -62,8 +65,8 @@ function CollapsedPhotoCard({
   const lastCloseSignalRef = useRef(closeSignal);
   const prevPhaseRef       = useRef(phase);
 
-  const { scrollTo, getScrollPosition, isDesktop } = useSmoothScrollContext();
-  const { id, title, description, year, client, category } = project;
+  const { scrollTo, getScrollPosition, isDesktop, setScrollLocked } = useSmoothScrollContext();
+  const { id, title, description, year, category } = project;
   const variant = COLLAPSED_VARIANTS[index % COLLAPSED_VARIANTS.length];
   const firstSentence = (description.match(/^[^.!?]+[.!?]/)?.[0] || description).trim();
 
@@ -87,6 +90,25 @@ function CollapsedPhotoCard({
     const t = setTimeout(() => setClosingOverlayVisible(true), OVERLAY_REVEAL_DELAY_MS);
     return () => clearTimeout(t);
   }, [phase]);
+
+  // While this card is mid-animation, disable user scrolling so a manual
+  // scroll — or an inertial fling on mobile — cannot fight the programmatic
+  // open/close scroll. setScrollLocked gates the desktop smooth-scroll's
+  // wheel/key handlers; the touchmove blocker covers mobile native scroll.
+  // Programmatic scrollTo is unaffected by either. Keyed on `phase` (not a
+  // transition event) so the unlock is guaranteed to run.
+  useEffect(() => {
+    if (phase !== 'animating' && phase !== 'closing') return undefined;
+    setScrollLocked(true);
+    const blockTouch = (e) => {
+      if (e.cancelable) e.preventDefault();
+    };
+    window.addEventListener('touchmove', blockTouch, { passive: false });
+    return () => {
+      setScrollLocked(false);
+      window.removeEventListener('touchmove', blockTouch);
+    };
+  }, [phase, setScrollLocked]);
 
   // Settle inline styles when phase reaches a stable state.
   useLayoutEffect(() => {
@@ -318,10 +340,18 @@ function CollapsedPhotoCard({
         const sourceTop = e.detail?.sourceTop ?? myTop;
         const isAbove = myTop < sourceTop;
 
-        setPhase('collapsed');
         if (isAbove && delta > 0) {
+          // Collapse + scroll-compensate as one atomic, synchronous step.
+          // flushSync forces the collapse to commit to the DOM *now*, so
+          // the browser cannot paint a frame where the scroll has moved
+          // up but the old card is still expanded — which flickers it
+          // back into view. (The collapse only shrinks the document
+          // height; it does not change getScrollPosition()'s value.)
           const newScrollY = Math.max(0, getScrollPosition() - delta);
+          flushSync(() => setPhase('collapsed'));
           scrollTo(newScrollY, { instant: true });
+        } else {
+          setPhase('collapsed');
         }
       };
       window.addEventListener('photo-card-expand-done', handleExpandDone);
@@ -377,7 +407,7 @@ function CollapsedPhotoCard({
             ? `Collapse ${title} photo gallery`
             : undefined
       }
-      className={`w-full bg-white relative ${phase === 'collapsed' ? 'cursor-pointer md:h-9' : ''} ${phase === 'expanded' ? 'cursor-pointer group' : ''}`}
+      className={`w-full bg-white relative ${phase === 'collapsed' ? 'cursor-pointer' : ''} ${phase === 'expanded' ? 'cursor-pointer group' : ''}`}
       style={{
         // clip-path (not overflow:hidden) so the sticky gallery header
         // continues to treat the viewport as its scroll ancestor on mobile.
@@ -387,31 +417,37 @@ function CollapsedPhotoCard({
     >
       {/* Collapsed band overlay — same visual + variant padding pattern as
           CollapsedFilmCard. Three independent hover chips (group/row).
-          Mobile: relative (sizes the article naturally).
-          Desktop: absolute (article fixed at md:h-9 = 36 px). */}
+          `relative` at every width when collapsed: it sizes the article,
+          so a band whose text wraps to two lines grows to fit instead of
+          clipping into its neighbour. py-2 + md:min-h-[36px] keep a
+          one-line row at ≈36 px. */}
       {showOverlay && (
         <div
-          className={`${phase === 'collapsed' ? 'relative md:absolute group/row' : 'absolute'} top-0 left-0 right-0 bg-white z-10`}
+          className={`${phase === 'collapsed' ? 'relative group/row' : 'absolute'} top-0 left-0 right-0 bg-white z-10`}
           style={{
             transition: `transform ${OVERLAY_TRANSITION_MS}ms ease-out, opacity ${OVERLAY_TRANSITION_MS}ms ease-out`,
             transform: overlayHidden ? 'translateY(-100%)' : 'translateY(0)',
             opacity: overlayHidden ? 0 : 1,
           }}
         >
-          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 px-4 py-2 md:py-0 md:h-9">
-            <p className={`flex-1 font-header font-medium tracking-[1.8px] uppercase ${variant.titlePl}`}>
+          {/* items-stretch (default): the 3 column boxes all stretch to the
+              tallest one's height. Each <p> is itself a flex container
+              (md:flex md:items-center) so its text sits vertically centred
+              within that equal-height box. */}
+          <div className="flex flex-col md:flex-row gap-2 md:gap-6 px-4 py-2 md:min-h-[36px]">
+            <p className={`flex-1 md:flex md:items-center font-header font-medium tracking-[1.8px] uppercase ${variant.titlePl}`}>
               <span className="inline-block px-2 py-0.5 text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 {title}
               </span>
             </p>
-            <p className="font-body tracking-[0.6px] shrink-0 hidden md:block">
+            <p className="font-body tracking-[0.6px] hidden md:flex md:items-center">
               <span className="inline-block px-2 py-0.5 text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 {firstSentence}
               </span>
             </p>
-            <p className={`flex-1 font-header font-medium tracking-[1.5px] md:text-right uppercase whitespace-pre-wrap ${variant.metaPr}`}>
+            <p className={`flex-1 md:flex md:items-center md:justify-end font-header font-medium tracking-[1.5px] md:text-right uppercase whitespace-pre-wrap ${variant.metaPr}`}>
               <span className="inline-block px-2 py-0.5 text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
-                {year}  •  {client}  •  {category}
+                {year}  •  {category}
               </span>
             </p>
           </div>

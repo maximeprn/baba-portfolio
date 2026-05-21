@@ -13,6 +13,7 @@ source_files:
   - src/pages/Photos.jsx
   - src/sanity/loader.js  # photoProjects + getNonFeaturedProjects (CMS-backed; see doc 09)
   - src/data/photoProjects.js  # legacy fallback only
+  - tailwind.config.js  # the `cards` (1350px) breakpoint
 routes:
   - /photos
 models: []
@@ -20,20 +21,23 @@ test_files:
   - tests/e2e/featured-photo-cards.spec.js
 known_issues:
   - "Single-expand orchestration is shared with FeaturedPhotoCard via Photos.jsx (one expandedProjectId / closeSignals map). A click on either type collapses whichever card is currently expanded — including across types."
+  - "Open/close scroll positioning inherits SmoothScrollContext's ease residual: a card that travels a long distance may settle a few px shy of viewport y=0."
 ---
 
 # 06 — Collapsed Photo Cards: Other Projects single-row → gallery shutter
 
 ## Purpose
 
-The `Other Projects` section on `/photos` lists non-featured projects (`featured: false`) as compact single-row bands — exactly like `Other Projects` on the Films page. Clicking a band runs a 1200 ms shutter open into the **same** `ExpandedPhotoGallery` component used by `FeaturedPhotoCard` (sticky pinned header on mobile, JS pin on desktop, masonry grid, click-photo-to-Lightbox, click-X-or-header-to-close). A single global single-expand pool covers both card types: opening any card collapses whichever was previously open.
+The `Other Projects` section on `/photos` lists non-featured projects (`featured: false`) as compact single-row bands — the same collapsed-band layout as `Other Projects` on the Films page. Clicking a band runs a 1200 ms shutter open into the **same** `ExpandedPhotoGallery` used by `FeaturedPhotoCard` (sticky pinned header on mobile, JS pin on desktop, masonry grid, click-photo-to-Lightbox, click-X-or-header-to-close).
+
+`CollapsedPhotoCard` is **the reference implementation for the collapsed-band pattern** — `CollapsedFilmCard` (doc 03) borrows its open/close technique and shares the shutter timing and the `cards` (1350 px) destructure breakpoint. Two behaviours are **photos-only**, though: the coordinated single-expand handoff described below (film cards are independent — opening one never collapses another) and the gallery-top scroll target (films centre their preview video in the viewport instead).
 
 ## Architecture
 
 ```
 Photos.jsx
-  ├─ getFeaturedProjects()    → FeaturedPhotoCard list (existing)
-  ├─ getNonFeaturedProjects() → CollapsedPhotoCard list (new)
+  ├─ getFeaturedProjects()    → FeaturedPhotoCard list
+  ├─ getNonFeaturedProjects() → CollapsedPhotoCard list
   ├─ state: expandedProjectId            ← shared across both card types
   ├─ state: closeSignals { id: count }   ← bumping a card's count auto-closes it
   ├─ handleWillExpand(id) / handleDidCollapse(id)  ← shared orchestrator
@@ -41,39 +45,36 @@ Photos.jsx
 
 CollapsedPhotoCard.jsx (per-instance shutter state machine)
   phase: 'collapsed' → 'animating' → 'expanded' → 'closing' → 'collapsed'
-  ├─ handleOpen           ← anchors viewport y, flushSync-collapses any sibling,
-  │                         pins height, swaps phase to 'animating'
-  ├─ useLayoutEffect[animating] ← reads scrollHeight, smooth-scrolls article top
-  │                         to viewport y=0, plays the height transition
-  ├─ handleClose          ← pins height, fades gallery, swaps phase to 'closing'
-  ├─ useLayoutEffect[closing]   ← gallery opacity 1→0 over 200 ms; height shutter 600 ms
-  ├─ useLayoutEffect[closeSignal] ← INSTANT collapse when parent bumps signal
-  └─ handleTransitionEnd  ← terminal flip; drains pendingCloseRef if a close was queued
+  ├─ handleOpen               ← pins height, swaps phase to 'animating'
+  ├─ useLayoutEffect[animating] ← reads scrollHeight, scrolls band top to y=0, plays open shutter
+  ├─ handleClose              ← pins height, swaps phase to 'closing'
+  ├─ useLayoutEffect[closing]   ← gallery opacity 1→0 (200 ms); height shutter (600 ms)
+  ├─ useLayoutEffect[closeSignal] ← coordinated auto-close (see Single-expand below)
+  └─ handleTransitionEnd      ← terminal flip; dispatches 'photo-card-expand-done'
 
-ExpandedPhotoGallery.jsx (reused — no changes for this feature beyond the
-                          header click-to-close behavior shared with FeaturedPhotoCard)
+ExpandedPhotoGallery.jsx (reused as-is — sticky/JS-pin header, masonry, close-X)
 ```
 
-`CollapsedPhotoCard` does **not** copy or re-implement the gallery surface — it renders `<ExpandedPhotoGallery>` once `phase !== 'collapsed'`. Sticky-on-mobile / JS-pin-on-desktop behaves identically; the close-X strip and pinned-header-to-close affordance are inherited.
+`CollapsedPhotoCard` does **not** re-implement the gallery — it renders `<ExpandedPhotoGallery>` once `phase !== 'collapsed'`.
 
 ## Data Model
 
-Driven by the existing `src/data/photoProjects.js`. The new helper:
+Driven by `getNonFeaturedProjects()` (CMS-backed via `loader.js`, fallback `photoProjects.js`):
 
 ```js
 export const getNonFeaturedProjects = () => photoProjects.filter((p) => !p.featured);
 ```
 
-Each non-featured project ships with the same fields as featured — `title`, `description`, `year`, `client`, `category`, `photos[]`. `preview` is unused for collapsed cards (no FLIP morph; the band has no images), so projects flagged `featured: false` may carry a stale `preview` block — it's just ignored.
+Non-featured projects ship the same fields as featured — `title`, `description`, `year`, `client`, `category`, `photos[]`. The collapsed band shows only `title`, the first sentence of `description`, and `year • category` (the `client` is shown in the expanded gallery header, so it is omitted from the band as redundant).
 
 ## State Machine
 
 | Phase | Band visible? | Gallery visible? | DOM state |
 |---|---|---|---|
-| `'collapsed'` | yes (in flow on mobile, absolute on desktop) | no | Article `md:h-9` (36 px desktop), `clip-path: inset(0)`. Click → `handleOpen`. |
-| `'animating'` | yes (sliding up) | yes (in flow) | Article inline `style.height` transitioning collapsed → target with `OPEN_TRANSITION` (1200 ms `cubic-bezier(0.4, 0, 0.2, 1)`). Band overlay `translateY(0 → -100%)` + `opacity 1 → 0` over 500 ms ease-out. |
-| `'expanded'` | no | yes (in flow) | `style.height: auto`, `clip-path: none`. Article carries `group` for the X icon's hover-reveal. Click on the article whitespace, the pinned header, or the X strip → `handleClose`. |
-| `'closing'` | yes (sliding back in over the tail) | yes (fading) | Article transitions expanded → collapsed (600 ms). Gallery `opacity 1 → 0` (200 ms). Band overlay slides `translateY(-100% → 0)` + `opacity 0 → 1` over the **last 500 ms** so it lands fully visible exactly at t = 600 ms. |
+| `'collapsed'` | yes | no | Article height is driven by its in-flow `relative` overlay — a one-line row is ≈36 px (`py-2` + `md:min-h-[36px]`) and grows when text wraps. `clip-path: inset(0)`. Click → `handleOpen` |
+| `'animating'` | yes (sliding up) | yes (in flow) | Article inline `style.height` transitioning collapsed → target with `OPEN_TRANSITION` (1200 ms). Band overlay `translateY(0 → -100%)` + `opacity 1 → 0` over 500 ms |
+| `'expanded'` | no | yes (in flow) | `style.height: auto`, `clip-path: none`. Article carries `group` for the X hover-reveal. Click on article whitespace / pinned header / X → `handleClose` |
+| `'closing'` | yes (sliding back in over the tail) | yes (fading) | Article transitions expanded → collapsed (600 ms). Gallery `opacity 1 → 0` (200 ms). Band overlay slides back in over the **last 500 ms** |
 
 ## Animation Constants (`CollapsedPhotoCard.jsx` top of file)
 
@@ -81,115 +82,70 @@ Each non-featured project ships with the same fields as featured — `title`, `d
 const OPEN_DURATION_MS  = 1200;
 const CLOSE_DURATION_MS = 600;   // 2× faster than open — snappy dismissal.
 const EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
-const GALLERY_FADE_OUT_MS    = 200;
-const OVERLAY_TRANSITION_MS  = 500;
-const OVERLAY_REVEAL_DELAY_MS = Math.max(0, CLOSE_DURATION_MS - OVERLAY_TRANSITION_MS); // 100
+const GALLERY_FADE_OUT_MS     = 200;
+const OVERLAY_TRANSITION_MS    = 500;
+const OVERLAY_REVEAL_DELAY_MS  = Math.max(0, CLOSE_DURATION_MS - OVERLAY_TRANSITION_MS); // 100
 ```
 
 These match `CollapsedFilmCard` and `FeaturedPhotoCard` so films and photos read as one motion language.
 
-## Anchored Open
+## Open / Close Path
 
-Identical to FeaturedPhotoCard's anchored-open pattern (see doc 05). On click:
+**Open** — `handleOpen` pins the article to its collapsed height and swaps phase to `'animating'`. The `useLayoutEffect[animating]` runs after commit (gallery now in flow): reads `article.scrollHeight` for the target, computes `targetScroll = band top → viewport y=0`, calls `scrollTo`, then plays the height transition. Desktop runs the scroll + transition concurrently; mobile serializes (await scroll-end, then transition) because native smooth-scroll race-conditions with the growing document.
 
-1. Snapshot `articleTopPre = article.getBoundingClientRect().top` and `scrollPre = getScrollPosition()`.
-2. `flushSync(() => onWillExpand?.(id))` — forces any currently-expanded sibling (Featured **or** Collapsed) to collapse fully + clean up inline styles synchronously, before paint.
-3. Re-anchor: jump-scroll instantly by `articleTopPre − articleTopPost` so the article is back at the click position.
-4. Pin the article height, `setPhase('animating')`.
-5. The `useLayoutEffect[animating]` reads `scrollHeight` and smooth-scrolls so the article's **center** lands at viewport center, then plays the height transition.
+**Close** — `handleClose` pins the article to its expanded height and swaps phase to `'closing'`. The `useLayoutEffect[closing]` fades the gallery to opacity 0 (200 ms), scrolls the band top to `y=0`, and plays the `CLOSE_TRANSITION` height shutter. The band overlay slides in over the close tail.
 
-Because the sibling close happens inside `flushSync`, the new card's `articleTopPost` reflects the post-collapse layout — no separate sibling-delta correction needed.
+`clip-path: inset(0)` (not `overflow: hidden`) is applied while `phase !== 'expanded'` — it preserves the gallery header's `position: sticky` scroll ancestor (the viewport) on mobile. Same trade-off as `FeaturedPhotoCard`.
 
-### Viewport centering + the snap-trick
+**Scroll lock during animation.** While `phase` is `'animating'` or `'closing'`, a `useEffect` keyed on `phase` disables *user* scrolling so a manual scroll — or an inertial fling on mobile — cannot fight the programmatic open/close scroll (and cannot land mid-handoff). `setScrollLocked(true)` gates the desktop smooth-scroll's wheel/key handlers; a `touchmove` listener (`{ passive: false }`, `preventDefault`) covers mobile native scroll. Programmatic `scrollTo` is unaffected by either. Because the lock is keyed on `phase` (not a transition event), the unlock cleanup is guaranteed to run.
 
-Mirrors `CollapsedFilmCard.handleOpen`'s video-centering. The films formula centers the `<video>` tile; the photo analogue centers the entire expanded article (header + masonry + close strip).
+## Single-Expand — the coordinated handoff
 
-The naïve sequence — pin to collapsed, call `scrollTo(centered)`, then start the height transition — **silently fails** when the card sits low in the document (which Other Projects always does — past the hero + featured cards). At the moment `scrollTo` runs, the document is still doc-with-article-at-collapsedHeight (e.g., 36 px). `SmoothScrollContext.scrollTo` and native `window.scrollTo` both clamp to `Math.min(position, content.scrollHeight − innerHeight)` — and that clamp chops the centered target back down to the current `maxScroll`, which often equals "article top at viewport `y=0`". The visible result: same as before.
+`Photos.jsx` exposes one `expandedProjectId` + `closeSignals` map to **both** `FeaturedPhotoCard` and `CollapsedPhotoCard`. When card **B** opens while card **A** is expanded:
 
-The fix is the snap-trick from `CollapsedFilmCard.handleOpen`: temporarily set the article to `targetHeight` so the document grows to its post-expand size, call `scrollTo` (now the un-chopped target survives the clamp), then snap back to `collapsedHeight` and start the height transition — all inside a single `requestAnimationFrame` so the browser paints only the smooth interpolation, not the snap.
+1. B's `handleOpen` calls `onWillExpand(B.id)`; `Photos.jsx` bumps A's `closeSignal`. A is **not** collapsed yet — the collapse is deferred to step 5.
+2. A's `useLayoutEffect[closeSignal]` sees `phase === 'expanded'` and **does not collapse**. It registers a one-shot `photo-card-expand-done` window-event listener and stays fully expanded.
+3. B runs its normal open, scrolling its own top to `y=0` and pushing A off-screen above the viewport.
+4. When B's open transition ends, `handleTransitionEnd` dispatches `photo-card-expand-done` with `{ sourceTop }`.
+5. A's listener (`handleExpandDone`) fires: A collapses **instantly** (no animation). When A sits above the source it must also scroll `scrollY` up by its `(expanded − collapsed)` delta to keep B anchored — and the collapse and that scroll **must land in the same paint**, or the still-expanded A flickers back into view (the scroll moves up before the DOM has shrunk). So the collapse is committed with `flushSync(() => setPhase('collapsed'))` and the `scrollTo(scrollY − delta, { instant: true })` runs immediately after, both before the handler returns — one atomic frame. A is off-screen, so the collapse is invisible.
 
-```js
-const collapsedHeight = collapsedHeightRef.current;
-article.style.height = `${collapsedHeight}px`;
-const targetHeight = article.scrollHeight; // captured pre-rAF, doc still small
+`closeSignal` arriving mid-animation collapses the card instantly with no waiting. All card types listen for `closeSignal` in `useLayoutEffect` and settle inline styles in `useLayoutEffect[collapsed]`.
 
-requestAnimationFrame(() => {
-  // Step 1 — grow the doc so the centered target survives the clamp
-  article.style.transition = 'none';
-  article.style.height = `${targetHeight}px`;
-  article.getBoundingClientRect();
+## Reduced Motion
 
-  // Step 2 — compute centering target with the doc post-expand
-  const articleAbsoluteTop = article.getBoundingClientRect().top + getScrollPosition();
-  const targetScroll = Math.max(
-    0,
-    articleAbsoluteTop - (window.innerHeight / 2) + (targetHeight / 2),
-  );
-  scrollTo(targetScroll, { ease: 0.05 });
+`reducedMotion()` (`prefers-reduced-motion: reduce`) short-circuits `handleOpen` / `handleClose` to instant phase flips. The global `index.css` rule already kills CSS transitions site-wide; the JS path mirrors that.
 
-  // Step 3 — snap back, then start the height transition
-  article.style.height = `${collapsedHeight}px`;
-  article.getBoundingClientRect();
-  article.style.transition = OPEN_TRANSITION;
-  article.style.height = `${targetHeight}px`;
-});
-```
+## Layout & Spacing — three responsive tiers
 
-For galleries shorter than the viewport, the article is visually centered. For taller galleries, the article center lands at viewport center — meaning the article top sits above the viewport, the sticky pinned header (see doc 05) renders at viewport top, and the masonry runs around viewport center. `scrollTo`'s lower clamp (`Math.max(0, ...)`) still applies, so a card high enough in the document just glides to `y=0`.
+The collapsed band has three layouts (identical to `CollapsedFilmCard`):
 
-## Close Path
+- **Phones (< 768 px).** `flex-col`, stacked, left-aligned title + metadata; description sentence `hidden`. Overlay is `relative` and sizes the article. `mb-6` gap between bands (the `Photos.jsx` wrapper).
+- **768 px – 1350 px — plain 3-zone row.** `md:flex-row` with the default `items-stretch`: the three column boxes (`<p>`s) all stretch to the **tallest** one's height. Each `<p>` is itself a flex container (`md:flex md:items-center`) so its text sits **vertically centred** within that equal-height box. Title pinned left (`flex-1`), description sentence in the middle (default `flex 0 1 auto` — it shrinks and wraps when the row is cramped, so the metadata is never pushed off-screen), metadata pinned right (`flex-1 md:justify-end md:text-right`). One-line row ≈36 px (`py-2` + `md:min-h-[36px]`); a band whose text wraps grows to fit (the `relative` overlay sizes the article) instead of clipping into its neighbour. No per-card stagger offsets. `mb-0` rhythm.
+- **≥ 1350 px — composed 3-zone row.** Same plus the per-card `cards:pl-*` / `cards:pr-*` drift offsets (the custom Tailwind `cards` screen = `1350px`).
 
-`clip-path: inset(0)` (not `overflow: hidden`) is applied via the React `style` prop while `phase !== 'expanded'`. This preserves the gallery header's `position: sticky` scroll ancestor (the viewport) on mobile — `overflow: hidden` on the article would re-anchor sticky to the article and cause the header to pop out of the viewport the instant close starts. Same trade-off documented in `FeaturedPhotoCard`.
+`1350px` is the complement of the photo-thumbnail `mobileBreakpoint: 1349` in `photoProjects.js` — band and thumbnail gain their composed treatment at the same width.
 
 ## Click Areas
 
 | Region | Phase | Behavior |
 |---|---|---|
-| Band overlay (any text) | `collapsed` | bubbles to article → `handleOpen` |
-| Article whitespace | `expanded` | bubbles to article → `handleClose` |
-| Pinned gallery header (title / meta / description) | `expanded` | bubbles to article → `handleClose` |
+| Band overlay | `collapsed` | bubbles to article → `handleOpen` |
+| Article whitespace / pinned gallery header | `expanded` | bubbles to article → `handleClose` |
 | Gallery `<img>` | `expanded` | `stopPropagation` + `onPhotoClick(project, idx)` → Lightbox |
-| Close-X strip | `expanded` | `handleClose` (its own onClick + `stopPropagation`) |
-
-The pinned-header-to-close affordance is shared with `FeaturedPhotoCard` and is implemented in `ExpandedPhotoGallery` itself: the `<header>` no longer carries `onClick={(e) => e.stopPropagation()}`, so its click bubbles up. The `cursor-pointer` class on the header advertises this affordance.
-
-## Single-Expand Across Card Types
-
-`Photos.jsx` exposes a single `expandedProjectId` + `closeSignals` map to **both** `FeaturedPhotoCard` and `CollapsedPhotoCard`. Card IDs are unique across the project list, so `closeSignals[id]` increments unambiguously.
-
-For `flushSync` to work across types, both card types listen for `closeSignal` in **`useLayoutEffect`** (not `useEffect`) and collapse instantly to `phase: 'collapsed'`:
-
-- `FeaturedPhotoCard`: existing — clears morph transforms / cell opacities / inline styles in `useLayoutEffect[collapsed]`.
-- `CollapsedPhotoCard`: new — clears inline `height` / `transition` in `useLayoutEffect[collapsed]`.
-
-`flushSync` flushes layout effects synchronously, so by the time `flushSync(() => onWillExpand(id))` returns, the previous card has fully collapsed.
-
-## Reduced Motion
-
-`window.matchMedia('(prefers-reduced-motion: reduce)').matches` short-circuits both `handleOpen` and `handleClose` to instant phase flips. The global CSS rule in `index.css` already kills CSS transitions site-wide; the JS path mirrors that.
+| Close-X strip | `expanded` | `handleClose` |
 
 ## Constraints / Reuse
 
-- **Easing parity:** `cubic-bezier(0.4, 0, 0.2, 1)`, 1200 / 600 split.
-- **`SmoothScrollContext`:** `scrollTo` (with `instant: true` for the re-anchor jump and `ease: 0.05` for the smooth open) + `getScrollPosition`.
-- **`ExpandedPhotoGallery`:** reused as-is. Sticky-on-mobile / JS-pin-on-desktop, masonry, close X, Lightbox wiring.
+- **Easing parity:** `cubic-bezier(0.4, 0, 0.2, 1)`, 1200 / 600 split — shared with `CollapsedFilmCard` and `FeaturedPhotoCard`.
+- **`SmoothScrollContext`:** `scrollTo` (`{ ease }` for the open, `{ instant }` for the handoff compensation) + `getScrollPosition`.
+- **`ExpandedPhotoGallery`:** reused as-is.
 - **`TitleSection`:** the same component the Films page uses for `Other Projects`.
 
 ## Verification
 
-Visual (manual):
+Visual (manual): `npm run dev`, `/photos` → scroll to `Other Projects`. Open a band; open a second band (first collapses invisibly off-screen, second opens); close via the pinned header. Resize across 1350 px — the band switches between the stacked and row layouts. DevTools → emulate `prefers-reduced-motion` → cards open instantly.
 
-1. `npm run dev`, open `/photos`. Scroll past featured projects to `Other Projects`.
-2. Click any collapsed band. Band slides up, height shutter to gallery height, scroll lands the article top at viewport top, gallery header pinned.
-3. Click the pinned header title. Gallery fades, height shutters back, band slides in.
-4. With one card expanded, click another collapsed band. The first instantly collapses (no fade/shutter) so the new card's anchor is correct; the new card opens normally.
-5. With a featured card expanded, click a collapsed band — and vice versa. Same single-expand behavior across types.
-6. DevTools mobile emulation — same flows. Sticky header stays still while scrolling inside the expanded gallery.
-7. DevTools → Rendering → emulate `prefers-reduced-motion: reduce`. Cards open instantly, no transitions.
-
-Automated:
-
-- `npx playwright test --project=chromium` — `homepage.spec.js` and `featured-photo-cards.spec.js` must stay green. Both depend on `dispatchEvent('click')` because the desktop smooth-scroll defeats Playwright's native actionability check on `/photos`.
+Automated: `npx playwright test --project=chromium` — `featured-photo-cards.spec.js` (photos) and `collapsed-film-cards.spec.js` (the Films-page bands) must stay green.
 
 ## Known Issues
 

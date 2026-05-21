@@ -12,6 +12,7 @@
  */
 
 import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
+import { flushSync } from 'react-dom';
 
 import PhotoCardPreview from './PhotoCardPreview';
 import ExpandedPhotoGallery from './ExpandedPhotoGallery';
@@ -56,7 +57,7 @@ function FeaturedPhotoCard({
   const firstRectsRef      = useRef(new Map()); // photoIdx → DOMRect
   const prevPhaseRef       = useRef(phase);
 
-  const { scrollTo, getScrollPosition, isDesktop } = useSmoothScrollContext();
+  const { scrollTo, getScrollPosition, isDesktop, setScrollLocked } = useSmoothScrollContext();
   const { id, title, description, year, client, category } = project;
   // Alternate by row: even rows → image left, odd rows → image right.
   const isImageLeft = index % 2 === 0;
@@ -79,6 +80,25 @@ function FeaturedPhotoCard({
     const t = setTimeout(() => setOverlayVisible(true), OVERLAY_REVEAL_DELAY_MS);
     return () => clearTimeout(t);
   }, [phase]);
+
+  // While this card is mid-animation, disable user scrolling so a manual
+  // scroll — or an inertial fling on mobile — cannot fight the programmatic
+  // open/close scroll. setScrollLocked gates the desktop smooth-scroll's
+  // wheel/key handlers; the touchmove blocker covers mobile native scroll.
+  // Programmatic scrollTo is unaffected by either. Keyed on `phase` (not a
+  // transition event) so the unlock is guaranteed to run.
+  useEffect(() => {
+    if (phase !== 'animating-open' && phase !== 'animating-close') return undefined;
+    setScrollLocked(true);
+    const blockTouch = (e) => {
+      if (e.cancelable) e.preventDefault();
+    };
+    window.addEventListener('touchmove', blockTouch, { passive: false });
+    return () => {
+      setScrollLocked(false);
+      window.removeEventListener('touchmove', blockTouch);
+    };
+  }, [phase, setScrollLocked]);
 
   // Settle inline styles when phase reaches a stable state.
   useLayoutEffect(() => {
@@ -385,10 +405,18 @@ function FeaturedPhotoCard({
         const sourceTop = e.detail?.sourceTop ?? myTop;
         const isAbove = myTop < sourceTop;
 
-        setPhase('collapsed');
         if (isAbove && delta > 0) {
+          // Collapse + scroll-compensate as one atomic, synchronous step.
+          // flushSync forces the collapse to commit to the DOM *now*, so
+          // the browser cannot paint a frame where the scroll has moved
+          // up but the old card is still expanded — which flickers it
+          // back into view. (The collapse only shrinks the document
+          // height; it does not change getScrollPosition()'s value.)
           const newScrollY = Math.max(0, getScrollPosition() - delta);
+          flushSync(() => setPhase('collapsed'));
           scrollTo(newScrollY, { instant: true });
+        } else {
+          setPhase('collapsed');
         }
       };
       window.addEventListener('photo-card-expand-done', handleExpandDone);

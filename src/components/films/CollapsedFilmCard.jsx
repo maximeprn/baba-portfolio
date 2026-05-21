@@ -21,6 +21,7 @@ import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react
 
 import FeaturedFilmCard from './FeaturedFilmCard';
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
+import CardSubtitle from '../ui/CardSubtitle';
 
 const OPEN_DURATION_MS  = 1200;
 const CLOSE_DURATION_MS = 600; // 2× faster than open — snappy dismissal.
@@ -378,7 +379,7 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
             </p>
             <p className={`flex-1 md:flex md:items-center md:justify-end font-header font-medium tracking-[1.5px] md:text-right uppercase whitespace-pre-wrap ${collapsedVariant.metaPr}`}>
               <span className="inline-block px-2 py-0.5 text-[10.5px] md:text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
-                {year}  •  {category}
+                <CardSubtitle parts={[year, category]} separator="  •  " />
               </span>
             </p>
           </div>

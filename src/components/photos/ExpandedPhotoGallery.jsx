@@ -30,6 +30,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
+import CardSubtitle from '../ui/CardSubtitle';
 
 const RELEASE_MARGIN_PX = 24;
 const DESKTOP_MEDIA_QUERY = '(min-width: 1024px)';
@@ -132,11 +133,10 @@ function ExpandedPhotoGallery({ project, pinHeader, onPhotoClick, onClose }) {
           {title}
         </h3>
         <div className="mt-2 font-header text-xs tracking-widest text-primary uppercase">
-          {year}
-          <span className="mx-3">•</span>
-          {client}
-          <span className="mx-3">•</span>
-          {category}
+          <CardSubtitle
+            parts={[year, client, category]}
+            separator={<span className="mx-3">•</span>}
+          />
         </div>
         {description && (
           <p className="mt-4 max-w-prose font-header text-[12.5px] md:text-xs tracking-[0.08em] leading-6 text-primary">

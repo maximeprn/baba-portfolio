@@ -8,6 +8,7 @@ import Hls from 'hls.js';
 
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
 import { siteSettings } from '../../sanity/loader';
+import CardSubtitle from '../ui/CardSubtitle';
 
 // Per-element padding + margin-bottom variants. Cycled by index for a
 // "slightly random but intentional" feel. Desktop-only — see ffc-* rules
@@ -279,13 +280,13 @@ function FeaturedFilmCard({ film, index = 0, onFilmClick, shouldLoad = true, onV
             </h3>
           </header>
 
-          {/* METADATA */}
+          {/* METADATA — empty CMS fields are dropped; dots sit only between
+              the fields that are filled. */}
           <div className="ffc-subtitle font-header text-xs tracking-widest text-primary uppercase">
-            {year}
-            <span className="mx-3">•</span>
-            {client}
-            <span className="mx-3">•</span>
-            {category}
+            <CardSubtitle
+              parts={[year, client, category]}
+              separator={<span className="mx-3">•</span>}
+            />
           </div>
 
           {/* DESCRIPTION */}

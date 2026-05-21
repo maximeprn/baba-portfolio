@@ -18,6 +18,7 @@ import PhotoCardPreview from './PhotoCardPreview';
 import ExpandedPhotoGallery from './ExpandedPhotoGallery';
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
 import { siteSettings } from '../../sanity/loader';
+import CardSubtitle from '../ui/CardSubtitle';
 
 const OPEN_DURATION_MS  = 1200;
 const CLOSE_DURATION_MS = 600;
@@ -570,11 +571,10 @@ function FeaturedPhotoCard({
                 </span>
               </h3>
               <div className="mt-3 font-header text-xs tracking-widest text-primary uppercase">
-                {year}
-                <span className="mx-3">•</span>
-                {client}
-                <span className="mx-3">•</span>
-                {category}
+                <CardSubtitle
+                  parts={[year, client, category]}
+                  separator={<span className="mx-3">•</span>}
+                />
               </div>
               {description && (
                 <p className="mt-4 font-header text-[12.5px] md:text-xs tracking-[0.08em] leading-6 text-primary">

@@ -20,6 +20,7 @@ import { flushSync } from 'react-dom';
 
 import ExpandedPhotoGallery from './ExpandedPhotoGallery';
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
+import CardSubtitle from '../ui/CardSubtitle';
 
 const OPEN_DURATION_MS  = 1200;
 const CLOSE_DURATION_MS = 600;
@@ -447,7 +448,7 @@ function CollapsedPhotoCard({
             </p>
             <p className={`flex-1 md:flex md:items-center md:justify-end font-header font-medium tracking-[1.5px] md:text-right uppercase whitespace-pre-wrap ${variant.metaPr}`}>
               <span className="inline-block px-2 py-0.5 text-[10.5px] md:text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
-                {year}  •  {category}
+                <CardSubtitle parts={[year, category]} separator="  •  " />
               </span>
             </p>
           </div>

@@ -117,9 +117,11 @@ function Films() {
         ))}
 
         {/* OTHER PROJECTS */}
-        <div className="h-32" aria-hidden="true" />
+        <div className="h-24" aria-hidden="true" />
         <TitleSection title="Other Projects" />
 
+        {/* 1rem gap below the Other Projects title */}
+        <div className="h-4" aria-hidden="true" />
         {/* Phone shows the collapsed bands two-up; tablet/desktop keep the
             single-column tight list. Row gap = the phone-tuned 12px; from
             md the list is a tight 36px-row rhythm (gap-0). An expanded band

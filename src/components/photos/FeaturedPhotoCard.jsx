@@ -558,8 +558,13 @@ function FeaturedPhotoCard({
               <h3
                 className={`font-header text-lg md:text-2xl font-medium tracking-widest uppercase leading-tight ${titleH3Class}`}
               >
+                {/* px-2 -mx-2: the hover chip keeps its 0.5rem padding, but
+                    the negative margin cancels it for layout — the title text
+                    stays aligned with the meta / description / thumbnail
+                    while the chip background bleeds over the margin. Desktop
+                    keeps the chip inset (mx-0). */}
                 <span
-                  className={`px-2 py-0.5 box-decoration-clone transition-colors duration-150 ${titleSpanClass}`}
+                  className={`px-2 -mx-2 md:mx-0 py-0.5 box-decoration-clone transition-colors duration-150 ${titleSpanClass}`}
                 >
                   {title}
                 </span>

@@ -154,8 +154,10 @@ function Photos() {
             Spec: .mdd/docs/06-collapsed-photo-cards.md */}
         {otherProjects.length > 0 && (
           <>
-            <div className="h-32" aria-hidden="true" />
+            <div className="h-24" aria-hidden="true" />
             <TitleSection title="Other Projects" />
+            {/* 1rem gap below the Other Projects title */}
+            <div className="h-4" aria-hidden="true" />
             {/* Phone shows the collapsed bands two-up; tablet/desktop keep
                 the single-column tight list. An expanded band breaks out to
                 full width via col-span-2 on its <article>. */}

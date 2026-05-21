@@ -34,17 +34,6 @@ const OVERLAY_TRANSITION_MS   = 500;
 // close height transition ends.
 const OVERLAY_REVEAL_DELAY_MS = Math.max(0, CLOSE_DURATION_MS - OVERLAY_TRANSITION_MS);
 
-// Per-card horizontal drift for the collapsed row — cycled by index so
-// each band sits slightly differently. `cards:`-prefixed (≥1350 px) so
-// the stagger only appears in the fully-composed desktop layout. Between
-// 768 px and 1350 px the row is a plain 3-zone layout with no stagger;
-// on phones the band stacks.
-const COLLAPSED_VARIANTS = [
-  { titlePl: 'cards:pl-6', metaPr: 'cards:pr-2' },
-  { titlePl: 'cards:pl-2', metaPr: 'cards:pr-8' },
-  { titlePl: 'cards:pl-8', metaPr: 'cards:pr-4' },
-];
-
 function reducedMotion() {
   return typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -61,7 +50,6 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
 
   const { scrollTo, getScrollPosition, isDesktop, setScrollLocked } = useSmoothScrollContext();
   const { title, description, year, category } = film;
-  const collapsedVariant = COLLAPSED_VARIANTS[index % COLLAPSED_VARIANTS.length];
 
   // First sentence of the description (matches up to and including the first . ! or ?)
   const firstSentence = (description.match(/^[^.!?]+[.!?]/)?.[0] || description).trim();
@@ -367,7 +355,7 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
               (md:flex md:items-center) so its text sits vertically centred
               within that equal-height box. */}
           <div className="flex flex-col md:flex-row gap-[3px] md:gap-6 px-4 py-2 md:min-h-[36px]">
-            <p className={`flex-1 md:flex md:items-center font-header font-semibold md:font-medium tracking-[1.8px] uppercase ${collapsedVariant.titlePl}`}>
+            <p className="flex-1 md:flex md:items-center font-header font-semibold md:font-medium tracking-[1.8px] uppercase">
               <span className="inline-block px-2 py-0.5 text-[13.5px] md:text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 {title}
               </span>
@@ -377,7 +365,7 @@ function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
                 {firstSentence}
               </span>
             </p>
-            <p className={`flex-1 md:flex md:items-center md:justify-end font-header font-medium tracking-[1.5px] md:text-right uppercase whitespace-pre-wrap ${collapsedVariant.metaPr}`}>
+            <p className="flex-1 md:flex md:items-center md:justify-end font-header font-medium tracking-[1.5px] md:text-right uppercase whitespace-pre-wrap">
               <span className="inline-block px-2 py-0.5 text-[10.5px] md:text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 <CardSubtitle parts={[year, category]} separator="  •  " />
               </span>

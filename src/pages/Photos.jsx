@@ -162,11 +162,10 @@ function Photos() {
                 the single-column tight list. An expanded band breaks out to
                 full width via col-span-2 on its <article>. */}
             <div className="grid w-full grid-cols-2 md:grid-cols-1 gap-x-2 gap-y-[12px] md:gap-0">
-              {otherProjects.map((project, idx) => (
+              {otherProjects.map((project) => (
                 <CollapsedPhotoCard
                   key={project.id}
                   project={project}
-                  index={idx}
                   onPhotoClick={handlePhotoClick}
                   onWillExpand={handleWillExpand}
                   onDidCollapse={handleDidCollapse}

@@ -29,25 +29,9 @@ function Films() {
   const [showShowreel, setShowShowreel] = useState(false);
   const [selectedFilm, setSelectedFilm] = useState(null);
 
-  // Single-expanded enforcement for collapsed cards.
-  // _expandedCollapsedId: id of the expanded card. Read only via the functional
-  //   setState updater below, so the bound value itself is intentionally unused.
-  // closeSignals: per-card counter; incrementing it tells that card to auto-close.
-  const [_expandedCollapsedId, setExpandedCollapsedId] = useState(null);
-  const [closeSignals, setCloseSignals] = useState({});
-
-  const handleCollapsedWillExpand = useCallback((id) => {
-    setExpandedCollapsedId((prev) => {
-      if (prev !== null && prev !== id) {
-        setCloseSignals((sigs) => ({ ...sigs, [prev]: (sigs[prev] || 0) + 1 }));
-      }
-      return id;
-    });
-  }, []);
-
-  const handleCollapsedDidCollapse = useCallback((id) => {
-    setExpandedCollapsedId((prev) => (prev === id ? null : prev));
-  }, []);
+  // Collapsed "Other Projects" film cards are independent — no
+  // single-expand. Opening one does not collapse the others; each card
+  // owns its own state and the user collapses it itself.
 
   // Cascading video load: hero → featured → collapsed
   const [loadPhase, setLoadPhase] = useState('hero');
@@ -105,11 +89,17 @@ function Films() {
       {/* HERO SECTION — full-bleed */}
       <HeroSection onVideoClick={() => setShowShowreel(true)} onReady={handleHeroReady} />
 
-      {/* POST-HERO CONTENT — re-applies the md:px-[100px] gutter that Layout
-          drops on hero pages, so TitleSection's -mx-[100px] escape still works
-          and the cards have the same gutter as on every other page. */}
-      <div className="flex flex-col items-center w-full md:px-[100px]">
-        <div className="h-10 md:h-0" aria-hidden="true" />
+      {/* POST-HERO CONTENT — the content itself (the sections / cards) is
+          capped at 1400px wide. The column is max-w-[1600px] = 1400px of
+          content + the 2×100px side gutter; it is centred, so on screens
+          wider than that the surplus becomes equal left/right margin.
+          The md:px-[100px] gutter re-applies what Layout drops on hero
+          pages, so TitleSection's -mx-[100px] escape still works and the
+          cards have the same gutter as on every other page. */}
+      <div className="flex flex-col items-center w-full max-w-[1600px] md:px-[100px]">
+        {/* Hero → first section gap. Tablet (768–1024px) gets a wider
+            120px breather; phone and desktop keep their values. */}
+        <div className="h-10 md:h-[120px] lg:h-0" aria-hidden="true" />
 
         {/* CURATED WORKS — hidden for now, may reintroduce later */}
         {/* <TitleSection title="Curated Works" borderTop /> */}
@@ -131,16 +121,17 @@ function Films() {
         <TitleSection title="Other Projects" />
 
         {films.filter(f => f.collapsed).map((film, index) => (
-          <CollapsedFilmCard
-            key={film.id}
-            film={film}
-            index={index}
-            onFilmClick={handleFilmClick}
-            shouldLoad={loadPhase === 'collapsed'}
-            onWillExpand={handleCollapsedWillExpand}
-            onDidCollapse={handleCollapsedDidCollapse}
-            closeSignal={closeSignals[film.id] || 0}
-          />
+          // Phone-only spacing: the band stacks title + meta on phones and
+          // would feel cramped between adjacent projects. mb-6 gives a
+          // visible gap; from 768px up the band is a tight 36px row so we
+          // keep its zero-margin rhythm. Matches the Photos page wrapper.
+          <div key={film.id} className="w-full mb-6 md:mb-0 last:mb-0">
+            <CollapsedFilmCard
+              film={film}
+              index={index}
+              onFilmClick={handleFilmClick}
+            />
+          </div>
         ))}
 
         <div className="h-20" aria-hidden="true" />

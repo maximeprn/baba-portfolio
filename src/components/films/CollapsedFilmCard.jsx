@@ -1,64 +1,73 @@
 /**
- * Collapsed Film Card — single-row summary with shutter open/close animation.
- * On click (collapsed): text slides up, bottom edge slides down revealing FeaturedFilmCard content.
- * On click (expanded): reverse — content shrinks back to a single row.
- * A small X indicator at the bottom (with COLLAPSE label revealed on hover) signals click-to-close.
+ * CollapsedFilmCard — single-row band in the Films page "Other Projects"
+ * section that expands inline into a full FeaturedFilmCard.
+ *
+ * Borrows CollapsedPhotoCard's open/close TECHNIQUE — the expanded body
+ * is mounted only while the card is open (`showContent`), driven by the
+ * same 1200 ms open / 600 ms close height shutter and band-overlay
+ * slide — but with two deliberate differences:
+ *
+ *  - No single-expand. Film cards are independent: opening one does NOT
+ *    collapse the others. Each card is collapsed only by the user
+ *    clicking it. (Photos enforces single-expand; Films does not.)
+ *  - Open scroll target. A film's body is a single preview video, so the
+ *    open scrolls the video's vertical centre to the viewport's vertical
+ *    centre. (Photos scrolls its gallery's top to y=0.)
+ *
+ * Spec: .mdd/docs/03-collapsed-film-cards.md
  */
 
-import { useRef, useState, useCallback, useEffect, useLayoutEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
+
 import FeaturedFilmCard from './FeaturedFilmCard';
 import { useSmoothScrollContext } from '../../context/SmoothScrollContext';
 
 const OPEN_DURATION_MS  = 1200;
-const CLOSE_DURATION_MS = 600; // Half the open duration: close feels snappier than the deliberate open.
-const OPEN_TRANSITION  = `height ${OPEN_DURATION_MS}ms cubic-bezier(0.4, 0, 0.2, 1)`;
-const CLOSE_TRANSITION = `height ${CLOSE_DURATION_MS}ms cubic-bezier(0.4, 0, 0.2, 1)`;
-const OVERLAY_TRANSITION_MS = 500;
-// Delay before starting the overlay slide-in so it lands right as the height transition ends.
+const CLOSE_DURATION_MS = 600; // 2× faster than open — snappy dismissal.
+const EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
+const OPEN_TRANSITION   = `height ${OPEN_DURATION_MS}ms ${EASE}`;
+const CLOSE_TRANSITION  = `height ${CLOSE_DURATION_MS}ms ${EASE}`;
+const CONTENT_FADE_OUT_MS    = 200;
+const OVERLAY_TRANSITION_MS   = 500;
+// Delay the overlay reveal so it lands fully visible exactly when the
+// close height transition ends.
 const OVERLAY_REVEAL_DELAY_MS = Math.max(0, CLOSE_DURATION_MS - OVERLAY_TRANSITION_MS);
 
-// Per-card horizontal drift for the collapsed row. Cycled by index so each
-// card sits slightly differently inside its band. Adds to the parent <div>'s
-// own px-4 — these are extra inset on top of that.
-// Title shifts via padding-left on the left-aligned <p>; metadata shifts via
-// padding-right on the right-aligned <p> (text-right pulls the span back
-// inward as we add padding-right).
+// Per-card horizontal drift for the collapsed row — cycled by index so
+// each band sits slightly differently. `cards:`-prefixed (≥1350 px) so
+// the stagger only appears in the fully-composed desktop layout. Between
+// 768 px and 1350 px the row is a plain 3-zone layout with no stagger;
+// on phones the band stacks.
 const COLLAPSED_VARIANTS = [
-  { titlePl: '1.5rem', metaPr: '0.5rem' },
-  { titlePl: '0.5rem', metaPr: '2rem'   },
-  { titlePl: '2rem',   metaPr: '1rem'   },
+  { titlePl: 'cards:pl-6', metaPr: 'cards:pr-2' },
+  { titlePl: 'cards:pl-2', metaPr: 'cards:pr-8' },
+  { titlePl: 'cards:pl-8', metaPr: 'cards:pr-4' },
 ];
 
-function CollapsedFilmCard({
-  film,
-  index = 0,
-  onFilmClick,
-  shouldLoad = false,
-  onWillExpand,
-  onDidCollapse,
-  closeSignal = 0,
-}) {
+function reducedMotion() {
+  return typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function CollapsedFilmCard({ film, index = 0, onFilmClick }) {
   const [phase, setPhase] = useState('collapsed'); // 'collapsed' | 'animating' | 'expanded' | 'closing'
-  // During 'closing': overlay starts hidden (translateY(-100%), opacity 0) and crossfades in
-  // when this flips true, near the tail of the height transition.
   const [closingOverlayVisible, setClosingOverlayVisible] = useState(false);
-  const containerRef = useRef(null);
-  const contentRef = useRef(null);
+
+  const containerRef       = useRef(null);
+  const contentRef         = useRef(null);
   const collapsedHeightRef = useRef(0);
-  const isAnimatingRef = useRef(false);
-  // Tracks an auto-close request received while still in the open animation;
-  // if true, we close immediately after reaching 'expanded'.
-  const pendingCloseRef = useRef(false);
-  const lastCloseSignalRef = useRef(closeSignal);
-  const prevPhaseRef = useRef(phase);
-  const { scrollTo, getScrollPosition, isDesktop } = useSmoothScrollContext();
+  const isAnimatingRef     = useRef(false);
+
+  const { scrollTo, getScrollPosition, isDesktop, setScrollLocked } = useSmoothScrollContext();
   const { title, description, year, category } = film;
   const collapsedVariant = COLLAPSED_VARIANTS[index % COLLAPSED_VARIANTS.length];
 
   // First sentence of the description (matches up to and including the first . ! or ?)
   const firstSentence = (description.match(/^[^.!?]+[.!?]/)?.[0] || description).trim();
 
-  // Schedule the overlay reveal for the tail of the close animation.
+  // Closing-tail overlay reveal: fades the band back in over the last
+  // OVERLAY_TRANSITION_MS of the close so it lands fully visible exactly
+  // when the height transition ends.
   useEffect(() => {
     if (phase !== 'closing') {
       setClosingOverlayVisible(false);
@@ -68,149 +77,227 @@ function CollapsedFilmCard({
     return () => clearTimeout(t);
   }, [phase]);
 
-  // Notify parent when this card lands in 'collapsed' after a close (not on initial mount).
+  // While this card is mid-animation, disable user scrolling so a manual
+  // scroll — or an inertial fling on mobile — cannot fight the programmatic
+  // open/close scroll. setScrollLocked gates the desktop smooth-scroll's
+  // wheel/key handlers; the touchmove blocker covers mobile native scroll.
+  // Programmatic scrollTo is unaffected by either. Keyed on `phase` (not a
+  // transition event) so the unlock is guaranteed to run.
   useEffect(() => {
-    const wasNotCollapsed = prevPhaseRef.current !== 'collapsed';
-    prevPhaseRef.current = phase;
-    if (phase === 'collapsed' && wasNotCollapsed) {
-      onDidCollapse?.(film.id);
-    }
-  }, [phase, onDidCollapse, film.id]);
+    if (phase !== 'animating' && phase !== 'closing') return undefined;
+    setScrollLocked(true);
+    const blockTouch = (e) => {
+      if (e.cancelable) e.preventDefault();
+    };
+    window.addEventListener('touchmove', blockTouch, { passive: false });
+    return () => {
+      setScrollLocked(false);
+      window.removeEventListener('touchmove', blockTouch);
+    };
+  }, [phase, setScrollLocked]);
 
-  // Run AFTER React has committed the new phase but BEFORE the browser paints — this prevents
-  // a one-frame flash where the article's inline height is removed before contentRef switches
-  // to absolute positioning (which would briefly let the full FeaturedFilmCard size the article).
+  // Settle inline styles when phase reaches a stable state.
   useLayoutEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     if (phase === 'expanded') {
       container.style.transition = 'none';
       container.style.height = 'auto';
+      const content = contentRef.current;
+      if (content) {
+        content.style.transition = '';
+        content.style.opacity = '';
+      }
     } else if (phase === 'collapsed') {
       container.style.transition = 'none';
       container.style.height = '';
-      delete container.dataset.cfcEh;
-      delete container.dataset.cfcCh;
     }
   }, [phase]);
 
   const handleOpen = useCallback(() => {
     if (phase !== 'collapsed' || isAnimatingRef.current) return;
-    // Notify parent we're about to expand — parent may close any other expanded card.
-    onWillExpand?.(film.id);
-    isAnimatingRef.current = true;
-
-    const container = containerRef.current;
-    const content = contentRef.current;
-    if (!container || !content) return;
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setPhase('expanded');
-      container.style.height = 'auto';
-      container.style.overflow = '';
-      isAnimatingRef.current = false;
-      return;
-    }
-
-    const targetHeight = content.scrollHeight;
-    const collapsedHeight = container.offsetHeight;
-    collapsedHeightRef.current = collapsedHeight;
-
-    // Publish our heights so siblings opening later can adjust their scroll target
-    // to account for our expected collapse. Cleared in the 'collapsed' useLayoutEffect.
-    container.dataset.cfcEh = String(targetHeight);
-    container.dataset.cfcCh = String(collapsedHeight);
-
-    container.style.height = `${collapsedHeight}px`;
-    container.getBoundingClientRect();
-
-    setPhase('animating');
-
-    // Compute scroll target: top of card at viewport y=0, accounting
-    // for siblings above us that will collapse in the next tick (their
-    // delta will pull us up after we measure). Since `onWillExpand`
-    // above doesn't flushSync, sibling DOM hasn't shrunk yet — we read
-    // it manually via [data-cfc-eh] markers.
-    let siblingDelta = 0;
-    const containerTop = container.getBoundingClientRect().top;
-    document.querySelectorAll('[data-cfc-eh]').forEach((el) => {
-      if (el === container) return;
-      const expH = parseFloat(el.dataset.cfcEh || '0');
-      const colH = parseFloat(el.dataset.cfcCh || '0');
-      const siblingTop = el.getBoundingClientRect().top;
-      if (siblingTop < containerTop) {
-        siblingDelta += expH - colH;
-      }
-    });
-    const currentScroll = getScrollPosition();
-    const containerAbsoluteTop = containerTop + currentScroll;
-    const targetScroll = Math.max(0, containerAbsoluteTop - siblingDelta);
-
-    const startHeightTransition = () => {
-      container.style.transition = OPEN_TRANSITION;
-      container.style.height = `${targetHeight}px`;
-    };
-
-    if (!isDesktop) {
-      // Mobile — serialize. Native smooth-scroll race-conditions with
-      // the doc growing under it, so wait for the scroll to settle
-      // before kicking off the height transition.
-      scrollTo(targetScroll).then(() => {
-        requestAnimationFrame(startHeightTransition);
-      });
-      return;
-    }
-
-    // Desktop — snap-trick: temporarily expand to grow the doc so the
-    // smooth-scroll's clamp doesn't chop the target.
-    requestAnimationFrame(() => {
-      container.style.transition = 'none';
-      container.style.height = `${targetHeight}px`;
-      container.getBoundingClientRect();
-
-      scrollTo(targetScroll, { ease: 0.05 });
-
-      container.style.height = `${collapsedHeight}px`;
-      container.getBoundingClientRect();
-      startHeightTransition();
-    });
-  }, [phase, scrollTo, getScrollPosition, onWillExpand, film.id, isDesktop]);
-
-  const handleClose = useCallback((e) => {
-    if (e) e.stopPropagation();
-    if (phase !== 'expanded' || isAnimatingRef.current) return;
-    isAnimatingRef.current = true;
 
     const container = containerRef.current;
     if (!container) return;
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const collapsedHeight = container.offsetHeight;
+    collapsedHeightRef.current = collapsedHeight;
+
+    isAnimatingRef.current = true;
+
+    if (reducedMotion()) {
+      const topNow = container.getBoundingClientRect().top;
+      scrollTo(Math.max(0, topNow + getScrollPosition()), { instant: true });
+      setPhase('expanded');
+      isAnimatingRef.current = false;
+      return;
+    }
+
+    // Pin the article to its current height before the layout swap so
+    // nothing jumps when the content mounts in flow.
+    container.style.transition = 'none';
+    container.style.height = `${collapsedHeight}px`;
+
+    setPhase('animating');
+    // Continues in the 'animating' useLayoutEffect below.
+  }, [phase, getScrollPosition, scrollTo]);
+
+  // After the swap to 'animating' commits: scroll the preview video's
+  // vertical centre to the viewport's vertical centre and play the open
+  // height shutter.
+  //
+  // Desktop uses a snap-trick. The centre target sits deep in the page,
+  // and SmoothScrollContext.scrollTo clamps to the CURRENT maxScroll —
+  // which, while the card is still collapsed, is too small, so the
+  // target would be chopped short. So: temporarily grow the article to
+  // its expanded height (the document reaches its post-expand size),
+  // call scrollTo (now the target survives the clamp), snap the article
+  // back to collapsed, then start the real height transition — all in
+  // one rAF so the snapped states never paint.
+  //
+  // Mobile (native scroll) can't snap-trick: a native smooth-scroll
+  // race-conditions with the document growing under it. Mobile runs the
+  // shutter first and centres the video afterwards (handleTransitionEnd),
+  // once the document is already at full height.
+  useLayoutEffect(() => {
+    if (phase !== 'animating') return;
+    const container = containerRef.current;
+    if (!container) return;
+
+    const collapsedHeight = collapsedHeightRef.current;
+    container.style.transition = 'none';
+    container.style.height = `${collapsedHeight}px`;
+    const targetHeight = container.scrollHeight;
+
+    let cancelled = false;
+
+    if (!isDesktop) {
+      const rafId = requestAnimationFrame(() => {
+        if (cancelled) return;
+        container.style.transition = OPEN_TRANSITION;
+        container.style.height = `${targetHeight}px`;
+      });
+      return () => {
+        cancelled = true;
+        cancelAnimationFrame(rafId);
+      };
+    }
+
+    const rafId = requestAnimationFrame(() => {
+      if (cancelled) return;
+
+      // Grow the document so scrollTo clamps against the full maxScroll.
+      container.style.transition = 'none';
+      container.style.height = `${targetHeight}px`;
+      container.getBoundingClientRect();
+
+      // Centre the preview video; fall back to top-aligning the article.
+      const video = container.querySelector('video');
+      let targetScroll;
+      if (video) {
+        const vr = video.getBoundingClientRect();
+        targetScroll = Math.max(
+          0,
+          vr.top + getScrollPosition() + vr.height / 2 - window.innerHeight / 2,
+        );
+      } else {
+        targetScroll = Math.max(
+          0,
+          container.getBoundingClientRect().top + getScrollPosition(),
+        );
+      }
+      scrollTo(targetScroll, { ease: 0.05 });
+
+      // Snap back to collapsed, then play the real height transition.
+      container.style.height = `${collapsedHeight}px`;
+      container.getBoundingClientRect();
+      container.style.transition = OPEN_TRANSITION;
+      container.style.height = `${targetHeight}px`;
+    });
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(rafId);
+    };
+  }, [phase, getScrollPosition, scrollTo, isDesktop]);
+
+  const handleClose = useCallback((e) => {
+    if (e) e.stopPropagation();
+    if (phase !== 'expanded' || isAnimatingRef.current) return;
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    isAnimatingRef.current = true;
+
+    if (reducedMotion()) {
       setPhase('collapsed');
-      container.style.height = '';
       isAnimatingRef.current = false;
       return;
     }
 
     const expandedHeight = container.offsetHeight;
-    // Use the height we measured during open. Fallback: desktop = 36px (md:h-9), mobile = 0 → re-measure after.
-    const targetHeight = collapsedHeightRef.current || (window.innerWidth >= 768 ? 36 : 0);
-
+    container.style.transition = 'none';
     container.style.height = `${expandedHeight}px`;
-    container.getBoundingClientRect();
-
-    // Scroll the now-collapsed card top to viewport y=0 so the user
-    // doesn't end up stranded mid-gallery after a deep scroll.
-    const containerAbsoluteTop =
-      container.getBoundingClientRect().top + getScrollPosition();
-    scrollTo(Math.max(0, containerAbsoluteTop), isDesktop ? { ease: 0.05 } : undefined);
 
     setPhase('closing');
+  }, [phase]);
 
-    requestAnimationFrame(() => {
+  // Drive the close animation: content opacity fade + scroll the
+  // collapsed band to the viewport top + height shutter.
+  useLayoutEffect(() => {
+    if (phase !== 'closing') return;
+    const container = containerRef.current;
+    const content = contentRef.current;
+    if (!container) return;
+
+    if (content) {
+      content.style.transition = `opacity ${CONTENT_FADE_OUT_MS}ms ease-out`;
+      content.style.opacity = '0';
+    }
+
+    container.getBoundingClientRect();
+
+    const targetHeight =
+      collapsedHeightRef.current || (window.innerWidth >= 768 ? 36 : 0);
+
+    const absoluteTop =
+      container.getBoundingClientRect().top + getScrollPosition();
+    scrollTo(Math.max(0, absoluteTop), isDesktop ? { ease: 0.05 } : undefined);
+
+    const rafId = requestAnimationFrame(() => {
       container.style.transition = CLOSE_TRANSITION;
       container.style.height = `${targetHeight}px`;
     });
+
+    return () => cancelAnimationFrame(rafId);
   }, [phase, getScrollPosition, scrollTo, isDesktop]);
+
+  const handleTransitionEnd = useCallback((e) => {
+    if (e.target !== containerRef.current || e.propertyName !== 'height') return;
+    if (phase === 'animating') {
+      setPhase('expanded');
+      isAnimatingRef.current = false;
+      // Mobile centres the video now — the document is at full height so
+      // the native scroll isn't clamped short (see the open useLayoutEffect).
+      if (!isDesktop) {
+        const container = containerRef.current;
+        const video = container?.querySelector('video');
+        if (video) {
+          const vr = video.getBoundingClientRect();
+          scrollTo(
+            Math.max(
+              0,
+              vr.top + getScrollPosition() + vr.height / 2 - window.innerHeight / 2,
+            ),
+          );
+        }
+      }
+    } else if (phase === 'closing') {
+      setPhase('collapsed');
+      isAnimatingRef.current = false;
+    }
+  }, [phase, isDesktop, getScrollPosition, scrollTo]);
 
   const handleArticleClick = useCallback((e) => {
     if (phase === 'collapsed') {
@@ -227,46 +314,19 @@ function CollapsedFilmCard({
     }
   }, [handleArticleClick]);
 
-  const handleTransitionEnd = useCallback((e) => {
-    if (e.target !== containerRef.current || e.propertyName !== 'height') return;
-    if (phase === 'animating') {
-      setPhase('expanded');
-      isAnimatingRef.current = false;
-      // If a close was queued while we were still opening, fire it now.
-      if (pendingCloseRef.current) {
-        pendingCloseRef.current = false;
-        requestAnimationFrame(() => handleClose());
-      }
-    } else if (phase === 'closing') {
-      setPhase('collapsed');
-      isAnimatingRef.current = false;
-    }
-  }, [phase, handleClose]);
-
-  // Auto-close when parent signals via closeSignal increment.
-  // If we're still opening, queue the close to fire on transition end.
-  useEffect(() => {
-    if (closeSignal === lastCloseSignalRef.current) return;
-    lastCloseSignalRef.current = closeSignal;
-    if (phase === 'expanded') {
-      handleClose();
-    } else if (phase === 'animating') {
-      pendingCloseRef.current = true;
-    }
-    // 'collapsed' / 'closing': nothing to do
-  }, [closeSignal, phase, handleClose]);
-
-  const isInteractive = phase === 'collapsed' || phase === 'expanded';
-  const showOverlay = phase === 'collapsed' || phase === 'animating' || phase === 'closing';
+  const isInteractive      = phase === 'collapsed' || phase === 'expanded';
+  const showOverlay        = phase === 'collapsed' || phase === 'animating' || phase === 'closing';
+  const showContent        = phase !== 'collapsed';
   const showCloseIndicator = phase === 'expanded' || phase === 'closing';
-  // Overlay is hidden during the open animation, and during the leading portion of the close
-  // animation (before closingOverlayVisible flips true). Otherwise it's fully visible.
+  // Overlay is hidden during the open animation, and during the leading
+  // portion of the close (before closingOverlayVisible flips true).
   const overlayHidden =
     phase === 'animating' || (phase === 'closing' && !closingOverlayVisible);
 
   return (
     <article
       ref={containerRef}
+      data-collapsed-film-card
       onClick={isInteractive ? handleArticleClick : undefined}
       onKeyDown={isInteractive ? handleKeyDown : undefined}
       onTransitionEnd={handleTransitionEnd}
@@ -280,41 +340,43 @@ function CollapsedFilmCard({
             ? `Collapse ${title} film details`
             : undefined
       }
-      className={`w-full bg-white relative ${phase === 'collapsed' ? 'cursor-pointer md:h-9' : ''} ${phase === 'expanded' ? 'cursor-pointer group' : ''}`}
+      className={`w-full bg-white relative ${phase === 'collapsed' ? 'cursor-pointer' : ''} ${phase === 'expanded' ? 'cursor-pointer group' : ''}`}
       style={{
         overflow: phase !== 'expanded' ? 'hidden' : undefined,
       }}
     >
-      {/* Collapsed text overlay — normal flow on mobile (sizes container), absolute on desktop.
-          On hover (collapsed only), each of the three text elements gets its own
-          black-on-white chip — three separate boxes, not one row-wide box. */}
+      {/* Collapsed band overlay — `relative` at every width when collapsed:
+          it sits in flow and sizes the article, so a band whose text wraps
+          to two lines grows to fit instead of clipping into its neighbour.
+          py-2 + md:min-h-[36px] keep a one-line row at ≈36 px. (During the
+          open/close animation the overlay is `absolute` so it can slide
+          independently of the revealed content.) Three independent
+          black-on-white hover chips (group/row). */}
       {showOverlay && (
         <div
-          className={`${phase === 'collapsed' ? 'relative md:absolute group/row' : 'absolute'} top-0 left-0 right-0 bg-white z-10`}
+          className={`${phase === 'collapsed' ? 'relative group/row' : 'absolute'} top-0 left-0 right-0 bg-white z-10`}
           style={{
             transition: `transform ${OVERLAY_TRANSITION_MS}ms ease-out, opacity ${OVERLAY_TRANSITION_MS}ms ease-out`,
             transform: overlayHidden ? 'translateY(-100%)' : 'translateY(0)',
             opacity: overlayHidden ? 0 : 1,
           }}
         >
-          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 px-4 py-2 md:py-0 md:h-9">
-            <p
-              className="flex-1 font-header font-medium tracking-[1.8px] uppercase"
-              style={{ paddingLeft: collapsedVariant.titlePl }}
-            >
+          {/* items-stretch (default): the 3 column boxes all stretch to the
+              tallest one's height. Each <p> is itself a flex container
+              (md:flex md:items-center) so its text sits vertically centred
+              within that equal-height box. */}
+          <div className="flex flex-col md:flex-row gap-2 md:gap-6 px-4 py-2 md:min-h-[36px]">
+            <p className={`flex-1 md:flex md:items-center font-header font-medium tracking-[1.8px] uppercase ${collapsedVariant.titlePl}`}>
               <span className="inline-block px-2 py-0.5 text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 {title}
               </span>
             </p>
-            <p className="font-body tracking-[0.6px] shrink-0 hidden md:block">
+            <p className="font-body tracking-[0.6px] hidden md:flex md:items-center">
               <span className="inline-block px-2 py-0.5 text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 {firstSentence}
               </span>
             </p>
-            <p
-              className="flex-1 font-header font-medium tracking-[1.5px] text-right uppercase whitespace-pre-wrap"
-              style={{ paddingRight: collapsedVariant.metaPr }}
-            >
+            <p className={`flex-1 md:flex md:items-center md:justify-end font-header font-medium tracking-[1.5px] md:text-right uppercase whitespace-pre-wrap ${collapsedVariant.metaPr}`}>
               <span className="inline-block px-2 py-0.5 text-xs leading-[1.3] group-hover/row:bg-gray-900 group-hover/row:text-white">
                 {year}  •  {category}
               </span>
@@ -323,69 +385,56 @@ function CollapsedFilmCard({
         </div>
       )}
 
-      {/* FeaturedFilmCard content — absolute when collapsed so it doesn't affect height */}
-      {/*
-        contentRef wraps the FeaturedFilmCard. While collapsed, it's positioned absolute (out
-        of flow) AND visibility:hidden so it produces no pixels. This is a deliberate fix for
-        a 1px subpixel leak: the article clips at y=36px but FeaturedFilmCard's video sits at
-        y=32px inside contentRef, and fractional rounding under the smooth-scroll transform
-        could expose a thin video line at the article's bottom edge. visibility:hidden hides
-        the rendering without disturbing layout, so content.scrollHeight (used in handleOpen)
-        still measures the true expanded height.
-      */}
-      <div
-        ref={contentRef}
-        className={`pt-[52px] ${phase === 'collapsed' ? 'absolute top-0 left-0 right-0 invisible' : ''}`}
-      >
-        <FeaturedFilmCard
-          film={film}
-          index={index}
-          onFilmClick={onFilmClick}
-          shouldLoad={phase !== 'collapsed' || shouldLoad}
-        />
+      {/* Expanded body — FeaturedFilmCard + close-X indicator. Mounted only
+          while the card is open, exactly like CollapsedPhotoCard's
+          showGallery. */}
+      {showContent && (
+        <div ref={contentRef} className="w-full">
+          <FeaturedFilmCard
+            film={film}
+            index={index}
+            onFilmClick={onFilmClick}
+          />
 
-        {/*
-          Close indicator — small X with COLLAPSE label revealed on hover.
-          Always mounted so its height is included in `content.scrollHeight` during the
-          collapsed→expanded measurement in handleOpen. When not in expanded/closing state
-          it is visibility:hidden + inert (preserves layout space, no interaction).
-        */}
-        <div
-          onClick={showCloseIndicator ? handleClose : undefined}
-          role={showCloseIndicator ? 'button' : undefined}
-          tabIndex={showCloseIndicator ? 0 : -1}
-          aria-hidden={!showCloseIndicator}
-          aria-label={showCloseIndicator ? `Collapse ${title}` : undefined}
-          onKeyDown={
-            showCloseIndicator
-              ? (e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleClose(e);
+          {/* Close indicator — small X revealed on hover (desktop) / always
+              visible (touch). Inert until the card is expanded. */}
+          <div
+            onClick={showCloseIndicator ? handleClose : undefined}
+            role={showCloseIndicator ? 'button' : undefined}
+            tabIndex={showCloseIndicator ? 0 : -1}
+            aria-hidden={!showCloseIndicator}
+            aria-label={showCloseIndicator ? `Collapse ${title}` : undefined}
+            onKeyDown={
+              showCloseIndicator
+                ? (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleClose(e);
+                    }
                   }
-                }
-              : undefined
-          }
-          className={`flex items-center justify-center pb-8 pt-2 ${
-            showCloseIndicator ? 'cursor-pointer' : 'invisible pointer-events-none'
-          }`}
-        >
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 12 12"
-            stroke="currentColor"
-            strokeWidth="1"
-            fill="none"
-            aria-hidden="true"
-            className="shrink-0 transition-opacity duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                : undefined
+            }
+            className={`flex items-center justify-center pb-8 pt-2 ${
+              showCloseIndicator ? 'cursor-pointer' : 'invisible pointer-events-none'
+            }`}
           >
-            <line x1="2" y1="2" x2="10" y2="10" />
-            <line x1="10" y1="2" x2="2" y2="10" />
-          </svg>
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 12 12"
+              stroke="currentColor"
+              strokeWidth="1"
+              fill="none"
+              aria-hidden="true"
+              className="shrink-0 transition-opacity duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100"
+            >
+              <line x1="2" y1="2" x2="10" y2="10" />
+              <line x1="10" y1="2" x2="2" y2="10" />
+            </svg>
+          </div>
         </div>
-      </div>
+      )}
     </article>
   );
 }

@@ -22,6 +22,20 @@ export default {
   // Extends Tailwind's default theme with our custom design tokens
   theme: {
     extend: {
+      // Custom Breakpoints
+      // ------------------
+      // `cards` is the width at/above which card layouts get their
+      // fully-composed desktop treatment: the photo-card thumbnails show
+      // their multi-image collage, and the "Other Projects" collapsed
+      // bands gain their per-card stagger offsets. It matches the
+      // photo-card thumbnail breakpoint — photoProjects.js uses
+      // `mobileBreakpoint: 1349` (a max-width), and 1350px min-width is
+      // its exact complement.
+      // Usage: className="cards:pl-6"
+      screens: {
+        'cards': '1350px',
+      },
+
       // Custom Font Families
       // --------------------
       // These map to CSS variables defined in index.css

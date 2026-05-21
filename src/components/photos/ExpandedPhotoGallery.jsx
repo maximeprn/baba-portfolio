@@ -146,7 +146,19 @@ function ExpandedPhotoGallery({ project, pinHeader, onPhotoClick, onClose }) {
       </header>
 
       {/* Masonry — CSS columns. break-inside avoids splitting an image
-          across columns. mb-4 separates rows; gap-4 separates columns. */}
+          across columns. mb-4 separates rows; gap-4 separates columns.
+
+          Firefox (and forks like Zen) has a long-standing compositing bug:
+          while a transform/opacity animates inside — or on an ancestor of —
+          a `column-count` container, it repaints the multi-column box and
+          its images flicker (appear / vanish / reappear), worst at wide
+          widths where it's 3 columns. Promoting each <img> to its own
+          compositing layer (`will-change: transform`) makes the browser
+          composite them from a stable cached layer instead of re-painting
+          them with the multi-column box. Chromium/WebKit are unaffected —
+          8 extra layers is negligible. The FLIP morph already drives
+          `transform` on the matched preview images, so `will-change:
+          transform` is also the correct hint for them. */}
       <div
         data-fpc-gallery
         className="columns-1 sm:columns-2 lg:columns-3 gap-4"
@@ -168,7 +180,7 @@ function ExpandedPhotoGallery({ project, pinHeader, onPhotoClick, onClose }) {
                 e.stopPropagation();
                 onPhotoClick?.(project, idx);
               }}
-              className="block w-full h-auto cursor-pointer"
+              className="block w-full h-auto cursor-pointer will-change-transform"
               style={{ aspectRatio: photo.aspectRatio || undefined }}
             />
           </div>

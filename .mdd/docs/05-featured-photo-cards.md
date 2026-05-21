@@ -203,7 +203,7 @@ const handleDidCollapse = (id) =>
   setExpandedProjectId((prev) => (prev === id ? null : prev));
 ```
 
-A `closeSignal` bump triggers an **instant** collapse on the previously-expanded card — `setPhase('collapsed')` directly, no `'animating-close'` phase. The `'collapsed'` `useLayoutEffect` clears any inline styles left over from a possibly-interrupted `'animating-open'`. The animated close path (`handleClose` → `'animating-close'`) is reserved for explicit user dismissal (clicking the X strip or article whitespace in the expanded phase).
+A `closeSignal` bump triggers an **instant** collapse on the previously-expanded card — no `'animating-close'` phase. The `'collapsed'` `useLayoutEffect` clears any inline styles left over from a possibly-interrupted `'animating-open'`. The animated close path (`handleClose` → `'animating-close'`) is reserved for explicit user dismissal (clicking the X strip or article whitespace in the expanded phase). When the collapsing card sits above the newly-opened one, its collapse and the scroll compensation are committed as one atomic frame — `flushSync(() => setPhase('collapsed'))` then `scrollTo(scrollY − delta, { instant: true })` — so the still-expanded card can never flicker back into view between the two updates (see doc 06's "Single-Expand — the coordinated handoff").
 
 ## Anchored Open — Sibling Collapses Invisibly
 
@@ -286,6 +286,10 @@ Set during `useLayoutEffect[animating-open]`, deleted in `useLayoutEffect[collap
 | Gallery img       | `expanded`  | `stopPropagation` + `onPhotoClick(project, idx)` → Lightbox |
 | Header (title / meta / description) | `expanded` | bubbles to article → `handleClose` (the pinned header is the primary collapse affordance once expanded; `cursor-pointer` advertises this) |
 | Close X strip     | `expanded`  | `handleClose` |
+
+## Scroll Lock During Animation
+
+While `phase` is `'animating-open'` or `'animating-close'`, a `useEffect` keyed on `phase` disables *user* scrolling so a manual scroll — or an inertial fling on mobile — cannot fight the programmatic open/close scroll (and cannot land mid-handoff, flickering the collapsing sibling back into view). `setScrollLocked(true)` gates the desktop smooth-scroll's wheel/key handlers; a `touchmove` listener (`{ passive: false }`, `preventDefault`) covers mobile native scroll. Programmatic `scrollTo` is unaffected by either. Keyed on `phase` (not a transition event), so the unlock cleanup always runs.
 
 ## Reduced Motion
 

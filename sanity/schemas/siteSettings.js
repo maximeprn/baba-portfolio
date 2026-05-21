@@ -9,6 +9,7 @@ export const siteSettings = defineType({
     { name: 'seo', title: 'SEO' },
     { name: 'social', title: 'Social' },
     { name: 'nav', title: 'Navigation' },
+    { name: 'display', title: 'Display' },
     { name: 'footer', title: 'Footer' },
   ],
   fields: [
@@ -141,6 +142,33 @@ export const siteSettings = defineType({
       initialValue: 18,
       validation: (Rule) => Rule.positive().integer(),
       group: 'nav',
+    }),
+
+    // -------------------- Display --------------------
+    defineField({
+      name: 'featuredTitleHoverEffect',
+      title: 'Title hover effect',
+      description:
+        'How a featured film or photo section title reacts on hover. "Highlight" gives it a black background with white text. "Grow" enlarges it and makes it bolder, like the active navigation link.',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Highlight (black background)', value: 'invert' },
+          { title: 'Grow (bigger + bolder)', value: 'grow' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'invert',
+      group: 'display',
+    }),
+    defineField({
+      name: 'featuredTitleHoverWholeSection',
+      title: 'Highlight title when hovering the whole section',
+      description:
+        'On the featured film and photo sections: when ON, hovering anywhere on a section highlights its title. When OFF, the title only highlights when the pointer is on the title text itself.',
+      type: 'boolean',
+      initialValue: true,
+      group: 'display',
     }),
 
     // -------------------- Footer --------------------

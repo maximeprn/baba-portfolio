@@ -149,7 +149,7 @@ _type in ["siteSettings", "heroOverlay", "showreel", "heroPhotos", "photoProject
 ### Schema
 
 Four singletons + two collections:
-- **`siteSettings`** (singleton) — artist name, SEO, social URLs, footer copyright, nav style + link sizes
+- **`siteSettings`** (singleton) — artist name, SEO, social URLs, footer copyright, nav style + link sizes, Display group (featured-section title-hover effect + scope)
 - **`heroOverlay`** (singleton) — array of floating text items (bio, clients, phone, email…). Per item: anchor (fixed-inset position — no offsets), text style + size (with optional per-screen phone/tablet sizes), link, grouping, mobile-visibility. Fields split Basics / Advanced with plain-language labels. Mobile auto-arranges into nav-safe zones (see Hero overlay model below)
 - **`showreel`** (singleton) — Vimeo URL + hero video file path
 - **`heroPhotos`** (singleton) — array of uploaded images for the Photos page slideshow
@@ -164,7 +164,7 @@ Field reference: see `sanity/schemas/*.js` for canonical definitions. Singletons
 
 **Positioning** — desktop (`variant="desktop"`, ≥768px) places each item from its `anchor` (6 options: left/right × top/middle/bottom — never centered) via **fixed rem insets** (`2.5rem` edges, `9rem` top so it clears the nav, `2.5rem` bottom). There are **no per-item offsets** — `offsetX`/`offsetY` are retired (kept `hidden` in the schema only so older docs don't show orphan-field warnings). Mobile (`variant="mobile"`, <768px) uses the automatic nav-safe top/bottom zones from doc 13 (`ResizeObserver` auto-shrink, floored 0.6); the vertical half of `anchor` picks the zone.
 
-**Size — per viewport tier** (`viewportTier()`: phone <768 / tablet 768–1024 / desktop ≥1024). `size` ("Style" in Studio) = `body`/`contact` (casing/tracking only). `textSize` = named scale `xs…xl` → 18/22/25/28/34px — the computer/base size. `autoShrinkSmallScreens` (default true): **on** → phone & tablet derive via `fluidScale` (phone uses `OVERLAY_TEXT_MOBILE_RATIO` 0.75); **off** → editor sets explicit `phoneSize`/`tabletSize`. All resolved by `resolveOverlayFontSize(item, tier)`. Legacy items without `textSize` fall back style-aware (`body`→28, `contact`→25) — migration-free.
+**Size — per viewport tier** (`viewportTier()`: phone <768 / tablet 768–1024 / desktop ≥1024). `size` ("Style" in Studio) = `body`/`contact` (casing/tracking only). `textSize` = named scale `xs…xl` → base 18/22/25/28/34px, each ×1.125 (the global type scale — see [.mdd/docs/16](.mdd/docs/16-global-type-scale.md)) — the computer/base size. `autoShrinkSmallScreens` (default true): **on** → phone & tablet derive via `fluidScale` (phone uses `OVERLAY_TEXT_MOBILE_RATIO` 0.75); **off** → editor sets explicit `phoneSize`/`tabletSize`. All resolved by `resolveOverlayFontSize(item, tier)`. Legacy items without `textSize` fall back style-aware (`body`→28, `contact`→25) — migration-free.
 
 **Grouping + gap** — `stackWithSiblings` items at the same anchor merge into one flex-wrap container; the row gap is **proportional to the text size** (`stackRowGapPx`, ≈0.55× — `em`-style, not a fixed/editable value). `mobileVisible: false` hides an item from phones.
 
@@ -188,7 +188,8 @@ Field reference: see `sanity/schemas/*.js` for canonical definitions. Singletons
 
 - Fonts: `font-header` (Helvetica Now Display), `font-title` (Helvetica Now Display), `font-body` (Helvetica Now Text)
 - Colors: All via CSS variables (`--color-background`, `--color-text`, etc.)
-- Custom sizes: `text-hero` (140px), `text-subheading`
+- Custom sizes: `text-hero`, `text-subheading`
+- Type scale: root font-size is **18px** — a global +12.5% type & spacing scale (see [.mdd/docs/16](.mdd/docs/16-global-type-scale.md)). Layout max-widths are pinned in px so the page canvas stays fixed.
 - Import alias: `@/` maps to `src/` (configured in vite.config.js)
 
 ## Gotchas

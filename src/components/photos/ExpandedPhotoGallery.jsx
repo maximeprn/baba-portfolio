@@ -139,7 +139,7 @@ function ExpandedPhotoGallery({ project, pinHeader, onPhotoClick, onClose }) {
           {category}
         </div>
         {description && (
-          <p className="mt-4 max-w-prose font-header text-xs tracking-[0.15em] leading-6 text-primary">
+          <p className="mt-4 max-w-prose font-header text-xs tracking-[0.08em] leading-6 text-primary">
             {description}
           </p>
         )}

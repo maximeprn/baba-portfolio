@@ -17,12 +17,20 @@ import { fluidScale } from '../../utils/fluidScale';
  * Named sizes Basile picks in Sanity → desktop-ceiling px values (each fed
  * through `fluidScale` so it scales on narrow viewports, like the nav).
  *
- * Values are chosen so the two legacy presets map exactly, keeping existing
- * content pixel-identical without a data migration:
- *   legacy "body"    (28px) → 'lg'
- *   legacy "contact" (25px) → 'md'
+ * Base values xs/sm/md/lg/xl = 18/22/25/28/34, each multiplied by the
+ * global TYPE_SCALE (+12.5% — see .mdd/docs/16-global-type-scale.md, the
+ * same factor applied site-wide via the 18px rem root). The base values
+ * still map the legacy presets ("body" → lg, "contact" → md), so legacy
+ * items scale by the same +12.5% as everything else.
  */
-export const SIZE_SCALE = { xs: 18, sm: 22, md: 25, lg: 28, xl: 34 };
+const TYPE_SCALE = 1.125;
+export const SIZE_SCALE = {
+  xs: 18 * TYPE_SCALE,
+  sm: 22 * TYPE_SCALE,
+  md: 25 * TYPE_SCALE,
+  lg: 28 * TYPE_SCALE,
+  xl: 34 * TYPE_SCALE,
+};
 
 /**
  * Mobile shrink ratio for overlay text in AUTO mode. On phones, overlay text

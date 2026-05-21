@@ -34,6 +34,13 @@ non-technical editor (Basile) to use:
    settings are split into Basics + a collapsed Advanced section, and every
    label and help text is rewritten in plain, non-technical language.
 
+> **Type-scale note:** every base px value in this doc — the `SIZE_SCALE`
+> presets (18/22/25/28/34), the rem insets, the derived gaps — is subject
+> to the global **+12.5%** type scale (`SIZE_SCALE` multiplies its base
+> values by `TYPE_SCALE`; the rem insets follow the 18px root). See
+> [16-global-type-scale](16-global-type-scale.md). Numbers below are the
+> pre-scale base values unless noted.
+
 ## Architecture
 
 ```

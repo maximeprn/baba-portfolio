@@ -140,55 +140,58 @@
   /* -------------------------------------------------------------------------
      FONT SIZES
      -------------------------------------------------------------------------
-     A consistent scale of font sizes.
-     Using rem units (relative to root font size) for accessibility.
-     1rem = 16px by default, but scales if user changes browser font size.
+     A consistent scale of font sizes, in rem (relative to the root font
+     size). The root is 18px — bumped from 16px for a site-wide +12.5%
+     type scale (see §4 `html` and .mdd/docs/16-global-type-scale.md).
+     px annotations below are at the 18px root.
   */
 
-  --text-xs: 0.75rem;      /* 12px - Small labels */
-  --text-sm: 0.875rem;     /* 14px - Captions, credits */
-  --text-base: 1rem;       /* 16px - Body text default */
-  --text-lg: 1.125rem;     /* 18px - Slightly larger body */
-  --text-xl: 1.25rem;      /* 20px - Navigation, subheadings */
-  --text-2xl: 1.5rem;      /* 24px - Section headings */
-  --text-3xl: 1.875rem;    /* 30px - Page titles */
-  --text-4xl: 2.25rem;     /* 36px - Large headings */
-  --text-subheading: 1.25rem; /* 20px - "REINVENTING" text */
-  --text-hero: 8.75rem;    /* 140px - "BASILE DESCHAMPS" */
+  --text-xs: 0.75rem;      /* 13.5px - Small labels */
+  --text-sm: 0.875rem;     /* 15.75px - Captions, credits */
+  --text-base: 1rem;       /* 18px - Body text default */
+  --text-lg: 1.125rem;     /* 20.25px - Slightly larger body */
+  --text-xl: 1.25rem;      /* 22.5px - Subheadings */
+  --text-2xl: 1.5rem;      /* 27px - Section headings */
+  --text-3xl: 1.875rem;    /* 33.75px - Page titles */
+  --text-4xl: 2.25rem;     /* 40.5px - Large headings */
+  --text-subheading: 1.25rem; /* 22.5px - subheading / tagline */
+  --text-hero: 8.75rem;    /* 157.5px - retired wordmark token (see .mdd/docs/02) */
 
 
   /* -------------------------------------------------------------------------
      SPACING
      -------------------------------------------------------------------------
-     Consistent spacing scale for margins, padding, and gaps.
-     Using these values ensures visual consistency.
+     Consistent spacing scale for margins, padding, and gaps. In rem, so it
+     grows with the type scale (18px root). px annotations at the 18px root.
   */
 
-  --spacing-xs: 0.25rem;   /* 4px */
-  --spacing-sm: 0.5rem;    /* 8px */
-  --spacing-md: 1rem;      /* 16px */
-  --spacing-lg: 1.5rem;    /* 24px */
-  --spacing-xl: 2rem;      /* 32px */
-  --spacing-2xl: 3rem;     /* 48px */
-  --spacing-3xl: 4rem;     /* 64px */
-  --spacing-section: 5rem; /* 80px - Between major sections */
-  --spacing-content: 2.5rem; /* 40px - Between content blocks */
+  --spacing-xs: 0.25rem;   /* 4.5px */
+  --spacing-sm: 0.5rem;    /* 9px */
+  --spacing-md: 1rem;      /* 18px */
+  --spacing-lg: 1.5rem;    /* 27px */
+  --spacing-xl: 2rem;      /* 36px */
+  --spacing-2xl: 3rem;     /* 54px */
+  --spacing-3xl: 4rem;     /* 72px */
+  --spacing-section: 5rem; /* 90px - Between major sections */
+  --spacing-content: 2.5rem; /* 45px - Between content blocks */
 
 
   /* -------------------------------------------------------------------------
      LAYOUT
      -------------------------------------------------------------------------
-     Max widths and container sizes for layout consistency.
+     Max widths and container sizes. PINNED in px (not rem) so the page
+     canvas stays a fixed width while the type scale grows — otherwise the
+     +12.5% root bump would just zoom the whole layout. See .mdd/docs/16.
   */
 
-  /* Main container max width (matches your 1440px design) */
-  --max-width-container: 90rem; /* 1440px */
+  /* Main container max width */
+  --max-width-container: 1440px;
 
   /* Narrower content width for text-heavy sections */
-  --max-width-content: 45.625rem; /* 730px - hero image width */
+  --max-width-content: 730px; /* hero image width */
 
   /* Navigation height */
-  --nav-height: 5rem; /* 80px */
+  --nav-height: 80px;
 
 
   /* -------------------------------------------------------------------------
@@ -245,7 +248,7 @@
 
   /* HTML element - sets the root font size */
   html {
-    font-size: 16px; /* Base size for rem calculations */
+    font-size: 18px; /* Root for rem — +12.5% type scale, bumped from 16px (see .mdd/docs/16-global-type-scale.md) */
     /* scroll-behavior handled by SmoothScrollContext (desktop) and native (mobile) */
     -webkit-font-smoothing: antialiased; /* Smoother fonts on Mac */
     -moz-osx-font-smoothing: grayscale;

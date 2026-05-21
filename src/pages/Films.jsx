@@ -122,12 +122,13 @@ function Films() {
 
         {/* 1rem gap below the Other Projects title */}
         <div className="h-4" aria-hidden="true" />
-        {/* Phone shows the collapsed bands two-up (unchanged); tablet and
-            desktop lay them out three-up — the same stacked title +
-            subtitle card, just in a 3-column grid. An expanded band breaks
-            out to full width via col-span-2 / md:col-span-3 on its
-            <article>. */}
-        <div className="grid w-full grid-cols-2 md:grid-cols-3 gap-x-2 gap-y-[12px] md:gap-x-6 md:gap-y-4">
+        {/* Phone shows the collapsed bands two-up (unchanged); tablet lays
+            them out three-up, and from the `cards` breakpoint (1350px) —
+            "when the space allows it" — desktop goes four-up. Same stacked
+            title + subtitle card throughout. An expanded band breaks out to
+            full width via col-span-2 / md:col-span-3 / cards:col-span-4 on
+            its <article>. */}
+        <div className="grid w-full grid-cols-2 md:grid-cols-3 cards:grid-cols-4 gap-x-2 gap-y-[12px] md:gap-x-6 md:gap-y-4">
           {films.filter(f => f.collapsed).map((film, index) => (
             <CollapsedFilmCard
               key={film.id}

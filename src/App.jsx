@@ -14,6 +14,7 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Films from './pages/Films';
 import Photos from './pages/Photos';
+import { useGoogleAnalytics } from './utils/useGoogleAnalytics';
 
 // Sanity Studio is heavy — code-split via React.lazy so the public bundle
 // doesn't pay the cost.
@@ -47,6 +48,8 @@ function PublicSite() {
 
 
 function App() {
+  useGoogleAnalytics();
+
   return (
     <Routes>
       <Route

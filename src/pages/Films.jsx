@@ -81,9 +81,11 @@ function Films() {
       <Helmet>
         <title>Basile Deschamps | Film & Photography</title>
         <meta name="description" content="Portfolio of Basile Deschamps - Visual artist specializing in film direction and photography. Reinventing the frame." />
+        <link rel="canonical" href={`${siteConfig.seo.siteUrl}/`} />
         <meta property="og:title" content="Basile Deschamps | Film & Photography" />
         <meta property="og:description" content="Visual artist specializing in film direction and photography." />
         <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${siteConfig.seo.siteUrl}/`} />
       </Helmet>
 
       {/* HERO SECTION — full-bleed */}

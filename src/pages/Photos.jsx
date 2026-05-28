@@ -22,6 +22,7 @@ import {
   getNonFeaturedProjects,
   photoProjects,
 } from '../sanity/loader';
+import { siteConfig } from '../data/siteConfig';
 
 function Photos() {
   const featuredProjects = getFeaturedProjects();
@@ -118,7 +119,11 @@ function Photos() {
           name="description"
           content="Photo projects by Basile Deschamps — sports photography and visual storytelling."
         />
+        <link rel="canonical" href={`${siteConfig.seo.siteUrl}/photos`} />
         <meta property="og:title" content="Photos | Basile Deschamps" />
+        <meta property="og:description" content="Photo projects by Basile Deschamps — sports photography and visual storytelling." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${siteConfig.seo.siteUrl}/photos`} />
       </Helmet>
 
       {/* HERO */}

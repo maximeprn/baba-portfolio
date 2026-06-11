@@ -15,6 +15,7 @@ known_issues:
   - "The video-centre scroll inherits SmoothScrollContext's ease residual: it settles ~1–2 px shy of an exact centre."
   - "Resize across the 1024px boundary mid-animation could mismatch the open technique (desktop snap-trick vs mobile body.minHeight); effectively unreachable in practice (scroll is locked and the window is only 1200ms). Audit 2026-06-12."
   - "The 36px close fallback (CollapsedFilmCard.jsx ~L290) references a retired row height; harmless because collapsedHeightRef is always set before a close. Audit 2026-06-12."
+  - "LATENT (timer sweep, audit 2026-06-12): SmoothScrollContext's desktop scrollTo settle loop (rAF polling |current - targetPos| < 1, ~L300) has no cancellation or target-supersede detection — an instant scrollTo issued mid-ease (e.g. route change) can leave the old promise's rAF loop spinning until navigation. Harmless today because all awaiting .then() callers are in mobile branches; desktop callers fire-and-forget."
 ---
 
 # 03 — Collapsed Film Cards: Shutter Expand/Collapse, Video-Centred Open

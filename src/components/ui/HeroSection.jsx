@@ -92,11 +92,17 @@ function HeroSection({ onVideoClick, onReady }) {
   // Non-Safari: unmute after 2.5s, re-mute if browser kills playback
   useEffect(() => {
     if (isSafari) return;
+    let verifyTimer;
     const timer = setTimeout(() => {
       const video = desktopVideoRef.current || mobileVideoRef.current;
       if (!video || video.paused) return;
       video.muted = false;
-      setTimeout(() => {
+      verifyTimer = setTimeout(() => {
+        // If something re-muted us during the verification window — the
+        // user opening the showreel / a film modal (handleHeroVideoClick
+        // mutes the hero) — respect it: don't force audio back on under
+        // the modal (audit 2026-06-12).
+        if (video.muted) return;
         if (video.paused) {
           video.muted = true;
           video.play().catch(() => {});
@@ -108,7 +114,10 @@ function HeroSection({ onVideoClick, onReady }) {
         }
       }, 100);
     }, 2500);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(verifyTimer);
+    };
   }, [isSafari]);
 
   // Mute hero when user opens a video (showreel or film modal)

@@ -12,6 +12,10 @@ function FilmModal({ film, isOpen, onClose }) {
   const [isVisible, setIsVisible] = useState(false);
   const modalRef = useRef(null);
   const closeBtnRef = useRef(null);
+  // The load-watchdog timer. Kept in a ref so the iframe's onLoad can cancel
+  // it — otherwise it fires at t=20s even while the video is playing and the
+  // error overlay paints over a perfectly healthy player (bug fixed 2026-06-12).
+  const loadTimeoutRef = useRef(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -26,13 +30,14 @@ function FilmModal({ film, isOpen, onClose }) {
       setIsVisible(true);
       closeBtnRef.current?.focus();
     });
-    // Timeout: if iframe hasn't loaded after 20s, show error
-    const timeout = setTimeout(() => {
+    // Watchdog: if the iframe still hasn't loaded after 20s, show the error.
+    // Cancelled by onLoad below the moment the player actually loads.
+    loadTimeoutRef.current = setTimeout(() => {
       setLoadError(true);
       setIsLoaded(true);
     }, 20000);
     return () => {
-      clearTimeout(timeout);
+      clearTimeout(loadTimeoutRef.current);
       document.body.style.overflow = previousOverflow;
     };
   }, [isOpen]);
@@ -124,8 +129,19 @@ function FilmModal({ film, isOpen, onClose }) {
           className="w-full h-full border-0 rounded-lg"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
-          onLoad={() => setIsLoaded(true)}
-          onError={() => { setLoadError(true); setIsLoaded(true); }}
+          onLoad={() => {
+            // Player is in — cancel the watchdog so it can't flag a false
+            // "failed to load" mid-playback, and clear any error a slow
+            // (>20s) load may have already painted.
+            clearTimeout(loadTimeoutRef.current);
+            setLoadError(false);
+            setIsLoaded(true);
+          }}
+          onError={() => {
+            clearTimeout(loadTimeoutRef.current);
+            setLoadError(true);
+            setIsLoaded(true);
+          }}
         />
       </div>
     </div>,

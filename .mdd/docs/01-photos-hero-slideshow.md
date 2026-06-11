@@ -13,6 +13,7 @@ known_issues:
   - "advance() silently returns after 20 consecutive landscape-skips/errors (a successful non-landscape load returns immediately — the cap only counts skips in a row); rare frozen-frame on mobile if many landscapes in a row (audit 2026-05-04 N6, still open as of 2026-05-05)"
   - "prefersReducedMotion is read once at hook mount and not reactive — toggling the OS setting does not update behavior until the page remounts (audit 2026-05-05)"
   - "Photo list source switched from a hardcoded JS array to a CMS singleton (Stage 3 / doc 08) on 2026-05-20. Component import path moved from src/data/heroPhotos to src/sanity/loader. The legacy data file remains as the loader's fallback only."
+  - "LATENT (timer sweep, audit 2026-06-12): the slideshow effect resets the shared cancelRef to false on every re-run (isMobile flip at 767px, e.g. tablet rotation), which can resurrect a cancelled in-flight advance() chain mid-await — two interleaved loops hard-cutting faster than the 0.5-2s cadence until unmount. Fix shape: per-run cancel token object instead of a shared ref (FloatingGalleryHero.jsx ~L126)."
 ---
 
 # 01 — Photos Hero — Flashing Photo Slideshow

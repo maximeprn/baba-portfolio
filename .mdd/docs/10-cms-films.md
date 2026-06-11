@@ -21,7 +21,8 @@ source_files:
 test_files:
   - tests/e2e/cms-films-cdn.spec.js
   - tests/e2e/cms-films-mux.spec.js
-known_issues: []
+known_issues:
+  - "FilmModal nits (audit 2026-06-12, pre-existing): (a) with isOpen=true but an un-embeddable videoUrl (toVimeoEmbedUrl → null) the component renders null while its effects still lock body scroll and arm the load watchdog — Escape still closes, but touch users depend on the parent; (b) loadError/isLoaded persist across close and reset only in the open effect, so reopening after a genuine failure can flash the stale error for ~1 frame. The 2026-06-12 fix made the 20s watchdog cancel on iframe load (it previously fired unconditionally — false 'Video failed to load' over a playing player)."
 ---
 
 # 10 — CMS Films

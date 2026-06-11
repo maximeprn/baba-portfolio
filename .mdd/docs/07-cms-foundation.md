@@ -42,6 +42,7 @@ known_issues:
   - "Sanity does NOT have a built-in webhook debounce. The recommended workflow is to disable the auto-webhook and use the Studio Deploy tool (see Business Rules → Webhook config + Deploy tool)."
   - "Vercel deploy hooks de-duplicate back-to-back triggers if a build is already running. The 200 OK response is the SAME whether queued or ignored, so the Deploy tool can't tell — it uses a 90-second button cool-down to discourage spam."
   - "The Studio bundle is ~6MB raw / ~1.95MB gzipped (measured 2026-05-21). Code-split via React.lazy in App.jsx so the public site bundle stays small. Never import 'sanity' from a non-Studio file."
+  - "LATENT (timer sweep, audit 2026-06-12): DeployTool's 90s cooldown setInterval is cleared only from inside the setCooldownLeft updater — switching Studio tools mid-cooldown unmounts the component, the updater never runs, the interval ticks until page reload, and on remount the cooldown lock is silently lost (button re-enabled). Fix shape: keep the id in a ref + clear in an unmount effect; derive remaining cooldown from a timestamp (DeployTool.jsx ~L129)."
 ---
 
 # 07 — CMS Foundation

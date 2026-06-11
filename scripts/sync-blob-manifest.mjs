@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /**
+ * STATUS: superseded by the Mux pipeline (doc 12); kept only because migrate-blob-to-mux.mjs reads the blobUrls.json manifest this script produces.
+ *
  * Build src/data/blobUrls.json from the existing Vercel Blob store.
  *
  * Use this when videos were uploaded via the Vercel dashboard (instead

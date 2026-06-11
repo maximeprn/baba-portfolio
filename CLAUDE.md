@@ -55,8 +55,8 @@ src/
 ├── App.jsx              # Router: /admin/* (Studio, lazy) + /* (public site)
 ├── main.jsx             # Entry point, wraps app in BrowserRouter
 ├── components/
-│   ├── films/           # FilmCard, FeaturedFilmCard, FilmModal
-│   ├── photos/          # ProjectCard, PhotoGrid, FloatingGalleryHero
+│   ├── films/           # CollapsedFilmCard, FeaturedFilmCard, FilmModal
+│   ├── photos/          # FeaturedPhotoCard, CollapsedPhotoCard, PhotoCardPreview, ExpandedPhotoGallery, FloatingGalleryHero
 │   ├── layout/          # Navigation, Layout, Footer
 │   └── ui/              # HeroSection, PersistentHeroText, Divider, Lightbox
 ├── data/
@@ -178,7 +178,7 @@ Field reference: see `sanity/schemas/*.js` for canonical definitions. Singletons
 
 - `src/data/siteConfig.js` — Compatibility shim. Components still `import { siteConfig }` but the values stream from `src/sanity/loader.js`.
 - `src/data/films.js` / `src/data/photoProjects.js` — Legacy fallback data. Both are now CMS-driven (Stages 4 + 5); these stay in the repo as a safety net the loader falls back to if `cms.json` is empty.
-- `src/components/ui/HeroSection.jsx` — Fullscreen sticky video hero. Renders `<HeroBioOverlay>` for the CMS-driven floating text overlay.
+- `src/components/ui/HeroSection.jsx` — Fullscreen video hero. **Not sticky** — commit `3d1dec4` dropped the sticky pin so the hero + nav scroll away together (HeroSection.jsx:150-156 documents why). Renders `<HeroBioOverlay>` for the CMS-driven floating text overlay. The hero showreel mutes itself when a film modal opens (HeroSection.jsx:114-120 + `muteHero()` in Films.jsx).
 - `src/components/ui/HeroOverlay.jsx` — Shared hero text overlay (`HeroBioOverlay`), used by both heroes. Desktop = free positioning; mobile = automatic nav-safe zones. Layout maths in `heroOverlayLayout.js`.
 - `src/components/films/FilmModal.jsx` — Shared fullscreen Vimeo overlay (used by both film detail and showreel).
 - `src/components/ui/PersistentHeroText.jsx` — Split-color artist name overlay (white on video, black on background).
@@ -196,11 +196,11 @@ Field reference: see `sanity/schemas/*.js` for canonical definitions. Singletons
 
 - Use Flexbox for all component layouts — never use `position: absolute` to place sibling elements (text, images, videos) side by side. Use `flex-row` / `flex-row-reverse` for left/right alternation and `gap` for guaranteed spacing.
 - Use `svh` units (not `vh`) for mobile viewport heights — avoids iOS address bar issues.
-- Hero video (`/public/videos/hero-teaser.mp4`) is a large file; original content in `content/` is gitignored.
+- The hero prefers the Mux showreel stream (`siteConfig.showreel.muxStreamUrl`); the local fallback (`/videos/Showreel 2021.mp4`) is a large file. Original content in `content/` is gitignored.
 - Bottom-aligned elements use absolute positioning with `bottom-[10vh]` + `left-0 right-0 z-0`.
 - Global `prefers-reduced-motion: reduce` in `index.css` disables all animations site-wide.
 - Film detail uses modal overlay (FilmModal), not a separate route.
-- Photo images must be in `public/photos/` — paths in `photoProjects.js` use `/photos/...`.
+- Photo images are uploaded in Sanity Studio and served from the Sanity CDN (`asset->url` flattened into `cms.json`). `public/photos/` + the `/photos/...` paths in `photoProjects.js` are the legacy fallback only.
 - **Playwright tests on `/` and `/photos`** must use `locator.dispatchEvent('click')` instead of `.click()` for elements below the fold. The desktop smooth-scroll system sets `body { overflow: hidden }` and translates the content via CSS transform, so Playwright's actionability check (and even `force: true`) reports "Element is outside of the viewport." `dispatchEvent` fires the React onClick directly without the actionability check. See `tests/e2e/featured-photo-cards.spec.js` for an example.
-- The Sanity Studio bundle is huge (~5MB gzipped 1.7MB). It's code-split via `React.lazy` so the public site bundle stays small. Never `import 'sanity'` from a non-Studio file.
+- The Sanity Studio bundle is huge (~6MB raw / ~1.95MB gzipped, measured 2026-05-21). It's code-split via `React.lazy` so the public site bundle stays small. Never `import 'sanity'` from a non-Studio file.
 - **`/about` and `/contact` routes were removed** in the CMS migration. Contact info now lives in the CMS hero overlay items.

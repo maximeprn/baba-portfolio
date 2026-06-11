@@ -16,13 +16,12 @@
  */
 
 import { Fragment } from 'react';
+import { filledParts } from './cardSubtitleParts';
 
 export default function CardSubtitle({ parts, separator }) {
-  // Drop empty / missing fields. Strings are trimmed first so a
-  // whitespace-only CMS value counts as empty; numbers (year) pass through.
-  const filled = parts
-    .map((part) => (typeof part === 'string' ? part.trim() : part))
-    .filter((part) => part != null && part !== '');
+  // Drop empty / missing fields — pure logic lives in cardSubtitleParts.js
+  // so it can be unit-tested (tests/card-subtitle.spec.js).
+  const filled = filledParts(parts);
 
   if (filled.length === 0) return null;
 

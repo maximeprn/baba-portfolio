@@ -2,6 +2,12 @@
 /**
  * scaffold-photo-projects.mjs
  *
+ * DEPRECATED — orphaned legacy scaffolder. Photo-project content now lives
+ * in Sanity (doc 09); src/data/photoProjects.js survives only as the
+ * loader's fallback. Re-running this script would regenerate that fallback
+ * file and re-introduce the removed `imagePosition` field. Kept for
+ * reference; do not run.
+ *
  * One-shot generator for src/data/photoProjects.js.
  *
  * Walks /public/img/BABA PHOTOS/, groups files into projects by filename

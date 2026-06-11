@@ -21,7 +21,8 @@ source_files:
 test_files:
   - tests/e2e/cms-films-cdn.spec.js
   - tests/e2e/cms-films-mux.spec.js
-known_issues: []
+known_issues:
+  - "FilmModal nits (audit 2026-06-12, pre-existing): (a) with isOpen=true but an un-embeddable videoUrl (toVimeoEmbedUrl → null) the component renders null while its effects still lock body scroll and arm the load watchdog — Escape still closes, but touch users depend on the parent; (b) loadError/isLoaded persist across close and reset only in the open effect, so reopening after a genuine failure can flash the stale error for ~1 frame. The 2026-06-12 fix made the 20s watchdog cancel on iframe load (it previously fired unconditionally — false 'Video failed to load' over a playing player)."
 ---
 
 # 10 — CMS Films
@@ -58,7 +59,7 @@ GROQ:  *[_type == "film"] | order(orderRank asc) {
         ▼
 src/data/cms.json (films array)
         ▼
-src/sanity/loader.js → films + getFeaturedFilms + getCollapsedFilms
+src/sanity/loader.js → films + getNonCollapsedFilms + getCollapsedFilms
         ▼
 src/pages/Films.jsx (drop-in replacement, no rendering changes)
 ```
@@ -169,12 +170,15 @@ featured/non-featured distinction; `videoType` / `videoFile` — superseded by
 
 ## Build plan (12 steps, ~3 h)
 
+> **Historical** — this plan describes the original Blob-era build; the video
+> handling was superseded by the Mux migration ([doc 12](12-cms-video-uploads-mux.md)).
+
 ### Phase 5 — Implement (do AFTER compaction)
 
 | # | Step | Files | Effort |
 |---|---|---|---|
 | 1 | **Schema** | `sanity/schemas/film.js` (NEW), `sanity/schemas/index.js` (register), `sanity/desk/structure.js` (add 🎬 Films entry below 📷 Photo projects) | 25 min |
-| 2 | **Fetcher query** | `scripts/fetch-cms-content.mjs` — add films GROQ projection + `flattenFilm()` that maps credits to `{left, right}` + thumbnail asset URL + passes videoFile through unchanged | 20 min |
+| 2 | **Fetcher query** | `scripts/fetch-cms-content.mjs` — add films GROQ projection + `flattenFilm()` that maps credits to `{left, right}` + thumbnail asset URL. (As built, `flattenFilm()` is Mux-only — no `videoFile`; see doc 12.) | 20 min |
 | 3 | **Loader** | `src/sanity/loader.js` — export `films`, `getNonCollapsedFilms()`, `getCollapsedFilms()`, `getFilmBySlug()` with fallback to `LEGACY_FILMS` from `src/data/films.js` | 15 min |
 | 4 | **Page switch** | `src/pages/Films.jsx` — change import from `../data/films` to `../sanity/loader`. No other code change (loader returns same shape). | 5 min |
 | 5 | **Migration script** | `scripts/upload-films.mjs` — read `src/data/films.js`, upload each `public/posters/<slug>.*` to Sanity (skip if missing), build doc with LexoRank-spaced `orderRank`, commit one transaction | 40 min |

@@ -17,7 +17,7 @@ known_issues: []
 
 ## Purpose
 
-Make `FeaturedFilmCard` videos gently fade out as they cross the top or bottom edge of the viewport, instead of clipping abruptly at the visible edge. The fade is ultra-subtle (~10% of viewport height) so cards in the middle of the viewport sit at full opacity, and only the few rows of pixels near the edge are dimmed. Mobile and desktop both run the effect; reduced-motion users opt out.
+Make `FeaturedFilmCard` videos gently fade out as they cross the top or bottom edge of the viewport, instead of clipping abruptly at the visible edge. The fade is subtle (20% of viewport height — `FADE_RAMP_VH = 0.20`) so cards in the middle of the viewport sit at full opacity, and only the band near the edge is dimmed. Mobile and desktop both run the effect; reduced-motion users opt out.
 
 ## Architecture
 
@@ -31,9 +31,9 @@ addScrollListener fires per-card update()
         │
         ▼
 update():  rect = articleRef.getBoundingClientRect()
-           enterT = smootherstep((vh - rect.top) / RAMP)
-           leaveT = smootherstep( rect.bottom    / RAMP)
-           opacity = min(enterT, leaveT)
+           enterT = (vh - rect.top) / RAMP
+           leaveT =  rect.bottom    / RAMP
+           opacity = min(smootherstep(enterT), smootherstep(leaveT))
         │
         ▼
 articleRef.style.opacity = opacity
@@ -64,12 +64,12 @@ N/A.
 - **Reduced motion:** if `window.matchMedia('(prefers-reduced-motion: reduce)').matches`, the effect is skipped — the wrapper keeps its default opacity 1 and the listener is never registered.
 - **Mount/unmount:** initial `update()` is called once after mount (so cards already in view aren't briefly transparent). On unmount, the listener and resize handler are cleaned up.
 - **Resize handling:** `RAMP` and the wrapper rect both depend on viewport height. A resize listener recomputes `RAMP` and re-runs `update()`.
-- **Coexistence with collapsed cards:** while a `CollapsedFilmCard` is in `'collapsed'` phase, its `contentRef` (which wraps the inner `FeaturedFilmCard`) carries `visibility: hidden`; the opacity write on the inner article still happens but is invisible. No conflict.
+- **Coexistence with collapsed cards:** while a `CollapsedFilmCard` is in `'collapsed'` phase, its expanded body — including the inner `FeaturedFilmCard` — is **not mounted at all** (`showContent = phase !== 'collapsed'`), so the fade listener simply isn't registered. When the card expands, the inner `FeaturedFilmCard` mounts, the effect runs, and the initial post-mount `update()` self-initialises the correct opacity. No conflict.
 - **No CSS transition:** because `update()` runs every scroll frame, a CSS `transition: opacity` would double-smooth and cause lag. Opacity is set directly via inline style.
 
 ## Dependencies
 
-- **03-collapsed-film-cards** — `FeaturedFilmCard` is rendered both standalone (top of `Films.jsx`) and inside `CollapsedFilmCard`. The fade must work in both contexts; collapsed cards' `visibility: hidden` while collapsed makes the opacity write a no-op.
+- **03-collapsed-film-cards** — `FeaturedFilmCard` is rendered both standalone (top of `Films.jsx`) and inside `CollapsedFilmCard`. The fade must work in both contexts; inside a collapsed card the inner `FeaturedFilmCard` is unmounted while collapsed, so the listener only exists (and the opacity write only happens) for the expanded lifetime.
 - **`SmoothScrollContext`** — provides `addScrollListener` (per-frame on desktop, native scroll on mobile/tablet).
 
 ## Constraints (do not change)
@@ -85,7 +85,7 @@ Visual (manual):
 2. Repeat on mobile-sized viewport (DevTools → 375×812). Same behavior via native scroll.
 3. Open DevTools → Rendering → emulate `prefers-reduced-motion: reduce`. Reload. Cards should be flat opacity 1 with no fade.
 4. Expand a collapsed card. Its video should fade exactly like a featured card while scrolling.
-5. Resize the window vertically. Fade ramp should adjust (still ~10% of new vh).
+5. Resize the window vertically. Fade ramp should adjust (still 20% of new vh).
 
 Automated:
 - Existing `tests/homepage.spec.js` Playwright spec stays green (no behavioral regression). No new test added — the effect is too visual/timing-sensitive to assert reliably in a headless run; manual verification is the bar.

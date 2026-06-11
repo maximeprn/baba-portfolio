@@ -1,6 +1,6 @@
 ---
 id: 06-collapsed-photo-cards
-title: Collapsed Photo Cards — Other Projects single-row → gallery shutter
+title: Collapsed Photo Cards — Other Projects multi-column grid → gallery shutter
 edition: BABA Portfolio
 depends_on:
   - 02-design-system
@@ -13,24 +13,26 @@ source_files:
   - src/pages/Photos.jsx
   - src/sanity/loader.js  # photoProjects + getNonFeaturedProjects (CMS-backed; see doc 09)
   - src/data/photoProjects.js  # legacy fallback only
-  - tailwind.config.js  # the `cards` (1350px) breakpoint
 routes:
   - /photos
 models: []
 test_files:
-  - tests/e2e/featured-photo-cards.spec.js
+  - tests/e2e/featured-photo-cards.spec.js   # shared single-expand orchestration only
+  - tests/e2e/collapsed-photo-cards.spec.js  # collapsed bands + cross-type handoff (added by the 2026-06-12 audit)
 known_issues:
   - "Single-expand orchestration is shared with FeaturedPhotoCard via Photos.jsx (one expandedProjectId / closeSignals map). A click on either type collapses whichever card is currently expanded — including across types."
   - "Open/close scroll positioning inherits SmoothScrollContext's ease residual: a card that travels a long distance may settle a few px shy of viewport y=0."
+  - "The two photo card types use divergent phase names (FeaturedPhotoCard: 'animating-open'/'animating-close'; CollapsedPhotoCard: 'animating'/'closing'); the shared photo-card-expand-done handoff relies on the generic `phase !== 'collapsed'` check on both sides — don't introduce phase-specific checks across types. Audit 2026-06-12."
+  - "36px close fallback (CollapsedPhotoCard.jsx ~L249) references a retired row height; harmless while collapsedHeightRef is always set. Audit 2026-06-12."
 ---
 
-# 06 — Collapsed Photo Cards: Other Projects single-row → gallery shutter
+# 06 — Collapsed Photo Cards: Other Projects multi-column grid → gallery shutter
 
 ## Purpose
 
-The `Other Projects` section on `/photos` lists non-featured projects (`featured: false`) as compact single-row bands — the same collapsed-band layout as `Other Projects` on the Films page. Clicking a band runs a 1200 ms shutter open into the **same** `ExpandedPhotoGallery` used by `FeaturedPhotoCard` (sticky pinned header on mobile, JS pin on desktop, masonry grid, click-photo-to-Lightbox, click-X-or-header-to-close).
+The `Other Projects` section on `/photos` lists non-featured projects (`featured: false`) as compact stacked cards (title over `year • category` subtitle) laid out in a multi-column grid — the same collapsed-card layout as `Other Projects` on the Films page. Clicking a band runs a 1200 ms shutter open into the **same** `ExpandedPhotoGallery` used by `FeaturedPhotoCard` (sticky pinned header on mobile, JS pin on desktop, masonry grid, click-photo-to-Lightbox, click-X-or-header-to-close).
 
-`CollapsedPhotoCard` is **the reference implementation for the collapsed-band pattern** — `CollapsedFilmCard` (doc 03) borrows its open/close technique and shares the shutter timing and the `cards` (1350 px) destructure breakpoint. Two behaviours are **photos-only**, though: the coordinated single-expand handoff described below (film cards are independent — opening one never collapses another) and the gallery-top scroll target (films centre their preview video in the viewport instead).
+`CollapsedPhotoCard` is **the reference implementation for the collapsed-band pattern** — `CollapsedFilmCard` (doc 03) borrows its open/close technique and shares the shutter timing; the band layout itself was unified across films and photos (the old per-page tiers — and the custom Tailwind `cards` 1350 px screen they used — are no longer used by either collapsed card). Two behaviours are **photos-only**, though: the coordinated single-expand handoff described below (film cards are independent — opening one never collapses another) and the gallery-top scroll target (films centre their preview video in the viewport instead).
 
 ## Architecture
 
@@ -65,13 +67,13 @@ Driven by `getNonFeaturedProjects()` (CMS-backed via `loader.js`, fallback `phot
 export const getNonFeaturedProjects = () => photoProjects.filter((p) => !p.featured);
 ```
 
-Non-featured projects ship the same fields as featured — `title`, `description`, `year`, `client`, `category`, `photos[]`. The collapsed band shows only `title`, the first sentence of `description`, and `year • category` (the `client` is shown in the expanded gallery header, so it is omitted from the band as redundant).
+Non-featured projects ship the same fields as featured — `title`, `description`, `year`, `client`, `category`, `photos[]`. The collapsed band shows only `title` and `year • category`. The first-sentence-of-`description` `<p>` is still mounted but carries a hard `hidden` at every width; the `client` is shown in the expanded gallery header, so it is omitted from the band as redundant.
 
 ## State Machine
 
 | Phase | Band visible? | Gallery visible? | DOM state |
 |---|---|---|---|
-| `'collapsed'` | yes | no | Article height is driven by its in-flow `relative` overlay — a one-line row is ≈36 px (`py-2` + `md:min-h-[36px]`) and grows when text wraps. `clip-path: inset(0)`. Click → `handleOpen` |
+| `'collapsed'` | yes | no | Article height is driven by its in-flow `relative` overlay — the stacked title + subtitle band, ≈50–60 px (grows when text wraps). `clip-path: inset(0)`. Click → `handleOpen`. The `36` in `handleClose`'s fallback (~L249) is a vestige of the retired one-line row — see known_issues. |
 | `'animating'` | yes (sliding up) | yes (in flow) | Article inline `style.height` transitioning collapsed → target with `OPEN_TRANSITION` (1200 ms). Band overlay `translateY(0 → -100%)` + `opacity 1 → 0` over 500 ms |
 | `'expanded'` | no | yes (in flow) | `style.height: auto`, `clip-path: none`. Article carries `group` for the X hover-reveal. Click on article whitespace / pinned header / X → `handleClose` |
 | `'closing'` | yes (sliding back in over the tail) | yes (fading) | Article transitions expanded → collapsed (600 ms). Gallery `opacity 1 → 0` (200 ms). Band overlay slides back in over the **last 500 ms** |
@@ -115,15 +117,13 @@ These match `CollapsedFilmCard` and `FeaturedPhotoCard` so films and photos read
 
 `reducedMotion()` (`prefers-reduced-motion: reduce`) short-circuits `handleOpen` / `handleClose` to instant phase flips. The global `index.css` rule already kills CSS transitions site-wide; the JS path mirrors that.
 
-## Layout & Spacing — three responsive tiers
+## Layout & Spacing — multi-column grid
 
-The collapsed band has three layouts (identical to `CollapsedFilmCard`):
+The collapsed cards live in a CSS grid owned by `Photos.jsx` (identical to the Films page's `Other Projects` grid):
 
-- **Phones (< 768 px).** `flex-col`, stacked, left-aligned title + metadata; description sentence `hidden`. Overlay is `relative` and sizes the article. `mb-6` gap between bands (the `Photos.jsx` wrapper).
-- **768 px – 1350 px — plain 3-zone row.** `md:flex-row` with the default `items-stretch`: the three column boxes (`<p>`s) all stretch to the **tallest** one's height. Each `<p>` is itself a flex container (`md:flex md:items-center`) so its text sits **vertically centred** within that equal-height box. Title pinned left (`flex-1`), description sentence in the middle (default `flex 0 1 auto` — it shrinks and wraps when the row is cramped, so the metadata is never pushed off-screen), metadata pinned right (`flex-1 md:justify-end md:text-right`). One-line row ≈36 px (`py-2` + `md:min-h-[36px]`); a band whose text wraps grows to fit (the `relative` overlay sizes the article) instead of clipping into its neighbour. No per-card stagger offsets. `mb-0` rhythm.
-- **≥ 1350 px — composed 3-zone row.** Same plus the per-card `cards:pl-*` / `cards:pr-*` drift offsets (the custom Tailwind `cards` screen = `1350px`).
-
-`1350px` is the complement of the photo-thumbnail `mobileBreakpoint: 1349` in `photoProjects.js` — band and thumbnail gain their composed treatment at the same width.
+- **Parent grid** — `grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4` with `gap-x-2 gap-y-[12px] md:gap-x-6 md:gap-y-4`. Phones show the bands two-up, tablets (md, ≥768 px) three-up, desktop (lg, ≥1024 px) four-up.
+- **One card layout at every width** — each collapsed card is a stacked `flex flex-col gap-[3px] px-4 md:px-0 py-2`: title (13.5 px) over the `year • category` subtitle (10.5 px). The first-sentence description `<p>` is mounted but hard `hidden` at every width. md+ drops the horizontal padding so the bands sit flush-left in their column. The overlay is `relative` while collapsed and sizes the article, so a band whose text wraps grows to fit. There are no responsive row tiers, no `items-stretch` equal-height columns, and no per-card `cards:pl-*` / `cards:pr-*` drift offsets — the old 3-zone row is retired, and the custom Tailwind `cards` (1350 px) screen is no longer used by the collapsed cards.
+- **Breakout while expanded** — when `phase !== 'collapsed'` the article adds `col-span-2 md:col-span-3 lg:col-span-4`, breaking out of its column so the expanded gallery spans the full grid width.
 
 ## Click Areas
 
@@ -143,9 +143,9 @@ The collapsed band has three layouts (identical to `CollapsedFilmCard`):
 
 ## Verification
 
-Visual (manual): `npm run dev`, `/photos` → scroll to `Other Projects`. Open a band; open a second band (first collapses invisibly off-screen, second opens); close via the pinned header. Resize across 1350 px — the band switches between the stacked and row layouts. DevTools → emulate `prefers-reduced-motion` → cards open instantly.
+Visual (manual): `npm run dev`, `/photos` → scroll to `Other Projects`. Open a band; open a second band (first collapses invisibly off-screen, second opens); close via the pinned header. Resize across 768 px and 1024 px — the grid steps 2 → 3 → 4 columns while each card keeps the same stacked layout. DevTools → emulate `prefers-reduced-motion` → cards open instantly.
 
-Automated: `npx playwright test --project=chromium` — `featured-photo-cards.spec.js` (photos) and `collapsed-film-cards.spec.js` (the Films-page bands) must stay green.
+Automated: `npx playwright test --project=chromium` — `featured-photo-cards.spec.js` (shared single-expand orchestration), `collapsed-photo-cards.spec.js` (collapsed bands + cross-type handoff), and `collapsed-film-cards.spec.js` (the Films-page bands) must stay green.
 
 ## Known Issues
 

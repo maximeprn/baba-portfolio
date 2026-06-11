@@ -12,7 +12,7 @@ source_files:
 test_files: []
 known_issues:
   - "src/data/siteConfig.js is no longer the source of truth — it's a compatibility shim around src/sanity/loader.js (see doc 07). A few fields are still hardcoded there: artist.tagline, artist.shortBio, artist.title, contact.{email,phone,location}, navigation arrays. Components import siteConfig with no awareness of the CMS shift."
-  - "Fluid typography helper at src/utils/fluidScale.js — added 2026-05-19 (PR #11 era). Used by Navigation.jsx (nav link sizes) and HeroSection.jsx (hero overlay text sizes + positional offsets). Pattern: clamp(base × mobileRatio, base/10 vw, base). mobileRatio = 0.85 for text, 0.4 for hero overlay offsets."
+  - "Fluid typography helper at src/utils/fluidScale.js — added 2026-05-19 (PR #11 era). Consumers: Navigation.jsx (nav link sizes) and heroOverlayLayout.js (hero overlay text sizes). Pattern: clamp(base × mobileRatio, base/10 vw, base). Ratios in use: 0.85 (nav links, the default) and 0.75 (OVERLAY_TEXT_MOBILE_RATIO, hero overlay text). There is no offset path — per-item offsets were retired (docs 13/14)."
 ---
 
 # 02 — BABA Portfolio Design System
@@ -98,9 +98,9 @@ The site has no logomark, badge, or icon. The canonical brand expression is the 
 - **Top-left** — bio statement + selected clients, on two lines. Desktop uses 28px with `whitespace-nowrap` (the long client list intentionally bleeds past the right edge of the viewport on narrower screens — read as a marquee, not a wrap). Mobile scales to `text-lg` and is allowed to wrap.
 - **Bottom-left** — phone number + email, in tracked uppercase Helvetica Now Display. Desktop is 25px in a horizontal row; mobile stacks vertically at `text-base`.
 
-`HeroBioOverlay` is exported from `src/components/ui/HeroSection.jsx` and reused unchanged by `FloatingGalleryHero.jsx`. Treat **this overlay** — bio over imagery — as the canonical brand expression. Any new hero surface should reuse it, not introduce a separate wordmark.
+`HeroBioOverlay` is exported from `src/components/ui/HeroOverlay.jsx` (since the doc-13 refactor; `HeroSection.jsx` imports it) and reused unchanged by `FloatingGalleryHero.jsx`. Treat **this overlay** — bio over imagery — as the canonical brand expression. Any new hero surface should reuse it, not introduce a separate wordmark.
 
-> Historical note: the original hero used a 140px **BASILE DESCHAMPS** wordmark via a `PersistentHeroText.jsx` component (split-color over imagery vs background, masked with clip-path). That component still exists in the repo as of 2026-05-05 but is no longer imported anywhere; treat it as retired pending deletion. The `--text-hero` (140px) token is similarly unused.
+> Historical note: the original hero used a 157.5px (8.75rem at the 18px root) **BASILE DESCHAMPS** wordmark via a `PersistentHeroText.jsx` component (split-color over imagery vs background, masked with clip-path). That component still exists in the repo as of 2026-05-05 but is no longer imported anywhere; treat it as retired pending deletion. The `--text-hero` (157.5px) token is similarly unused.
 
 ## Spacing & Layout
 
@@ -145,7 +145,7 @@ Always use **`svh`** (small viewport height) not `vh` for mobile heights — avo
 
 ## Motion
 
-### Transition tokens (`index.css:200-202`)
+### Transition tokens (`index.css:203-205`)
 
 | Token | Value |
 |-------|-------|
@@ -176,7 +176,7 @@ Always use **`svh`** (small viewport height) not `vh` for mobile heights — avo
 
 ### Reduced motion
 
-`@media (prefers-reduced-motion: reduce)` (`index.css:475-484`) forces `animation-duration: 0.01ms` and `transition-duration: 0.01ms` site-wide. The slideshow degrades to a single static photo.
+`@media (prefers-reduced-motion: reduce)` (`index.css:511`) forces `animation-duration: 0.01ms` and `transition-duration: 0.01ms` site-wide. The slideshow degrades to a single static photo.
 
 ## Components
 
@@ -186,8 +186,8 @@ Always use **`svh`** (small viewport height) not `vh` for mobile heights — avo
 - **Footer** (`Footer.jsx`) — copyright + social links.
 
 ### UI primitives
-- **HeroSection** — full-bleed sticky showreel video hero with mute toggle. Renders `HeroBioOverlay` on top. Separate mobile/desktop render paths. Used on the Films homepage (`/`).
-- **HeroBioOverlay** — exported from `HeroSection.jsx`. Top-left bio + selected clients, bottom-left phone + email. The canonical brand expression — see *Typography > The hero expression*. Reused by `FloatingGalleryHero` so the Photos hero matches the Films hero.
+- **HeroSection** — full-bleed showreel video hero with mute toggle (not sticky — the hero + nav scroll away together). Renders `HeroBioOverlay` on top. Separate mobile/desktop render paths. Used on the Films homepage (`/`).
+- **HeroBioOverlay** — exported from `HeroOverlay.jsx` (`HeroSection.jsx` imports it). Top-left bio + selected clients, bottom-left phone + email. The canonical brand expression — see *Typography > The hero expression*. Reused by `FloatingGalleryHero` so the Photos hero matches the Films hero.
 - **TitleSection** — section title block.
 - **Divider** — 1px hairline (`--color-border`).
 - **Lightbox** — fullscreen photo viewer with body-overflow lock + arrow-key navigation. Used by `PhotoProject` only.

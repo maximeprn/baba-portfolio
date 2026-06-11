@@ -7,7 +7,7 @@
     "dev": "vite",
     "prebuild": "node scripts/fetch-cms-content.mjs",
     "build": "vite build",
-    "vercel-build": "vite build",
+    "vercel-build": "bash scripts/vercel-build.sh",
     "preview": "vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "cms:seed": "node scripts/seed-cms.mjs",

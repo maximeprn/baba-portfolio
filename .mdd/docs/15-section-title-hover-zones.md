@@ -36,9 +36,10 @@ when the pointer leaves the card.
 
 Two Sanity site settings tune the behavior:
 - **Title hover effect** (`featuredTitleHoverEffect`, default
-  *Highlight*) — *Highlight* inverts the title to a black background with
-  white text; *Grow* enlarges it and makes it bolder, like the active
-  nav link.
+  *Highlight*) — *Highlight* (value: `'invert'`; the schema title is
+  "Highlight (black background)", `siteSettings.js:157`) inverts the
+  title to a black background with white text; *Grow* enlarges it and
+  makes it bolder, like the active nav link.
 - **Highlight title when hovering the whole section**
   (`featuredTitleHoverWholeSection`, default on) — scopes the trigger to
   the whole card, or back to the title text only.
@@ -97,9 +98,9 @@ build time) tune the behavior:
     effect is driven by a plain CSS `:hover` on the title element itself.
 - **`featuredTitleHoverEffect`** (`'invert'` | `'grow'`, default
   `'invert'`):
-  - *invert* — the title `<span>` gets `bg-gray-900 text-white` (the B&W
-    chip).
-  - *grow* — the title `<h3>` gets `scale-[1.125] font-semibold` with
+  - *Highlight* — the title `<span>` gets `bg-gray-900 text-white` (the
+    B&W chip).
+  - *Grow* — the title `<h3>` gets `scale-[1.125] font-semibold` with
     `origin-left transition-transform` — a smooth scale + weight bump,
     matching the 18/16 px size ratio of the active nav link.
 
@@ -118,7 +119,7 @@ group/tab in the Studio):
 
 | Field | Type | Default | Purpose |
 |---|---|---|---|
-| `featuredTitleHoverEffect` | `string` (`invert` \| `grow`) | `invert` | Hover visual: `invert` = B&W chip; `grow` = bigger + bolder. |
+| `featuredTitleHoverEffect` | `string` (`invert` \| `grow`) | `invert` | Hover visual: *Highlight* (`invert`) = B&W chip; *Grow* (`grow`) = bigger + bolder. |
 | `featuredTitleHoverWholeSection` | `boolean` | `true` | On → hovering anywhere in a featured section reacts. Off → only the title text does. |
 
 They ride the existing build-time CMS pipeline (doc 07): `siteSettings`
@@ -145,7 +146,7 @@ N/A.
 - **Both titles track one state** (`FeaturedFilmCard`): the phone title
   (above the video) and the desktop title (in the text column) both read
   the same `titleHovered`; only one is visible per breakpoint.
-- **Invert visual:** `bg-gray-900` + `text-white` on the title `<span>`,
+- **Highlight visual:** `bg-gray-900` + `text-white` on the title `<span>`,
   with `transition-colors duration-150` (the design-system fast token)
   and `box-decoration-clone` so a wrapped title keeps the band on every
   line. Unchanged from the previous implementation.
@@ -195,8 +196,8 @@ N/A.
 
 - The collapsed bands (`CollapsedFilmCard`, `CollapsedPhotoCard`) keep
   their existing whole-band `group/row` hover. Out of scope.
-- The invert visual (black bg / white text / 150ms) is unchanged — only
-  the **trigger area** changes.
+- The Highlight visual (black bg / white text / 150ms) is unchanged —
+  only the **trigger area** changes.
 - `FeaturedPhotoCard`'s expand/collapse click handling, and the collapsed
   bands' click behavior, are unchanged.
 

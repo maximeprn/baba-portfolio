@@ -71,7 +71,7 @@ export default {
       // Extends the default Tailwind font sizes with our design system
       // Usage: className="text-hero" for the big BASILE DESCHAMPS text
       fontSize: {
-        // Hero text (140px) - for the main name display
+        // Hero text (157.5px — 8.75rem at the 18px root) - for the main name display
         'hero': ['var(--text-hero)', { lineHeight: '1' }],
         // Subheading size
         'subheading': ['var(--text-subheading)', { lineHeight: '1.2' }],

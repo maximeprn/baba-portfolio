@@ -1,10 +1,11 @@
 /**
  * SITE CONFIGURATION
  *
- * Site-wide values consumed by components. Most fields now stream from the
- * Sanity CMS via `src/sanity/loader.js`; a few (tagline, navigation
- * structure, contact location) remain hardcoded here for Stage 1 of the CMS
- * migration and will be promoted in future stages.
+ * Site-wide values consumed by components. The CMS migration is complete
+ * through Stage 6 (Mux video); this file remains a compatibility shim around
+ * `src/sanity/loader.js`. A few fields (tagline, navigation structure,
+ * contact location) are still hardcoded here — largely unused by components
+ * but kept for shape compatibility.
  *
  * The exported `siteConfig` keeps the legacy nested shape so existing
  * component imports (Footer, Navigation, HeroSection, etc.) work unchanged.

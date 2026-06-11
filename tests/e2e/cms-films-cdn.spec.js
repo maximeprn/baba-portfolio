@@ -2,46 +2,68 @@
  * CMS — Films pipeline (Stage 5) smoke test.
  *
  * Verifies the homepage is reading film data from the CMS (Stage 5) and not
- * the legacy `src/data/films.js` fallback. We assert at least one film card
- * has a thumbnail URL pointing at the Sanity CDN.
+ * the legacy `src/data/films.js` fallback.
  *
- * If the CMS fetch failed or the loader fell back to legacy data, the
- * thumbnail src would be `/posters/<slug>.jpg` — a hard signal that
- * something is wrong (CMS empty, film missing thumbnail in Studio, etc.).
+ * Post-Mux reality (audit 2026-06-12): a film's poster is
+ * `thumbnail || muxPosterUrl` — i.e. the Sanity CDN (`cdn.sanity.io`) when an
+ * editor uploaded an explicit thumbnail, otherwise Mux's auto-probed poster
+ * (`image.mux.com`). It is set as the featured card's `<video poster>` /
+ * background-image, NOT as an `<img>` (and collapsed cards keep their body
+ * unmounted while collapsed). So we assert at least one film card's video
+ * poster points at either CDN.
+ *
+ * If the CMS fetch failed and the loader fell back to legacy data, the
+ * poster would be `/posters/<slug>.jpg` — a hard signal that something is
+ * wrong (CMS empty, film missing media in Studio, etc.).
  *
  * Also asserts the page renders without runtime errors.
  */
 
 import { test, expect } from '@playwright/test';
 
-const SANITY_CDN_HOST = 'cdn.sanity.io';
+const CMS_CDN_HOSTS = ['cdn.sanity.io', 'image.mux.com'];
 
 test.describe('CMS films pipeline (Stage 5)', () => {
-  test('homepage thumbnails come from the Sanity CDN', async ({ page }) => {
+  test('homepage film posters come from the Sanity or Mux CDN', async ({ page }) => {
     const errors = [];
     page.on('pageerror', (err) => errors.push(err));
 
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
 
-    // Collapsed cards always render the thumbnail; FeaturedFilmCard also
-    // renders one as the video poster. We look for any <img> on the page
-    // whose src is on the Sanity CDN — at least one film must have a
-    // thumbnail there if the migration ran.
+    // Collect every candidate poster URL rendered by film cards: <video
+    // poster> attributes plus any <img> src (covers films with explicit
+    // Sanity thumbnails).
+    const collectPosterUrls = () =>
+      page.evaluate(() => {
+        const urls = [];
+        document.querySelectorAll('video').forEach((v) => {
+          if (v.poster) urls.push(v.poster);
+        });
+        document.querySelectorAll('img').forEach((i) => {
+          if (i.src) urls.push(i.src);
+        });
+        return urls;
+      });
+
     await expect
       .poll(
         async () => {
-          const srcs = await page.locator('img').evaluateAll((nodes) =>
-            nodes.map((n) => n.getAttribute('src')).filter(Boolean),
-          );
-          return srcs.some((s) => s.includes(SANITY_CDN_HOST));
+          const urls = await collectPosterUrls();
+          return urls.some((u) => CMS_CDN_HOSTS.some((host) => u.includes(host)));
         },
         {
           timeout: 15_000,
-          message: 'No <img> with cdn.sanity.io src was ever rendered on /',
+          message: 'No film poster/img on a CMS CDN (cdn.sanity.io / image.mux.com) was ever rendered on /',
         },
       )
       .toBe(true);
+
+    // Belt-and-braces: no card should be using the legacy fallback's
+    // `/posters/<slug>.jpg` paths.
+    const urls = await collectPosterUrls();
+    const legacy = urls.filter((u) => u.includes('/posters/'));
+    expect(legacy).toEqual([]);
 
     // And no runtime errors during the homepage mount.
     expect(errors.map((e) => e.message)).toEqual([]);

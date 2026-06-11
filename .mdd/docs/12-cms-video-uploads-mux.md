@@ -14,7 +14,6 @@ source_files:
   - src/sanity/loader.js                      # modify (surface playbackId)
   - src/data/videoShorts.js                   # keep (used only by legacy fallback)
   - src/components/films/FeaturedFilmCard.jsx # modify (Mux player or HLS <video>)
-  - src/components/films/FilmCard.jsx         # modify (Mux poster image)
   - src/components/films/CollapsedFilmCard.jsx# modify (Mux player or HLS)
   - src/components/films/FilmModal.jsx        # NO CHANGE (still Vimeo)
   - src/components/ui/HeroSection.jsx         # modify if showreel preview uses Mux
@@ -31,7 +30,7 @@ known_issues: []
 
 > **SHIPPED.** Implemented as described. As-built note: `muxInput` is
 > configured with `max_resolution_tier: '1080p'` and `encoding_tier: 'smart'`
-> (not the `720p` floated in the plan below) — `sanity.config.js` and
+> (not the `720p` floated in early planning) — `sanity.config.js` and
 > `scripts/migrate-blob-to-mux.mjs` are the source of truth. `videoMux` is on
 > both `film` and `showreel`.
 
@@ -51,7 +50,7 @@ basile drops a .mov / .mp4 (any size, but typically ≤ 20 MB)
         │ direct upload  (browser ↔ mux.com, bypasses Vercel)
         ▼
    ┌─ Mux ingest ─────────────────────────────────┐
-   │   transcode → 720p HLS + multi-bitrate ABR   │
+   │   transcode → 1080p HLS + multi-bitrate ABR  │
    │   auto-generate poster + thumbnails           │
    │   asset.playbackId saved on the Sanity doc   │
    └───────────────────────────────────────────────┘
@@ -60,7 +59,7 @@ basile drops a .mov / .mp4 (any size, but typically ≤ 20 MB)
         ▼
 src/data/cms.json  → films[].mux.playbackId
         ▼
-loader.js exposes `muxPlaybackId` + computed `posterUrl`
+loader.js exposes `muxPlaybackId` + computed `muxPosterUrl`
         ▼
 FeaturedFilmCard / CollapsedFilmCard → <MuxPlayer playbackId={…} />
                                      or HLS via hls.js + <video>
@@ -117,8 +116,8 @@ films[i] = {
   …,
   muxPlaybackId:  string | null,
   muxStatus:      'ready' | 'preparing' | 'errored' | null,
-  posterUrl:      `https://image.mux.com/${playbackId}/thumbnail.jpg?time=0.5`,
-  streamUrl:      `https://stream.mux.com/${playbackId}.m3u8`,
+  muxPosterUrl:   `https://image.mux.com/${playbackId}/thumbnail.jpg?time=0.5`,
+  muxStreamUrl:   `https://stream.mux.com/${playbackId}.m3u8`,
 }
 ```
 
@@ -159,11 +158,11 @@ Effectively free at this scale.
 |---|---|---|---|
 | 1 | **Mux account + creds** | (manual: create Mux account, generate access token at dashboard, save `MUX_TOKEN_ID` + `MUX_TOKEN_SECRET`) | 10 min |
 | 2 | **Install deps** | `package.json` — `sanity-plugin-mux-input`, `@mux/mux-player-react`, `@mux/mux-node` (for migration script) | 5 min |
-| 3 | **Plugin wiring** | `sanity.config.js` — `plugins: […, muxInput({ mp4_support: 'none', max_resolution_tier: '720p' })]` | 5 min |
+| 3 | **Plugin wiring** | `sanity.config.js` — `plugins: […, muxInput({ mp4_support: 'none', max_resolution_tier: '1080p' })]` | 5 min |
 | 4 | **Schema update** | `sanity/schemas/film.js` — swap `videoFile` for `videoMux` (`type: 'mux.video'`); leave `videoUrl` alone | 10 min |
-| 5 | **Fetcher projection** | `scripts/fetch-cms-content.mjs` — dereference the asset doc, extract `playbackId`, `status`, `aspect_ratio`, `duration`; build `streamUrl` + `posterUrl` strings | 20 min |
-| 6 | **Loader** | `src/sanity/loader.js` — surface `muxPlaybackId`, `muxStatus`, `posterUrl`, `streamUrl`; keep `LEGACY_FILMS` fallback intact for safety | 15 min |
-| 7 | **Components** | `FeaturedFilmCard.jsx`, `CollapsedFilmCard.jsx` — swap the `<video src>` for `<MuxPlayer>` (preferred) or `<video>` + hls.js; pass `playbackId`, `autoPlay='muted'`, `loop`, `playsInline`, `muted`, `streamType='on-demand'`. `FilmCard.jsx` only needs the `posterUrl` for the static thumbnail. `FilmModal.jsx` stays unchanged (Vimeo). | 40 min |
+| 5 | **Fetcher projection** | `scripts/fetch-cms-content.mjs` — dereference the asset doc, extract `playbackId`, `status`, `aspect_ratio`, `duration`; build `muxStreamUrl` + `muxPosterUrl` strings | 20 min |
+| 6 | **Loader** | `src/sanity/loader.js` — surface `muxPlaybackId`, `muxStatus`, `muxPosterUrl`, `muxStreamUrl`; keep `LEGACY_FILMS` fallback intact for safety | 15 min |
+| 7 | **Components** | `FeaturedFilmCard.jsx`, `CollapsedFilmCard.jsx` — swap the `<video src>` for `<MuxPlayer>` (preferred) or `<video>` + hls.js; pass `playbackId`, `autoPlay='muted'`, `loop`, `playsInline`, `muted`, `streamType='on-demand'`. The static-thumbnail fallback (`muxPosterUrl`) lives in these same two cards — there is no separate `FilmCard.jsx`. `FilmModal.jsx` stays unchanged (Vimeo). | 40 min |
 | 8 | **Migration script** | `scripts/migrate-blob-to-mux.mjs` — read every film, for each one with a Blob `videoFile`, POST to Mux Create Asset (input URL = Blob URL, playback_policy=`public`), poll until ready, patch the Sanity doc with the new asset ref. Idempotent (skips films that already have `videoMux`). | 35 min |
 | 9 | **npm scripts + CLAUDE.md** | `package.json` — add `cms:migrate-blob-to-mux`. Update CLAUDE.md schema section + scripts table. | 10 min |
 | 10 | **E2E test + build verify** | `tests/e2e/cms-films-mux.spec.js` — load `/`, intercept network, assert at least one request to `stream.mux.com`. `npm run build` clean. | 20 min |

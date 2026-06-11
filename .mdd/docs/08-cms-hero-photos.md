@@ -31,7 +31,7 @@ known_issues:
 ## Purpose
 
 Move the Photos page hero slideshow's image set into Sanity so Basile can
-add, remove, reorder, and re-caption the ~50 photos without code changes.
+add, remove, reorder, and re-caption the 115 photos (as of 2026-06) without code changes.
 Replaces the hardcoded URL array in `src/data/heroPhotos.js` (which is
 kept as a fallback).
 

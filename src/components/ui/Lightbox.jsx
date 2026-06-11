@@ -276,6 +276,7 @@ function Lightbox({ photos, currentIndex, onClose, onNavigate, isOpen }) {
         {slides.map(({ photo, photoIndex, slot }) => (
           <div
             key={keyByPhotoIndex ? `idx-${photoIndex}` : `slot-${slot}`}
+            data-lightbox-slot={slot === 1 ? 'current' : slot === 0 ? 'prev' : 'next'}
             className="flex-shrink-0 h-full flex items-center justify-center"
             style={{ width: viewportWidth }}
           >

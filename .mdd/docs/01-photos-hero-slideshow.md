@@ -8,31 +8,32 @@ source_files:
   - src/components/photos/FloatingGalleryHero.jsx
   - src/sanity/loader.js  # heroPhotos export — CMS-backed; see doc 08 for schema + upload script
   - src/data/heroPhotos.js  # legacy fallback only, returned by the loader when CMS array is empty
-  - src/components/ui/HeroSection.jsx  # exports HeroBioOverlay (shared with Films hero)
+  - src/components/ui/HeroOverlay.jsx  # exports HeroBioOverlay (shared with Films hero)
 known_issues:
-  - "advance() silently returns after 20 retries; rare frozen-frame on mobile if many landscapes in a row (audit 2026-05-04 N6, still open as of 2026-05-05)"
+  - "advance() silently returns after 20 consecutive landscape-skips/errors (a successful non-landscape load returns immediately — the cap only counts skips in a row); rare frozen-frame on mobile if many landscapes in a row (audit 2026-05-04 N6, still open as of 2026-05-05)"
   - "prefersReducedMotion is read once at hook mount and not reactive — toggling the OS setting does not update behavior until the page remounts (audit 2026-05-05)"
   - "Photo list source switched from a hardcoded JS array to a CMS singleton (Stage 3 / doc 08) on 2026-05-20. Component import path moved from src/data/heroPhotos to src/sanity/loader. The legacy data file remains as the loader's fallback only."
+  - "LATENT (timer sweep, audit 2026-06-12): the slideshow effect resets the shared cancelRef to false on every re-run (isMobile flip at 767px, e.g. tablet rotation), which can resurrect a cancelled in-flight advance() chain mid-await — two interleaved loops hard-cutting faster than the 0.5-2s cadence until unmount. Fix shape: per-run cancel token object instead of a shared ref (FloatingGalleryHero.jsx ~L126)."
 ---
 
 # 01 — Photos Hero — Flashing Photo Slideshow
 
 ## Purpose
 
-Replace the static single-image hero on the Photos page (`/photos`) with a rapid-fire photo slideshow that cycles through all 116 photos from `public/img/BABA PHOTOS/`. The effect is a "flashing" strobe-like display — hard instant cuts between random photos at randomized intervals (0.5–2 seconds).
+Replace the static single-image hero on the Photos page (`/photos`) with a rapid-fire photo slideshow that cycles through the full hero-photo set from the CMS `heroPhotos` singleton (115 photos as of 2026-06). The effect is a "flashing" strobe-like display — hard instant cuts between random photos at randomized intervals (0.5–2 seconds).
 
 ## Architecture
 
-`FloatingGalleryHero.jsx` renders the slideshow. Photo list lives in `src/data/heroPhotos.js`.
+`FloatingGalleryHero.jsx` renders the slideshow. The photo list comes from the CMS `heroPhotos` singleton via `src/sanity/loader.js` (see doc 08); `src/data/heroPhotos.js` is the fallback only, returned by the loader when the CMS array is empty.
 
-- A photo list is built from all `.jpeg` files in `public/img/BABA PHOTOS/` and exported from `heroPhotos.js`
+- The photo list is the `heroPhotos` singleton's image array (Sanity CDN URLs flattened into `cms.json`); the legacy list built from `public/img/BABA PHOTOS/` in `heroPhotos.js` is the empty-CMS fallback
 - Photos are shuffled randomly (Fisher-Yates), cycling through all before reshuffling
 - Each interval is randomly chosen between 500ms and 2000ms
 - Transition is instant (no fade/crossfade) — hard swap of `src`
 - A single `<img>` with changing `src` gives the instant-cut effect
 - After each advance, the next 10 photos in the queue are warmed in the browser cache (`new Image()`) to avoid flicker (`PRELOAD_AHEAD = 10`)
 - The slideshow logic is encapsulated in a `usePhotoSlideshow` hook colocated in the same file
-- The bio + contact overlay (`HeroBioOverlay`) is imported from `HeroSection.jsx` and rendered on top of the photo on **both** desktop and mobile — so the Photos hero matches the Films hero exactly. There is no per-photo brightness analysis or adaptive overlay color (overlay is always white on the photo).
+- The bio + contact overlay (`HeroBioOverlay`) is imported from `HeroOverlay.jsx` and rendered on top of the photo on **both** desktop and mobile — so the Photos hero matches the Films hero exactly. There is no per-photo brightness analysis or adaptive overlay color (overlay is always white on the photo).
 
 ## Business Rules
 

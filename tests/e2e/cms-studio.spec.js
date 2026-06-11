@@ -32,9 +32,11 @@ test.describe('CMS Studio', () => {
     // Some Studio shell should be in the DOM by now — either the login
     // screen, a CORS error card, or the Studio chrome itself. We assert
     // ANY Studio-rendered element is present so we don't lock the test
-    // to a specific auth state.
+    // to a specific auth state. The unauthenticated login screen renders
+    // no data-testid/landmark elements in Sanity v4, so we match its
+    // auth-provider links by href instead (audit 2026-06-12).
     const studioShell = page.locator(
-      '[data-ui="Studio"], [data-testid="login"], [data-testid="default-layout"], main',
+      '[data-ui="Studio"], [data-testid="login"], [data-testid="default-layout"], a[href*="api.sanity.io/v1/auth/login"], main',
     );
     await expect(studioShell.first()).toBeVisible({ timeout: 10_000 });
 

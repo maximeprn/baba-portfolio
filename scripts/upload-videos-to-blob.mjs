@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /**
+ * STATUS: superseded by the Mux pipeline (doc 12); kept only for the Blob→Mux transition.
+ *
  * Upload all mp4 files from public/videos/ to Vercel Blob and write a
  * manifest of {publicPath: blobUrl} to src/data/blobUrls.json.
  *

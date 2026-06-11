@@ -33,6 +33,7 @@ models:
   - sanity:siteSettings (singleton)
   - sanity:heroOverlay (singleton)
   - sanity:showreel (singleton)
+  # 4th singleton sanity:heroPhotos is owned by doc 08
 test_files:
   - tests/e2e/cms-studio.spec.js
 known_issues:
@@ -40,7 +41,7 @@ known_issues:
   - "`src/data/siteConfig.js` STILL has hardcoded fields not yet moved to CMS: `artist.tagline`, `artist.shortBio`, `artist.title`, `contact.email`, `contact.phone`, `contact.location`, `navigation.left/center/right` arrays, `footer.links`. The hero overlay handles contact display; siteConfig values are largely unused by components but kept for shape compatibility."
   - "Sanity does NOT have a built-in webhook debounce. The recommended workflow is to disable the auto-webhook and use the Studio Deploy tool (see Business Rules → Webhook config + Deploy tool)."
   - "Vercel deploy hooks de-duplicate back-to-back triggers if a build is already running. The 200 OK response is the SAME whether queued or ignored, so the Deploy tool can't tell — it uses a 90-second button cool-down to discourage spam."
-  - "The Studio bundle is ~5MB / 1.7MB gzipped. Code-split via React.lazy in App.jsx so the public site bundle stays small. Never import 'sanity' from a non-Studio file."
+  - "The Studio bundle is ~6MB raw / ~1.95MB gzipped (measured 2026-05-21). Code-split via React.lazy in App.jsx so the public site bundle stays small. Never import 'sanity' from a non-Studio file."
 ---
 
 # 07 — CMS Foundation
@@ -127,7 +128,7 @@ Three singleton documents. Singletons are enforced two ways:
 
 ### `siteSettings` (singleton)
 
-Grouped into 5 tabs in the Studio for editorial clarity.
+Grouped into 6 tabs in the Studio for editorial clarity.
 
 | Group | Field | Type | Notes |
 |---|---|---|---|
@@ -139,6 +140,8 @@ Grouped into 5 tabs in the Studio for editorial clarity.
 | Nav | `navActiveStyle` | enum('pill', 'bold-larger') | Toggles between two implementations in `Navigation.jsx`. |
 | Nav | `navLinkSize` | number (px) | Inactive link size; default 16. Wrapped in `fluidScale()` → responsive ceiling. |
 | Nav | `navLinkActiveSize` | number (px) | Active link size; default 18. Same fluidScale treatment. |
+| Display | `featuredTitleHoverEffect` | enum('invert', 'grow') | Radio: `invert` = "Highlight (black background)", `grow` = "Grow (bigger + bolder)". How a featured film/photo section title reacts on hover. Default `invert`. |
+| Display | `featuredTitleHoverWholeSection` | boolean | When on, hovering anywhere on a featured card section highlights its title; when off, only the title text itself triggers the hover. Default true. |
 | Footer | `footerCopyright` | string | Year is prepended at render time. |
 | Footer | `footerShowSocial` | boolean | Hide social icons in footer. |
 
@@ -221,8 +224,8 @@ No runtime HTTP endpoints. Three categories of "URL surface":
    `sanity/desk/structure.js` + action filtering in `sanity.config.js`.
    Basile can't delete or duplicate the three site singletons.
 5. **Studio is code-split.** `src/App.jsx` lazy-loads `src/pages/Studio.jsx`
-   so the ~5 MB / 1.7 MB gzipped Studio bundle doesn't ship with the
-   public site.
+   so the ~6 MB raw / ~1.95 MB gzipped (measured 2026-05-21) Studio bundle
+   doesn't ship with the public site.
 6. **Deploy tool reads `VITE_VERCEL_DEPLOY_HOOK_URL`** at build time
    (Vite inlines `VITE_*` vars). The URL ends up in the public Studio JS
    — acceptable risk for a portfolio (worst case: anyone with the URL can

@@ -111,8 +111,7 @@ function flattenPhotoProject(project) {
   // Compose the legacy shape the React components expect:
   //   { id, slug, title, description, year, client, category, featured,
   //     photos: [{ src, alt, aspectRatio }, ...],
-  //     preview: { pattern, photos: [indices] },
-  //     imagePosition? }
+  //     preview: { pattern, photos: [indices] } }
   const photos = (project.photos ?? []).map((p) => ({
     src: p.src,
     alt: p.alt ?? '',

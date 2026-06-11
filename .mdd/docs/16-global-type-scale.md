@@ -46,7 +46,7 @@ What does **not** follow the rem root, and is handled separately:
 |---|---|---|
 | Page max-widths (`--max-width-container` / `--max-width-content`, `--nav-height`) | was rem | **Pinned to px** — so the canvas stays a fixed width and the scale-up reads as "bigger type", not "zoomed page". |
 | Hero overlay text (`SIZE_SCALE`, `heroOverlayLayout.js`) | px | Base values ×`TYPE_SCALE` (1.125) in code. |
-| `TitleSection` heading (`text-[34px]`) | px (arbitrary) | Bumped to `text-[38.25px]`. |
+| `TitleSection` heading (was `text-[34px]`) | px (arbitrary) | Now `text-[34.25px] md:text-[38.25px]` — desktop 34 × 1.125 = 38.25; mobile deliberately kept ≈ the old 34px (not ×1.125). |
 | Nav link text (`fluidScale(navLinkSize)`) | px | Untouched — naturally unaffected by the rem root. |
 | Viewport units (`svh` / `vw` / `vh`), fixed px, `tracking-[…px]` | — | Untouched by design. |
 

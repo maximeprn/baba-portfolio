@@ -9,7 +9,8 @@ function TitleSection({ title, borderTop = false }) {
         borderTop ? ' border-t border-black' : ''
       }`}
     >
-      {/* 38.25px = 34px base × 1.125 global type scale — see .mdd/docs/16 */}
+      {/* Desktop 38.25px = 34px base × 1.125 global type scale; mobile 34.25px
+          deliberately keeps the heading ≈ the old 34px (not ×1.125) — see .mdd/docs/16 */}
       {/* ml-4 on mobile aligns the title with the card thumbnails' px-4 inset */}
       <h2 className="font-body font-bold text-[34.25px] md:text-[38.25px] leading-none tracking-normal uppercase ml-4 md:ml-0">
         {title}

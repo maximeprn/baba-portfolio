@@ -118,6 +118,9 @@ meanwhile. No write script, no `SANITY_WRITE_TOKEN` needed.
 - **Edge padding** — both zones inset `MOBILE_EDGE_PAD_PX` (16px) from the left
   and right screen edges; the bottom zone insets `MOBILE_BOTTOM_PAD_PX` (32px)
   from the bottom.
+- **Intra-zone gap** — items within a zone are separated by
+  `MOBILE_ZONE_GAP_PX` (16px), applied as the zone's `rowGap`
+  (`HeroOverlay.jsx:234,253`).
 - **Alignment** — always left-aligned on mobile (the established design), one
   item per line. `stackWithSiblings` is desktop-only and has no mobile effect.
 - **Auto-shrink** — if `topHeight + bottomHeight + MOBILE_MIN_ZONE_GAP_PX`
@@ -132,10 +135,11 @@ meanwhile. No write script, no `SANITY_WRITE_TOKEN` needed.
 
 ### Desktop layout
 
-- Free anchor + offset positioning is unchanged.
-- Top-anchored items (single and stacks) get `top: max(96px, <offset>)` so a
-  low `offsetY` cannot push text under the nav. Purely additive — existing
-  content (offsetY 145+) is unaffected.
+> **[superseded — doc 14: fixed 9rem inset]** The `top: max(96px, <offset>)`
+> nav-safe clamp described here shipped with this feature but was removed
+> along with the per-item offsets. The merged code positions top-anchored
+> items with a flat fixed inset `top: 9rem` (144px), no offsets
+> (`heroOverlayLayout.js:120,133`).
 
 ### Size
 

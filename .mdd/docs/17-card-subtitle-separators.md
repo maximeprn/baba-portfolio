@@ -11,6 +11,7 @@ depends_on:
   - 10-cms-films
 source_files:
   - src/components/ui/CardSubtitle.jsx
+  - src/components/ui/cardSubtitleParts.js  # pure filter helper, extracted 2026-06-12 for testability
   - src/components/films/FeaturedFilmCard.jsx
   - src/components/films/CollapsedFilmCard.jsx
   - src/components/photos/FeaturedPhotoCard.jsx
@@ -20,7 +21,8 @@ routes: []
 models:
   - film
   - photoProject
-test_files: []
+test_files:
+  - tests/card-subtitle.spec.js  # pure-logic: fill combinations, trim/number edges, separator-count contract
 known_issues: []
 ---
 

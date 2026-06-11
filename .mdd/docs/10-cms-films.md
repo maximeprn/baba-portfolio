@@ -58,7 +58,7 @@ GROQ:  *[_type == "film"] | order(orderRank asc) {
         ▼
 src/data/cms.json (films array)
         ▼
-src/sanity/loader.js → films + getFeaturedFilms + getCollapsedFilms
+src/sanity/loader.js → films + getNonCollapsedFilms + getCollapsedFilms
         ▼
 src/pages/Films.jsx (drop-in replacement, no rendering changes)
 ```
@@ -169,12 +169,15 @@ featured/non-featured distinction; `videoType` / `videoFile` — superseded by
 
 ## Build plan (12 steps, ~3 h)
 
+> **Historical** — this plan describes the original Blob-era build; the video
+> handling was superseded by the Mux migration ([doc 12](12-cms-video-uploads-mux.md)).
+
 ### Phase 5 — Implement (do AFTER compaction)
 
 | # | Step | Files | Effort |
 |---|---|---|---|
 | 1 | **Schema** | `sanity/schemas/film.js` (NEW), `sanity/schemas/index.js` (register), `sanity/desk/structure.js` (add 🎬 Films entry below 📷 Photo projects) | 25 min |
-| 2 | **Fetcher query** | `scripts/fetch-cms-content.mjs` — add films GROQ projection + `flattenFilm()` that maps credits to `{left, right}` + thumbnail asset URL + passes videoFile through unchanged | 20 min |
+| 2 | **Fetcher query** | `scripts/fetch-cms-content.mjs` — add films GROQ projection + `flattenFilm()` that maps credits to `{left, right}` + thumbnail asset URL. (As built, `flattenFilm()` is Mux-only — no `videoFile`; see doc 12.) | 20 min |
 | 3 | **Loader** | `src/sanity/loader.js` — export `films`, `getNonCollapsedFilms()`, `getCollapsedFilms()`, `getFilmBySlug()` with fallback to `LEGACY_FILMS` from `src/data/films.js` | 15 min |
 | 4 | **Page switch** | `src/pages/Films.jsx` — change import from `../data/films` to `../sanity/loader`. No other code change (loader returns same shape). | 5 min |
 | 5 | **Migration script** | `scripts/upload-films.mjs` — read `src/data/films.js`, upload each `public/posters/<slug>.*` to Sanity (skip if missing), build doc with LexoRank-spaced `orderRank`, commit one transaction | 40 min |

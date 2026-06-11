@@ -1,8 +1,11 @@
 /**
- * FILMS DATA
+ * FILMS DATA — legacy fallback only.
  *
- * All film/video projects displayed on the homepage.
- * Every film is currently set to featured (video preview cards).
+ * Films are CMS-driven (Sanity `film` collection, doc 10); the loader falls
+ * back to this file only when cms.json has no film data. The `featured`,
+ * `videoType`, `videoFile`, and `imagePosition` keys on entries are remnants
+ * of the removed pre-CMS model — tolerated because the upload script
+ * (`scripts/upload-films.mjs`) ignores them.
  *
  * Video files live in /public/videos/
  * Poster images live in /public/posters/ (some films still need posters)

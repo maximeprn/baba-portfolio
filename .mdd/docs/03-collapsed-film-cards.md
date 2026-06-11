@@ -7,20 +7,21 @@ source_files:
   - src/components/films/CollapsedFilmCard.jsx
   - src/components/films/FeaturedFilmCard.jsx
   - src/pages/Films.jsx
-  - tailwind.config.js  # the `cards` (1350px) breakpoint
 test_files:
   - tests/e2e/collapsed-film-cards.spec.js
 known_issues:
   - "Desktop open uses a snap-trick that can transiently over-scroll the smooth-scroll content during the 1200 ms shutter. The page background is white, so the brief white-on-white gap is not visible."
   - "Mobile centres the video BEFORE the open shutter, mirroring CollapsedPhotoCard's scroll-then-expand. It cannot snap-trick (native smooth-scroll clamps to the live document height), so it pins the document to its post-expand height via body.minHeight for the duration of the open."
   - "The video-centre scroll inherits SmoothScrollContext's ease residual: it settles ~1–2 px shy of an exact centre."
+  - "Resize across the 1024px boundary mid-animation could mismatch the open technique (desktop snap-trick vs mobile body.minHeight); effectively unreachable in practice (scroll is locked and the window is only 1200ms). Audit 2026-06-12."
+  - "The 36px close fallback (CollapsedFilmCard.jsx ~L290) references a retired row height; harmless because collapsedHeightRef is always set before a close. Audit 2026-06-12."
 ---
 
 # 03 — Collapsed Film Cards: Shutter Expand/Collapse, Video-Centred Open
 
 ## Purpose
 
-The **Other Projects** section on the Films page lists secondary film entries as compact one-line bands. Clicking a band expands it into a full `FeaturedFilmCard` via a 1200 ms height shutter, scrolling the page so the **preview video's vertical centre lands at the viewport's vertical centre**. A small X indicator at the bottom of the expanded view (revealed on hover) plus any whitespace click triggers the inverse 600 ms close.
+The **Other Projects** section on the Films page lists secondary film entries as compact stacked cards (title over subtitle) laid out in a multi-column grid. Clicking a band expands it into a full `FeaturedFilmCard` via a 1200 ms height shutter, scrolling the page so the **preview video's vertical centre lands at the viewport's vertical centre**. A small X indicator at the bottom of the expanded view (revealed on hover) plus any whitespace click triggers the inverse 600 ms close.
 
 `CollapsedFilmCard` borrows `CollapsedPhotoCard`'s open/close **technique** (the expanded body is mounted only while open; same shutter timing and band-overlay slide) but differs from it deliberately in two ways:
 
@@ -51,7 +52,7 @@ The expanded body (`FeaturedFilmCard` + a close-X indicator) is rendered **only 
 
 | Phase | Meaning | DOM state |
 |---|---|---|
-| `'collapsed'` | Idle band | Article height driven by its in-flow `relative` overlay (≈36 px one-line row; grows when text wraps). Expanded body not mounted. |
+| `'collapsed'` | Idle band | Article height driven by its in-flow `relative` overlay — the stacked title + subtitle band, ≈50–60 px (grows when text wraps). Expanded body not mounted. The `36` in `handleClose`'s fallback (`CollapsedFilmCard.jsx` ~L290) is a vestige of the retired one-line row; `collapsedHeightRef` is always set before a close, so the fallback never fires. |
 | `'animating'` | Open in progress | Expanded body mounted in flow. Article inline `style.height` transitioning collapsed→target with `OPEN_TRANSITION` (1200 ms). Overlay sliding up + fading out. |
 | `'expanded'` | Stable expanded view | Article `style.height = 'auto'`. Overlay unmounted. Close-X indicator visible at the bottom of the body; article carries `group` for the X hover-reveal. |
 | `'closing'` | Close in progress | Article transitioning expanded→collapsed (600 ms). Body fades to opacity 0 (200 ms). Overlay re-mounts and cross-fades back in over the close tail. |
@@ -98,24 +99,24 @@ While `phase` is `'animating'` or `'closing'`, a `useEffect` keyed on `phase` di
 | Region | Behavior |
 |---|---|
 | Video tile / title (FeaturedFilmCard) | Opens FilmModal — `stopPropagation` prevents the article-level close |
-| Text column (description, metadata) | Inert — `stopPropagation` |
+| Text column (description, metadata) | Bubbles to the article's `onClick` — closes the card (no `stopPropagation`) |
 | Close-X indicator strip | Closes via `handleClose` |
 | Anywhere else on the article | Closes via the article's `onClick` |
 
 ## Layout & Spacing — the collapsed band
 
-The collapsed band has three responsive tiers (identical to `CollapsedPhotoCard`):
+The collapsed cards live in a CSS grid owned by `Films.jsx` (identical to the Photos page's `Other Projects` grid):
 
-- **Phones (< 768 px)** — `flex-col`, stacked, left-aligned title + metadata; description sentence `hidden`; `mb-6` gap between bands.
-- **768 px – 1350 px** — `md:flex-row` 3-zone row, `items-stretch` so the three column boxes share the tallest one's height, each `<p>` a flex container (`md:flex md:items-center`) for vertical centring. One-line row ≈36 px (`py-2` + `md:min-h-[36px]`); grows when text wraps. No per-card stagger offsets.
-- **≥ 1350 px** — same plus the per-card `cards:pl-*` / `cards:pr-*` drift offsets (the custom Tailwind `cards` screen).
+- **Parent grid** — `grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4` with `gap-x-2 gap-y-[12px] md:gap-x-6 md:gap-y-4`. Phones show the bands two-up, tablets (md, ≥768 px) three-up, desktop (lg, ≥1024 px) four-up.
+- **One card layout at every width** — each collapsed card is a stacked `flex flex-col gap-[3px] px-4 md:px-0 py-2`: title (13.5 px) over the `year • category` subtitle (10.5 px). md+ drops the horizontal padding so the bands sit flush-left in their column. There are no responsive row tiers, no `items-stretch` equal-height columns, and no per-card `cards:pl-*` / `cards:pr-*` drift offsets — the old md `flex-row` 3-zone row is retired, and the custom Tailwind `cards` (1350 px) screen is no longer used by the collapsed cards.
+- **Breakout while expanded** — when `phase !== 'collapsed'` the article adds `col-span-2 md:col-span-3 lg:col-span-4`, breaking out of its column so the expanded body spans the full grid width.
 
 ## Dependencies
 
 - **02-design-system** — motion tokens, `cubic-bezier(0.4, 0, 0.2, 1)` shutter curve, B&W hover-invert palette.
 - **`SmoothScrollContext`** — `scrollTo({ ease, instant })` and `getScrollPosition()` drive the open/close scroll; the desktop snap-trick works around `scrollTo`'s call-time `maxScroll` clamp.
 - **`FeaturedFilmCard`** — rendered as the expanded body, unchanged. Its preview video is the element the open scroll centres.
-- **`tailwind.config.js`** — the `cards` screen (`1350px`).
+- The custom Tailwind `cards` (1350 px) screen is **intentionally no longer used** by the collapsed bands — the multi-column grid + stacked card layout replaced the old 3-zone row and its drift offsets.
 
 ## Known Issues
 

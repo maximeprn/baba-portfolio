@@ -93,8 +93,12 @@ async function buildFilmDoc(entry, index, total, orderRank) {
   process.stdout.write(`  [${index + 1}/${total}] ${entry.title} … `);
 
   // Field set mirrors the current `film` schema (sanity/schemas/film.js):
-  // identity → story → credits → videoUrl → visible/collapsed → aspectRatio.
+  // identity → story → credits → videoUrl → visible/featured → aspectRatio.
   // The preview video (`videoMux`) is attached in Studio, not here.
+  // Legacy entries only mark the exceptions (`featured: false`) — absence
+  // means featured. The retired inverted `collapsed` flag is written too,
+  // kept in sync until `cms:migrate-film-featured -- --prune` retires it.
+  const featured = entry.featured ?? true;
   const doc = {
     _id: docId,
     _type: 'film',
@@ -105,7 +109,8 @@ async function buildFilmDoc(entry, index, total, orderRank) {
     client: entry.client ?? '',
     category: entry.category ?? '',
     visible: entry.visible !== false,
-    collapsed: entry.collapsed ?? false,
+    featured,
+    collapsed: !featured,
     videoUrl: entry.videoUrl ?? null,
     aspectRatio: typeof entry.aspectRatio === 'number' ? entry.aspectRatio : 1.78,
     credits: creditsToArray(entry.credits),

@@ -8,6 +8,17 @@
  * Auto-webhook setup is meant to be DISABLED in Sanity Manage when this
  * tool is in use (otherwise both will fire).
  *
+ * Workflow signals (2026-06-12 audit, H4):
+ *   - The last deploy trigger is persisted in localStorage (per browser),
+ *     so it survives reloads.
+ *   - On load, useDeployStatus lists documents published since that moment
+ *     ("you have undeployed changes") and counts in-progress drafts
+ *     ("publish before deploying or it won't go live"). UI in
+ *     DeployStatus.jsx.
+ *   - The success area links straight to Vercel's deployments list. Set
+ *     VITE_VERCEL_DEPLOYMENTS_URL for a direct project link; falls back to
+ *     the generic dashboard.
+ *
  * Security: the Vercel deploy hook URL is bundled into the Studio JS
  * (via VITE_VERCEL_DEPLOY_HOOK_URL). The bundle is technically public
  * (served from /admin before OAuth), so a determined attacker could
@@ -15,75 +26,42 @@
  * risk is low for a portfolio — no data leak, just a build-quota burn —
  * but if it becomes a problem, swap to a Vercel Function intermediary
  * that checks a session cookie.
- *
- * Visual style: plain React + Sanity's CSS variables (var(--card-bg-color)
- * etc.) so the tool matches the Studio theme without pulling in @sanity/ui
- * as an extra dependency.
  */
 
 import { useState, useCallback } from 'react';
+import { useDeployStatus } from './useDeployStatus';
+import { DeployStatus } from './DeployStatus';
+import { styles } from './deployStyles';
 
 const DEPLOY_HOOK_URL = import.meta.env.VITE_VERCEL_DEPLOY_HOOK_URL;
+const DEPLOYMENTS_URL =
+  import.meta.env.VITE_VERCEL_DEPLOYMENTS_URL || 'https://vercel.com/dashboard';
 
-const styles = {
-  page: {
-    padding: '32px',
-    maxWidth: 720,
-    margin: '0 auto',
-    fontFamily: 'inherit',
-    color: 'var(--card-fg-color, #fff)',
-  },
-  h1: { margin: '0 0 8px 0', fontSize: 28, fontWeight: 600 },
-  muted: { color: 'var(--card-muted-fg-color, #b3b3b3)', margin: 0 },
-  card: {
-    background: 'var(--card-bg-color, #1c1c1f)',
-    border: '1px solid var(--card-border-color, #2e2e33)',
-    borderRadius: 8,
-    padding: 24,
-    marginTop: 24,
-  },
-  primaryCard: {
-    borderColor: 'var(--brand-primary, #156dff)',
-  },
-  button: {
-    background: 'var(--brand-primary, #156dff)',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 6,
-    padding: '12px 24px',
-    fontSize: 16,
-    fontWeight: 500,
-    cursor: 'pointer',
-    transition: 'opacity 150ms',
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-    cursor: 'not-allowed',
-  },
-  messageError: {
-    background: 'var(--card-tone-critical-bg-color, #3a0a0a)',
-    border: '1px solid var(--card-tone-critical-border-color, #6a1a1a)',
-    color: 'var(--card-tone-critical-fg-color, #ff8080)',
-    padding: 12,
-    borderRadius: 6,
-    fontSize: 13,
-    marginTop: 12,
-  },
-  messageSuccess: {
-    background: 'var(--card-tone-positive-bg-color, #0a3a1a)',
-    border: '1px solid var(--card-tone-positive-border-color, #1a6a3a)',
-    color: 'var(--card-tone-positive-fg-color, #80ff80)',
-    padding: 12,
-    borderRadius: 6,
-    fontSize: 13,
-    marginTop: 12,
-  },
+const LAST_DEPLOY_KEY = 'baba.lastDeployTriggeredAt';
+
+const readStoredDeployTime = () => {
+  try {
+    const raw = window.localStorage.getItem(LAST_DEPLOY_KEY);
+    const parsed = raw ? new Date(raw) : null;
+    return parsed && !Number.isNaN(parsed.getTime()) ? parsed : null;
+  } catch {
+    return null; // private mode / blocked storage — tracking just disables
+  }
+};
+
+const storeDeployTime = (date) => {
+  try {
+    window.localStorage.setItem(LAST_DEPLOY_KEY, date.toISOString());
+  } catch {
+    /* best-effort */
+  }
 };
 
 export default function DeployTool() {
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
-  const [lastDeployedAt, setLastDeployedAt] = useState(null);
+  const [lastDeployedAt, setLastDeployedAt] = useState(readStoredDeployTime);
+  const deployStatus = useDeployStatus(lastDeployedAt);
 
   // Vercel's deploy hook dedupes back-to-back triggers when a build is
   // already running. The response is 200 either way (queued OR ignored),
@@ -119,9 +97,11 @@ export default function DeployTool() {
 
       setStatus('success');
       setMessage(
-        `Vercel returned 200 (build hook triggered). NOTE: if a previous build is still running, this trigger may have been silently de-duplicated. Watch Vercel → Deployments for a new entry within ~30s.`,
+        'Vercel returned 200 (build hook triggered). NOTE: if a previous build is still running, this trigger may have been silently de-duplicated — confirm a new entry appears within ~30s.',
       );
-      setLastDeployedAt(new Date());
+      const now = new Date();
+      setLastDeployedAt(now); // also re-runs the status query via the hook
+      storeDeployTime(now);
 
       // Lock the button for the cool-down so back-to-back clicks don't get
       // silently swallowed by Vercel's dedupe behaviour.
@@ -143,7 +123,7 @@ export default function DeployTool() {
         err instanceof TypeError && /fetch/i.test(err.message);
       setMessage(
         isLikelyCorsBlock
-          ? `Cross-origin fetch blocked by your browser before Vercel could respond. The deploy hook may have still been triggered — check Vercel → Deployments to confirm. (Original error: ${err.message})`
+          ? `Cross-origin fetch blocked by your browser before Vercel could respond. The deploy hook may have still been triggered — check the Vercel deployments list to confirm. (Original error: ${err.message})`
           : `Fetch to ${urlHint} failed: ${err.message || 'Unknown error'}. Common causes: wrong/expired deploy hook URL, an ad-blocker intercepting api.vercel.com, or network issue.`,
       );
     }
@@ -166,6 +146,10 @@ export default function DeployTool() {
         Push the latest published content to the live site. Each click triggers one Vercel build.
       </p>
 
+      <div style={styles.card}>
+        <DeployStatus lastDeployedAt={lastDeployedAt} status={deployStatus} />
+      </div>
+
       <div style={{ ...styles.card, ...styles.primaryCard }}>
         <p style={{ margin: '0 0 16px 0' }}>
           Click <strong>Deploy now</strong> when you&apos;ve published everything you want to ship.
@@ -180,9 +164,12 @@ export default function DeployTool() {
           >
             {buttonLabel}
           </button>
+          <a href={DEPLOYMENTS_URL} target="_blank" rel="noreferrer" style={{ ...styles.link, fontSize: 13 }}>
+            Open Vercel deployments ↗
+          </a>
           {lastDeployedAt && (
             <span style={{ ...styles.muted, fontSize: 13 }}>
-              Last triggered: {lastDeployedAt.toLocaleTimeString()}
+              Last triggered: {lastDeployedAt.toLocaleString()}
             </span>
           )}
         </div>

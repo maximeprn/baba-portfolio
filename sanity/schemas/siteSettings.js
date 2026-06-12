@@ -55,6 +55,8 @@ export const siteSettings = defineType({
     defineField({
       name: 'seoKeywords',
       title: 'Keywords',
+      description:
+        'Legacy — search engines have ignored meta keywords for years. Safe to leave empty; kept only because the value is already stored.',
       type: 'array',
       of: [{ type: 'string' }],
       options: { layout: 'tags' },
@@ -140,7 +142,16 @@ export const siteSettings = defineType({
         'Font size for the active nav link. Bigger than the base size gives the "bold + larger" emphasis; equal removes the size delta.',
       type: 'number',
       initialValue: 18,
-      validation: (Rule) => Rule.positive().integer(),
+      validation: (Rule) => [
+        Rule.positive().integer(),
+        Rule.custom((value, context) => {
+          const base = context.document?.navLinkSize;
+          if (typeof value !== 'number' || typeof base !== 'number') return true;
+          return value >= base
+            ? true
+            : `Smaller than the base size (${base}px) — the current page's link would shrink instead of standing out.`;
+        }).warning(),
+      ],
       group: 'nav',
     }),
 

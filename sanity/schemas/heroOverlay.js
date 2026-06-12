@@ -29,13 +29,14 @@ export const heroOverlay = defineType({
   name: 'heroOverlay',
   title: 'Hero overlay',
   type: 'document',
-  description:
-    'The floating text on top of the hero — the bio, the client list and the contact details.',
   fields: [
     defineField({
       name: 'items',
       title: 'Overlay items',
-      description: 'Each piece of text on the hero. Drag to reorder.',
+      // NOTE: keep the guidance here — document-level descriptions are not
+      // rendered by Studio v4's form view, field descriptions are.
+      description:
+        'The floating text on top of the hero — the bio, the client list and the contact details. Drag to reorder.',
       type: 'array',
       of: [
         defineArrayMember({
@@ -194,12 +195,20 @@ export const heroOverlay = defineType({
               textSize: 'textSize',
               stack: 'stackWithSiblings',
             },
-            prepare: ({ text, anchor, size, textSize, stack }) => ({
-              title: text,
-              subtitle: `${anchor} · ${size}${textSize ? ` · ${textSize}` : ''}${
-                stack ? ' · grouped' : ''
-              }`,
-            }),
+            prepare: ({ text, anchor, size, textSize, stack }) => {
+              // Speak the same language as the input labels — raw values like
+              // "top-left · body · md" mean nothing to a non-technical editor.
+              const anchorLabel =
+                ANCHOR_OPTIONS.find((o) => o.value === anchor)?.title ?? anchor;
+              const styleLabel = size === 'contact' ? 'Contact' : 'Normal';
+              const sizeLabel = SIZE_OPTIONS.find((o) => o.value === textSize)?.title;
+              return {
+                title: text,
+                subtitle: [anchorLabel, styleLabel, sizeLabel, stack ? 'grouped' : null]
+                  .filter(Boolean)
+                  .join(' · '),
+              };
+            },
           },
         }),
       ],

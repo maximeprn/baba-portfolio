@@ -13,6 +13,7 @@ import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
 import { visionTool } from '@sanity/vision';
 import { muxInput } from 'sanity-plugin-mux-input';
+import { media } from 'sanity-plugin-media';
 import { schemaTypes } from './sanity/schemas';
 import { structure } from './sanity/desk/structure';
 import DeployTool from './sanity/tools/DeployTool';
@@ -27,7 +28,9 @@ export default defineConfig({
   basePath: '/admin',
   plugins: [
     structureTool({ structure }),
-    visionTool(),
+    // Vision (GROQ playground) is a developer tool — keep it out of the
+    // production Studio so Basile only sees Structure / Media / Deploy.
+    ...(import.meta.env.DEV ? [visionTool()] : []),
     // Mux video input: drag-and-drop uploads from Studio, automatic 720p
     // transcoding + adaptive bitrate (HLS). Token ID + secret are stored
     // server-side in Sanity's secrets API (set via `npx sanity secrets`),
@@ -37,6 +40,9 @@ export default defineConfig({
       encoding_tier: 'smart',
       mp4_support: 'none',
     }),
+    // Searchable, taggable asset browser — replaces the default asset picker
+    // (a must for a photography-heavy site with hundreds of images).
+    media(),
   ],
   // Custom tools appear as tabs in the Studio's left sidebar. The Deploy
   // tool is a manual replacement for the Sanity → Vercel auto-webhook —

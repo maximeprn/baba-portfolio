@@ -37,7 +37,7 @@ function Films() {
   const [loadPhase, setLoadPhase] = useState('hero');
   const phaseRef = useRef('hero');
   const featuredLoadCount = useRef(0);
-  const featuredFilms = films.filter(f => !f.collapsed);
+  const featuredFilms = films.filter(f => f.featured);
 
   const advancePhase = useCallback((to) => {
     if (
@@ -106,7 +106,7 @@ function Films() {
         {/* CURATED WORKS — hidden for now, may reintroduce later */}
         {/* <TitleSection title="Curated Works" borderTop /> */}
 
-        {films.filter(f => !f.collapsed).map((film, index) => (
+        {films.filter(f => f.featured).map((film, index) => (
           <div key={film.id} className="py-2.5 w-full">
             <FeaturedFilmCard
               film={film}
@@ -130,7 +130,7 @@ function Films() {
             breaks out to full width via col-span-2 / md:col-span-3 /
             lg:col-span-4 on its <article>. */}
         <div className="grid w-full grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-[12px] md:gap-x-6 md:gap-y-4">
-          {films.filter(f => f.collapsed).map((film, index) => (
+          {films.filter(f => !f.featured).map((film, index) => (
             <CollapsedFilmCard
               key={film.id}
               film={film}

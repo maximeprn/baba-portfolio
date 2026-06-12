@@ -88,7 +88,12 @@ const QUERY = `{
     client,
     category,
     visible,
-    collapsed,
+    // Two-phase rename (2026-06-12): while the retired collapsed flag is
+    // still on the doc (pre-prune) it stays the source of truth — docs carry
+    // ORPHANED featured values from the pre-CMS schema, so featured-first
+    // would read stale noise. After the prune, featured is authoritative.
+    // (GROQ: !null → null, so the coalesce falls through when collapsed is gone.)
+    "featured": coalesce(!collapsed, featured, false),
     "thumbnail": thumbnail.asset->url,
     videoUrl,
     aspectRatio,
@@ -191,7 +196,7 @@ function flattenFilm(film) {
     category: film.category ?? '',
     // visible defaults to true so legacy docs without the field stay shown.
     visible: film.visible !== false,
-    collapsed: !!film.collapsed,
+    featured: !!film.featured,
     thumbnail: film.thumbnail ?? null,
     videoUrl: film.videoUrl ?? null,
     // Aspect-ratio resolution order:

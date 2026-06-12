@@ -228,8 +228,7 @@ export const FILM_ENTRIES = [
       right: [],
     },
     imagePosition: 'right',
-    featured: true,
-    collapsed: true,
+    featured: false,
     aspectRatio: 1.78,
   },
 
@@ -252,8 +251,7 @@ export const FILM_ENTRIES = [
       right: [],
     },
     imagePosition: 'left',
-    featured: true,
-    collapsed: true,
+    featured: false,
     aspectRatio: 1.78,
   },
 
@@ -279,8 +277,7 @@ export const FILM_ENTRIES = [
       ],
     },
     imagePosition: 'right',
-    featured: true,
-    collapsed: true,
+    featured: false,
     aspectRatio: 1.78,
   },
 
@@ -306,8 +303,7 @@ export const FILM_ENTRIES = [
       ],
     },
     imagePosition: 'left',
-    featured: true,
-    collapsed: true,
+    featured: false,
     aspectRatio: 1.78,
   },
 
@@ -332,8 +328,7 @@ export const FILM_ENTRIES = [
       ],
     },
     imagePosition: 'right',
-    featured: true,
-    collapsed: true,
+    featured: false,
     aspectRatio: 1.78,
   },
 
@@ -359,8 +354,7 @@ export const FILM_ENTRIES = [
       ],
     },
     imagePosition: 'left',
-    featured: true,
-    collapsed: true,
+    featured: false,
     aspectRatio: 1.78,
   },
 
@@ -383,8 +377,7 @@ export const FILM_ENTRIES = [
       right: [],
     },
     imagePosition: 'right',
-    featured: true,
-    collapsed: true,
+    featured: false,
     aspectRatio: 1.78,
   },
 
@@ -409,14 +402,16 @@ export const FILM_ENTRIES = [
       ],
     },
     imagePosition: 'left',
-    featured: true,
-    collapsed: true,
+    featured: false,
     aspectRatio: 1.78,
   },
 ];
 
 export const films = FILM_ENTRIES.map((film) => ({
   ...film,
+  // `featured` replaced the inverted `collapsed` flag (2026-06-12). Legacy
+  // entries only mark the exceptions (`featured: false`) — absence = featured.
+  featured: film.featured ?? true,
   videoFile: shortVideo(film.videoFile),
 }));
 

@@ -27,6 +27,7 @@ npm run dev
 - `npm run cms:fix-photo-project-ranks` — Re-assigns every photoProject's `orderRank` to a fresh LexoRank value. Run when drag-to-reorder in Studio is producing flaky results (a sign the ranks aren't LexoRank-compatible). Needs `SANITY_WRITE_TOKEN`.
 - `npm run cms:upload-films` — One-shot: read `src/data/films.js` (`FILM_ENTRIES`) and create `film` docs in Sanity. Idempotent (pinned doc IDs = `film-<slug>`). Uploads existing posters from `public/posters/`; films without a poster on disk get a blank thumbnail. Needs `SANITY_WRITE_TOKEN`. See [.mdd/docs/10-cms-films.md](.mdd/docs/10-cms-films.md).
 - `npm run cms:fix-film-ranks` — Re-assigns every film's `orderRank` to a fresh LexoRank value. Same fix as for photo projects. Needs `SANITY_WRITE_TOKEN`.
+- `npm run cms:migrate-film-featured` — Two-phase rename of the film display flag (`collapsed` → `featured`, 2026-06-12). Default run sets `featured = !collapsed` and keeps `collapsed` (safe while the pre-rename build is live); `-- --prune` deletes `collapsed` — run it ONLY after the featured-aware build is deployed. Idempotent. Needs `SANITY_WRITE_TOKEN`. See [.mdd/docs/10-cms-films.md](.mdd/docs/10-cms-films.md).
 - `npm run cms:migrate-blob-to-mux` — One-shot: for every film with a Blob `videoFile` and no `videoMux`, copy the video into Mux (transcoded + ABR HLS) and patch the Sanity doc. Idempotent. Needs `SANITY_WRITE_TOKEN`, `MUX_TOKEN_ID`, `MUX_TOKEN_SECRET`. See [.mdd/docs/12-cms-video-uploads-mux.md](.mdd/docs/12-cms-video-uploads-mux.md).
 - `npm run studio:deploy` — Deploy a hosted backup studio to `basiledeschamps.sanity.studio`
 
@@ -43,6 +44,8 @@ npm run dev
 | Adding a new film | Create in Studio via `/admin → 🎬 Films` (no script needed) |
 | Bulk re-import from legacy `photoProjects.js` | `cms:upload-photo-projects` (overwrites Sanity docs — manual edits lost) |
 | Bulk re-import from legacy `films.js` | `cms:upload-films` (overwrites Sanity docs — manual edits lost) |
+| Film flag rename, phase 1 (one time) | `cms:migrate-film-featured` (sets `featured`, keeps `collapsed`) |
+| Film flag rename, phase 2 (after the new build is live) | `cms:migrate-film-featured -- --prune` (deletes `collapsed`) |
 | Migrate legacy Blob videos into Mux (one time) | `cms:migrate-blob-to-mux` |
 | Adding/updating a film's preview video | Upload in Studio via `/admin → 🎬 Films → Media → Preview video (Mux)` |
 
@@ -85,7 +88,7 @@ scripts/
 ## CMS
 
 **Sanity project:** `e9pgmdfm`, dataset `production`.
-**Studio:** embedded at `/admin` (Sanity Studio v4 React component). Hosted backup at `basiledeschamps.sanity.studio` after `npm run studio:deploy`.
+**Studio:** embedded at `/admin` (Sanity Studio v4 React component). Hosted backup at `basiledeschamps.sanity.studio` after `npm run studio:deploy`. Plugins: `sanity-plugin-mux-input` (video), `sanity-plugin-media` (searchable/taggable asset browser — its internal `media.tag` doc type must NOT be added to the webhook GROQ filter), Vision (dev-only — stripped from production builds so editors don't see the GROQ playground).
 **Auth:** Google OAuth via Sanity. Editors invited from the [project dashboard](https://www.sanity.io/manage/project/e9pgmdfm).
 
 ### Build-time content pipeline
@@ -154,7 +157,7 @@ Four singletons + two collections:
 - **`showreel`** (singleton) — Vimeo URL + hero video file path
 - **`heroPhotos`** (singleton) — array of uploaded images for the Photos page slideshow
 - **`photoProject`** (collection) — one document per photo project. Fields grouped into "Content" (title, slug, description, year, client, category, photos, visible, featured) and "Layout (advanced)" (previewPattern, previewPhotoIndices) so Basile sees the editable content fields by default and can drill into layout knobs when needed. `visible: false` hides the project from the public Photos page without unpublishing the document.
-- **`film`** (collection) — one document per film. Single-tab layout: identity → story → credits → video (Mux preview + Vimeo modal URL) → display (visible + collapsed) → advanced overrides (thumbnail, aspect ratio). Cards on the homepage alternate left/right by row index — no per-document or per-site alignment knob. Autoplaying preview video is stored in Mux via `sanity-plugin-mux-input` — drag-and-drop in Studio, Mux transcodes to ABR HLS and serves via its own CDN (does NOT consume Vercel Fast Data Transfer). Aspect ratio and thumbnail default to Mux's auto-probed values; the schema fields are overrides you set only when you want to force a different shape or a specific poster frame. `credits` is a flat array of `{side, role, name}` rows; the runtime rebuilds the `{left:[], right:[]}` shape expected by components.
+- **`film`** (collection) — one document per film. Single-tab layout: identity → story → credits → video (Mux preview + Vimeo modal URL) → display (visible + featured) → advanced overrides (thumbnail, aspect ratio). `featured: true` → large homepage card; `false` → "Other Projects" row (same vocabulary as photoProject; renamed from the inverted `collapsed` on 2026-06-12 — see [.mdd/docs/10-cms-films.md](.mdd/docs/10-cms-films.md) for the two-phase migration). Cards on the homepage alternate left/right by row index — no per-document or per-site alignment knob. Autoplaying preview video is stored in Mux via `sanity-plugin-mux-input` — drag-and-drop in Studio, Mux transcodes to ABR HLS and serves via its own CDN (does NOT consume Vercel Fast Data Transfer). Aspect ratio and thumbnail default to Mux's auto-probed values; the schema fields are overrides you set only when you want to force a different shape or a specific poster frame. `credits` is a flat array of `{side, role, name}` rows; the runtime rebuilds the `{left:[], right:[]}` shape expected by components.
 
 Field reference: see `sanity/schemas/*.js` for canonical definitions. Singletons are enforced via `sanity/desk/structure.js` + action filters in `sanity.config.js`. Both collections (`photoProject`, `film`) use `@sanity/orderable-document-list` and are sorted by `orderRank` ascending.
 

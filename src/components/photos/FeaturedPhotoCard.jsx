@@ -199,6 +199,58 @@ function FeaturedPhotoCard({
     // Continues in the 'animating-open' useLayoutEffect below.
   }, [phase, onWillExpand, id, getScrollPosition, scrollTo]);
 
+  const handleClose = useCallback((e) => {
+    if (e) e.stopPropagation();
+    if (phase !== 'expanded' || isAnimatingRef.current) return;
+
+    const article = articleRef.current;
+    if (!article) return;
+
+    const expandedHeight = article.offsetHeight;
+    isAnimatingRef.current = true;
+
+    if (reducedMotion()) {
+      setPhase('collapsed');
+      isAnimatingRef.current = false;
+      return;
+    }
+
+    article.style.transition = 'none';
+    article.style.height = `${expandedHeight}px`;
+    article.style.clipPath = 'inset(0)';
+
+    setPhase('animating-close');
+  }, [phase]);
+
+  // Phase finishers — shared by the height transitionend handler AND the
+  // watchdog timers in the animating effects below. The browser fires NO
+  // transitionend when the height doesn't actually change (zero-delta
+  // transition — e.g. a 2-photo project whose collapsed preview is exactly
+  // as tall as its expanded gallery), which used to jam the card in an
+  // animating phase forever: stuck aria-expanded, dead clicks, and the
+  // sibling waiting on 'photo-card-expand-done' never collapsing.
+  const finishOpen = useCallback(() => {
+    setPhase('expanded');
+    isAnimatingRef.current = false;
+    // Notify any sibling that's been waiting to collapse.
+    const article = articleRef.current;
+    if (article) {
+      const sourceTop = article.getBoundingClientRect().top + getScrollPosition();
+      window.dispatchEvent(new CustomEvent('photo-card-expand-done', {
+        detail: { sourceTop },
+      }));
+    }
+    if (pendingCloseRef.current) {
+      pendingCloseRef.current = false;
+      requestAnimationFrame(() => handleClose());
+    }
+  }, [getScrollPosition, handleClose]);
+
+  const finishClose = useCallback(() => {
+    setPhase('collapsed');
+    isAnimatingRef.current = false;
+  }, []);
+
   // After the swap to 'animating-open' commits: measure LAST rects,
   // invert each preview img to its FIRST position, then play under transition.
   useLayoutEffect(() => {
@@ -256,6 +308,7 @@ function FeaturedPhotoCard({
     const targetScroll = Math.max(0, articleTop + currentScroll);
 
     let cancelled = false;
+    let watchdogId = 0;
 
     const startMorph = () => {
       if (cancelled) return;
@@ -277,6 +330,12 @@ function FeaturedPhotoCard({
         cell.style.transition = `opacity ${CELL_FADE_DURATION_MS}ms ${EASE} ${stagger}ms`;
         cell.style.opacity = '1';
       });
+
+      // Watchdog: a zero-delta height (targetHeight === collapsedHeight)
+      // fires no transitionend — finish the open by timer instead.
+      watchdogId = setTimeout(() => {
+        if (!cancelled) finishOpen();
+      }, OPEN_DURATION_MS + 120);
     };
 
     if (!isDesktop) {
@@ -292,7 +351,7 @@ function FeaturedPhotoCard({
         if (cancelled) return;
         requestAnimationFrame(startMorph);
       });
-      return () => { cancelled = true; };
+      return () => { cancelled = true; clearTimeout(watchdogId); };
     }
 
     const rafId = requestAnimationFrame(() => {
@@ -303,31 +362,9 @@ function FeaturedPhotoCard({
     return () => {
       cancelled = true;
       cancelAnimationFrame(rafId);
+      clearTimeout(watchdogId);
     };
-  }, [phase, getScrollPosition, scrollTo, isDesktop]);
-
-  const handleClose = useCallback((e) => {
-    if (e) e.stopPropagation();
-    if (phase !== 'expanded' || isAnimatingRef.current) return;
-
-    const article = articleRef.current;
-    if (!article) return;
-
-    const expandedHeight = article.offsetHeight;
-    isAnimatingRef.current = true;
-
-    if (reducedMotion()) {
-      setPhase('collapsed');
-      isAnimatingRef.current = false;
-      return;
-    }
-
-    article.style.transition = 'none';
-    article.style.height = `${expandedHeight}px`;
-    article.style.clipPath = 'inset(0)';
-
-    setPhase('animating-close');
-  }, [phase]);
+  }, [phase, getScrollPosition, scrollTo, isDesktop, finishOpen]);
 
   // Drive the close animation: gallery opacity fade + height shutter +
   // scroll-up so the now-collapsed card lands at viewport top (instead
@@ -359,31 +396,24 @@ function FeaturedPhotoCard({
       article.style.height = `${targetHeight}px`;
     });
 
-    return () => cancelAnimationFrame(rafId);
-  }, [phase, getScrollPosition, scrollTo, isDesktop]);
+    // Watchdog: a zero-delta height (expanded === collapsed height) fires
+    // no transitionend — finish the close by timer instead.
+    const watchdogId = setTimeout(finishClose, CLOSE_DURATION_MS + 120);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      clearTimeout(watchdogId);
+    };
+  }, [phase, getScrollPosition, scrollTo, isDesktop, finishClose]);
 
   const handleTransitionEnd = useCallback((e) => {
     if (e.target !== articleRef.current || e.propertyName !== 'height') return;
     if (phase === 'animating-open') {
-      setPhase('expanded');
-      isAnimatingRef.current = false;
-      // Notify any sibling that's been waiting to collapse.
-      const article = articleRef.current;
-      if (article) {
-        const sourceTop = article.getBoundingClientRect().top + getScrollPosition();
-        window.dispatchEvent(new CustomEvent('photo-card-expand-done', {
-          detail: { sourceTop },
-        }));
-      }
-      if (pendingCloseRef.current) {
-        pendingCloseRef.current = false;
-        requestAnimationFrame(() => handleClose());
-      }
+      finishOpen();
     } else if (phase === 'animating-close') {
-      setPhase('collapsed');
-      isAnimatingRef.current = false;
+      finishClose();
     }
-  }, [phase, handleClose, getScrollPosition]);
+  }, [phase, finishOpen, finishClose]);
 
   // Auto-close when parent bumps closeSignal. We DELAY the actual
   // collapse until the new card finishes expanding (window event

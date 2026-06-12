@@ -407,7 +407,7 @@
       "client": "Salomon",
       "category": "Spec Commercial",
       "visible": false,
-      "featured": false,
+      "featured": true,
       "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/0af39bdc01276f0d847b369bf554f9880416b3c3-1280x720.jpg",
       "videoUrl": "https://player.vimeo.com/video/551544527",
       "aspectRatio": 1.78,
@@ -475,7 +475,7 @@
       "client": "",
       "category": "Fashion Film",
       "visible": false,
-      "featured": false,
+      "featured": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/271458415",
       "aspectRatio": 1.78,
@@ -511,7 +511,7 @@
       "client": "",
       "category": "Fashion Film",
       "visible": false,
-      "featured": false,
+      "featured": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/269335097",
       "aspectRatio": 1.78,
@@ -538,7 +538,7 @@
       "client": "Hommage Clothing",
       "category": "Fashion Film",
       "visible": false,
-      "featured": false,
+      "featured": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/187173133",
       "aspectRatio": 1.78,
@@ -2651,5 +2651,5 @@
     "socialTwitter": null,
     "socialVimeo": "https://vimeo.com/user37669788"
   },
-  "_fetchedAt": "2026-06-12T14:07:38.527Z"
+  "_fetchedAt": "2026-06-12T14:36:45.730Z"
 }

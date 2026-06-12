@@ -71,9 +71,10 @@ src/pages/Films.jsx (drop-in replacement, no rendering changes)
 
 ### `film` (collection)
 
-Single-tab layout (no `groups`), ordered in the natural flow of authoring via
-`fieldsets`: Identity → Story → Credits → Video → Display → Advanced overrides
-(collapsed by default). Canonical definition: [sanity/schemas/film.js](../../sanity/schemas/film.js).
+Tab groups mirror photoProject (2026-06-12 polish): **Content** (default —
+Identity → Story → Credits → Video → Display, with fieldsets for visual
+rhythm) and **Advanced (overrides)** (thumbnail + aspect ratio). Canonical
+definition: [sanity/schemas/film.js](../../sanity/schemas/film.js).
 
 #### Identity
 
@@ -124,7 +125,7 @@ Single-tab layout (no `groups`), ordered in the natural flow of authoring via
 | Field | Type | Notes |
 |---|---|---|
 | `thumbnail` | image (hotspot) | Optional custom poster. Blank → a frame Mux picks automatically. |
-| `aspectRatio` | number (positive) | Optional override. Blank → Mux's probed aspect ratio, falling back to 1.78. |
+| `aspectRatio` | number (positive, named-preset dropdown) | Optional override ("16:9 — widescreen (1.78)", "4:3 — classic TV (1.33)", …). Blank → Mux's probed aspect ratio, falling back to 1.78. NOTE: the original import wrote a 1.78 override on every doc — reset the field (⋮ → Reset value) to restore native-ratio behaviour per film. |
 
 #### Hidden
 

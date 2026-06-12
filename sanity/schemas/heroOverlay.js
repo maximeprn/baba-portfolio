@@ -1,4 +1,5 @@
 import { defineType, defineField, defineArrayMember } from 'sanity';
+import AnchorMiniMapInput from '../components/AnchorMiniMapInput';
 
 // Left / right only — overlay text is never centered (by design), so the
 // center anchors are deliberately omitted from the picker.
@@ -62,8 +63,12 @@ export const heroOverlay = defineType({
               name: 'anchor',
               title: 'Position',
               description:
-                'Which corner of the screen this text sits in. On phones, top items group near the top, bottom items near the bottom.',
+                'Click where on the screen this text should sit. On phones, top items group near the top, bottom items near the bottom.',
               type: 'string',
+              // Spatial mini-map picker (audit 2026-06-12, L3). The stored
+              // value is still one of ANCHOR_OPTIONS — the list stays as
+              // canonical metadata for previews and any non-custom rendering.
+              components: { input: AnchorMiniMapInput },
               options: { list: ANCHOR_OPTIONS },
               initialValue: 'top-left',
               validation: (Rule) => Rule.required(),

@@ -99,9 +99,19 @@ harmonize the film placement flag — rename inverted `collapsed` → `featured`
 to match photoProject; new films default to **not featured** (consistent with
 photos, safer than the old featured-by-default).
 
-**Executed:** steps 1–6 plus the `featured` harmonization. Step 7 (polish:
-anchor mini-map L3, named aspect ratios L4, film tab groups L10) deliberately
-skipped — not opted into.
+**Executed:** steps 1–6 plus the `featured` harmonization. Step 7 (polish)
+executed later the same day on Maxime's go (branch `feat/studio-ui-polish`):
+- **L3** — `anchor` renders as a clickable 2×3 mini-map of the hero screen
+  ([AnchorMiniMapInput.jsx](../../sanity/components/AnchorMiniMapInput.jsx));
+  stored value unchanged, options.list kept as canonical metadata.
+- **L4** — `aspectRatio` override is a named-preset dropdown ("16:9 —
+  widescreen (1.78)" …) covering every stored value (1.78 ×14 / 1.33 / 1.25,
+  verified read-only). Bonus finding: the ×14 is an import artifact — every
+  film carries a 1.78 override that defeats the Mux native-ratio default;
+  curable per film via ⋮ → Reset value (noted in doc 10).
+- **L10** — film schema now uses Content / Advanced tab groups like
+  photoProject (fieldsets kept inside Content for rhythm); one editing model
+  across both collections.
 
 | Step | Outcome |
 |---|---|

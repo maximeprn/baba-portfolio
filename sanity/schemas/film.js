@@ -5,14 +5,12 @@ import { orderRankField } from '@sanity/orderable-document-list';
 /**
  * Film — a single film/video project shown on the homepage (/).
  *
- * Single-tab layout, ordered top-to-bottom in the natural flow of authoring:
- *   1. Identity         — title, slug
- *   2. Story            — description, year, client, category
- *   3. Credits          — array of {side, role, name}
- *   4. Video            — Mux preview asset + Vimeo modal URL
- *   5. Display flags    — visible, featured
- *   6. Advanced (collapsed by default) — thumbnail override, aspectRatio
- *      override
+ * Tab groups mirror photoProject so the editor learns ONE layout:
+ *   - "Content"  → everything Basile owns, in the natural authoring flow:
+ *     identity (title, slug) → story → credits → video → display flags.
+ *     Fieldsets inside the tab keep the visual rhythm.
+ *   - "Advanced" → optional override knobs (thumbnail, aspect ratio) that
+ *     default to Mux's auto-probed values when left empty.
  *
  * One display flag drives placement (same vocabulary as photoProject):
  *   - featured=true  → FeaturedFilmCard (video preview, video left/right
@@ -23,7 +21,7 @@ import { orderRankField } from '@sanity/orderable-document-list';
  * Two-phase rename: `collapsed` is kept as a hidden retired field until the
  * branch is merged + deployed, then `cms:migrate-film-featured -- --prune`
  * removes it from the documents. The fetcher reads
- * `coalesce(featured, !collapsed)` in the meantime.
+ * `coalesce(!collapsed, featured, false)` in the meantime.
  *
  * Ordering is drag-and-drop via @sanity/orderable-document-list. The plugin
  * manages the hidden `orderRank` field. The fetcher sorts by orderRank asc.
@@ -40,6 +38,21 @@ const CATEGORY_SUGGESTIONS = [
   'Spec Commercial',
   'Branded Documentary',
   'Showreel',
+];
+
+// Named presets for the aspect-ratio override. Editors think "16:9", not
+// 1.78. The set covers every value currently stored in the dataset
+// (1.78 ×14 — an artifact of the original import — plus 1.33 and 1.25).
+const ASPECT_RATIO_OPTIONS = [
+  { title: '16:9 — widescreen (1.78)', value: 1.78 },
+  { title: '1.85:1 — cinema flat (1.85)', value: 1.85 },
+  { title: '2.39:1 — anamorphic / scope (2.39)', value: 2.39 },
+  { title: '2:1 — univisium (2)', value: 2 },
+  { title: '4:3 — classic TV (1.33)', value: 1.33 },
+  { title: '5:4 (1.25)', value: 1.25 },
+  { title: '1:1 — square (1)', value: 1 },
+  { title: '4:5 — portrait (0.8)', value: 0.8 },
+  { title: '9:16 — vertical (0.56)', value: 0.5625 },
 ];
 
 // List-preview media fallback: when no override thumbnail is set (the normal
@@ -60,6 +73,10 @@ export const film = defineType({
   name: 'film',
   title: 'Film',
   type: 'document',
+  groups: [
+    { name: 'content', title: 'Content', default: true },
+    { name: 'advanced', title: 'Advanced (overrides)' },
+  ],
   fieldsets: [
     {
       name: 'story',
@@ -76,13 +93,6 @@ export const film = defineType({
       title: 'Display',
       options: { columns: 1 },
     },
-    {
-      name: 'advanced',
-      title: 'Advanced overrides',
-      description:
-        'Optional knobs. Leave blank to let Mux + the layout engine handle each setting automatically.',
-      options: { collapsible: true, collapsed: true, columns: 1 },
-    },
   ],
   // A film with no video at all can neither autoplay a preview nor open the
   // Vimeo modal — warn (not block) so a draft can still be saved early.
@@ -97,6 +107,7 @@ export const film = defineType({
       name: 'title',
       title: 'Title',
       type: 'string',
+      group: 'content',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -105,6 +116,7 @@ export const film = defineType({
       description: 'Auto-generates from the title. Click "Generate" if you change the title later.',
       type: 'slug',
       options: { source: 'title', maxLength: 96 },
+      group: 'content',
       validation: (Rule) => Rule.required(),
     }),
 
@@ -115,12 +127,14 @@ export const film = defineType({
       type: 'text',
       rows: 3,
       fieldset: 'story',
+      group: 'content',
     }),
     defineField({
       name: 'year',
       title: 'Year',
       type: 'number',
       fieldset: 'story',
+      group: 'content',
       validation: (Rule) => Rule.min(2000).max(2100).integer(),
     }),
     defineField({
@@ -128,6 +142,7 @@ export const film = defineType({
       title: 'Client',
       type: 'string',
       fieldset: 'story',
+      group: 'content',
     }),
     defineField({
       name: 'category',
@@ -136,6 +151,7 @@ export const film = defineType({
       type: 'string',
       options: { list: CATEGORY_SUGGESTIONS.map((c) => ({ title: c, value: c })) },
       fieldset: 'story',
+      group: 'content',
     }),
 
     // ---------- Credits ----------
@@ -145,6 +161,7 @@ export const film = defineType({
       description:
         'Each row shows up in the left OR right credits column under the film. Add as many rows as you like; "Column" controls which side.',
       type: 'array',
+      group: 'content',
       of: [
         {
           type: 'object',
@@ -198,6 +215,7 @@ export const film = defineType({
         'Autoplaying preview shown on the homepage card. Drop a .mov/.mp4 here and Mux will transcode + serve via adaptive bitrate streaming. Encoding takes ~30s after upload completes.',
       type: 'mux.video',
       fieldset: 'video',
+      group: 'content',
     }),
     defineField({
       name: 'videoUrl',
@@ -206,6 +224,7 @@ export const film = defineType({
         'Drives the full-screen Vimeo modal opened on click. Paste any Vimeo link — the normal share link (https://vimeo.com/<id>) works fine; the site converts it to the embeddable player automatically.',
       type: 'url',
       fieldset: 'video',
+      group: 'content',
       validation: (Rule) => Rule.uri({ scheme: ['http', 'https'] }),
     }),
 
@@ -218,6 +237,7 @@ export const film = defineType({
       type: 'boolean',
       initialValue: true,
       fieldset: 'display',
+      group: 'content',
     }),
     defineField({
       name: 'featured',
@@ -227,9 +247,10 @@ export const film = defineType({
       type: 'boolean',
       initialValue: false,
       fieldset: 'display',
+      group: 'content',
     }),
 
-    // ---------- Advanced overrides ----------
+    // ---------- Advanced (overrides) ----------
     defineField({
       name: 'thumbnail',
       title: 'Thumbnail (override)',
@@ -237,15 +258,16 @@ export const film = defineType({
         'Optional custom poster. Leave blank to use a frame Mux picks automatically.',
       type: 'image',
       options: { hotspot: true },
-      fieldset: 'advanced',
+      group: 'advanced',
     }),
     defineField({
       name: 'aspectRatio',
       title: 'Aspect ratio (override)',
       description:
-        'Leave blank to use the uploaded video\'s native aspect ratio. Set this to force a different card shape — e.g. 1.78 (16:9), 1.33 (4:3), 1.25 (5:4).',
+        'Leave empty to use the uploaded video\'s native aspect ratio (recommended — use the field\'s ⋮ menu → "Reset value" to clear). Pick a shape only to force a different card shape.',
       type: 'number',
-      fieldset: 'advanced',
+      options: { list: ASPECT_RATIO_OPTIONS },
+      group: 'advanced',
       validation: (Rule) => Rule.positive(),
     }),
     orderRankField({ type: 'film' }),

@@ -2,14 +2,14 @@
   "films": [
     {
       "id": "9241be6f-37a3-4684-aa4f-8b95ead17f80",
-      "slug": "protea-a-portal-film",
-      "title": "PROTEA DREAMS - A Portal film by Basile Deschamps",
-      "description": "Directed, composed & edited by Basile Deschamps.",
+      "slug": "portal",
+      "title": "PROTEA DREAMS - A Portal film",
+      "description": "Directed, composed & edited by Basile Deschamps.\n\nDOP : Reezo Hassan & Basile Deschamps\nModel : Lubabalo Nkobo",
       "year": 2026,
       "client": "Portal",
       "category": "Branded Documentary",
       "visible": true,
-      "collapsed": false,
+      "featured": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/1186537438",
       "aspectRatio": 1.7777777777777777,
@@ -26,12 +26,12 @@
       "id": "9cd36103-5158-4d59-a944-803184f513f9",
       "slug": "outbreak-saucony",
       "title": "OUTBREAK - Saucony Shock Capsule Campaign",
-      "description": "For the release of the Endorphin Pro 5, Speed 5 and Elite 2",
+      "description": "Campaign film for the Endorphin Pro 5, Speed 5 and Elite 2\n\nDirector, edit, music : Basile Deschamps\nDOP : Jean Charles Baravian\nColor, compositing : Lucas Brunier\n3D : Pierre Allain Longval\nMain Talent : Shamseddine Monayajo",
       "year": 2026,
       "client": "Saucony",
       "category": "Commercial",
       "visible": true,
-      "collapsed": false,
+      "featured": true,
       "thumbnail": null,
       "videoUrl": "https://vimeo.com/1180456052",
       "aspectRatio": 1.78,
@@ -58,78 +58,6 @@
       "muxPosterUrl": "https://image.mux.com/eI2aUFi02yymZbUhZOwGmKVmXpe6H02PSO01NbxbJ1xyMk/thumbnail.jpg?time=0.5"
     },
     {
-      "id": "film-bastille-maison-mara",
-      "slug": "bastille-maison-mara",
-      "title": "Bastille, Maison Mara",
-      "description": "A fashion film for Maison Mara, directed and shot by Basile Deschamps. Styling by Natasha Els, with Loren Humpfreys and Olivier Ntumba. Paris, quiet confidence, nothing overdone.",
-      "year": 2021,
-      "client": "Maison Mara",
-      "category": "Fashion Film",
-      "visible": true,
-      "collapsed": false,
-      "thumbnail": null,
-      "videoUrl": "https://player.vimeo.com/video/541582370",
-      "aspectRatio": 1.78,
-      "credits": {
-        "left": [
-          {
-            "role": "Direction / DOP",
-            "name": "Basile Deschamps"
-          },
-          {
-            "role": "Styling",
-            "name": "Natasha Els"
-          }
-        ],
-        "right": [
-          {
-            "role": "Cast",
-            "name": "Loren Humpfreys, Olivier Ntumba"
-          }
-        ]
-      },
-      "muxPlaybackId": "YOGoQ01goSKnHiILQ4Qa900mm5eRDAXiJqVgb15nrX4uc",
-      "muxStatus": "ready",
-      "muxStreamUrl": "https://stream.mux.com/YOGoQ01goSKnHiILQ4Qa900mm5eRDAXiJqVgb15nrX4uc.m3u8",
-      "muxPosterUrl": "https://image.mux.com/YOGoQ01goSKnHiILQ4Qa900mm5eRDAXiJqVgb15nrX4uc/thumbnail.jpg?time=0.5"
-    },
-    {
-      "id": "film-veja-condor-3",
-      "slug": "veja-condor-3",
-      "title": "Veja Condor 3",
-      "description": "A sport film built around the launch of the Condor 3. From marathon tarmac to mountain trail, directed, edited, and scored by Basile Deschamps.",
-      "year": 2025,
-      "client": "Veja",
-      "category": "Commercial",
-      "visible": true,
-      "collapsed": true,
-      "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/9b8174848a577073e73b1c85781b355dfad4f02f-1280x720.jpg",
-      "videoUrl": "https://player.vimeo.com/video/1062003612",
-      "aspectRatio": 1.78,
-      "credits": {
-        "left": [
-          {
-            "role": "Direction",
-            "name": "Basile Deschamps"
-          },
-          {
-            "role": "Edit",
-            "name": "Basile Deschamps"
-          }
-        ],
-        "right": [
-          {
-            "role": "Music",
-            "name": "Basile Deschamps"
-          }
-        ]
-      },
-      "muxPlaybackId": "qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg",
-      "muxStatus": "ready",
-      "muxStreamUrl": "https://stream.mux.com/qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg.m3u8",
-      "muxPosterUrl": "https://image.mux.com/qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg/thumbnail.jpg?time=0.5"
-    },
-    {
       "id": "film-sacai-ss25",
       "slug": "sacai-ss25",
       "title": "Sacai SS25",
@@ -138,7 +66,7 @@
       "client": "Sacai",
       "category": "Fashion / Behind the Scenes",
       "visible": true,
-      "collapsed": false,
+      "featured": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/1047455821",
       "aspectRatio": 1.78,
@@ -166,36 +94,40 @@
       "muxPosterUrl": "https://image.mux.com/1zP5WK6W7uQOkeVo01nGwo8gokX200a5vhlBDEOrGs9ig/thumbnail.jpg?time=0.5"
     },
     {
-      "id": "film-quentin-malriq",
-      "slug": "quentin-malriq",
-      "title": "Quentin Malriq, An Athlete Portrait by DISTANCE",
-      "description": "A film following middle-distance runner Quentin Malriq as he fights for Olympic selection. Made for ASICS, the portrait stays close to the daily grind. The margins are tiny and the stakes are everything.",
-      "year": 2023,
-      "client": "ASICS",
-      "category": "Documentary / Sport",
+      "id": "film-veja-condor-3",
+      "slug": "veja-condor-3",
+      "title": "Veja Condor 3",
+      "description": "Campaign film for the Condor 3. \nDirected, edited, and scored by Basile Deschamps.",
+      "year": 2025,
+      "client": "Veja",
+      "category": "Commercial",
       "visible": true,
-      "collapsed": false,
-      "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/71f5cbe29ada11a67ae78ac4a8979a7b37cd859f-1280x720.jpg",
-      "videoUrl": "https://player.vimeo.com/video/895840721",
+      "featured": true,
+      "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/9b8174848a577073e73b1c85781b355dfad4f02f-1280x720.jpg",
+      "videoUrl": "https://player.vimeo.com/video/1062003612",
       "aspectRatio": 1.78,
       "credits": {
         "left": [
           {
             "role": "Direction",
             "name": "Basile Deschamps"
+          },
+          {
+            "role": "Edit",
+            "name": "Basile Deschamps"
           }
         ],
         "right": [
           {
-            "role": "Production",
-            "name": "DISTANCE"
+            "role": "Music",
+            "name": "Basile Deschamps"
           }
         ]
       },
-      "muxPlaybackId": "NwKvkp7WykiOu6DRfIJT3NAJJOuT01klYeL9rl02B9Lyk",
+      "muxPlaybackId": "qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg",
       "muxStatus": "ready",
-      "muxStreamUrl": "https://stream.mux.com/NwKvkp7WykiOu6DRfIJT3NAJJOuT01klYeL9rl02B9Lyk.m3u8",
-      "muxPosterUrl": "https://image.mux.com/NwKvkp7WykiOu6DRfIJT3NAJJOuT01klYeL9rl02B9Lyk/thumbnail.jpg?time=0.5"
+      "muxStreamUrl": "https://stream.mux.com/qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg.m3u8",
+      "muxPosterUrl": "https://image.mux.com/qnn02y3kytBKUsg8Aw9KfugrpYevamnYt2O5HDE83teg/thumbnail.jpg?time=0.5"
     },
     {
       "id": "film-decathlon-cocreation",
@@ -206,7 +138,7 @@
       "client": "Decathlon",
       "category": "Commercial",
       "visible": true,
-      "collapsed": false,
+      "featured": true,
       "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/7e70eebe70c1317d1a46aa01125a2a76350a7d97-720x576.jpg",
       "videoUrl": "https://player.vimeo.com/video/989542038",
       "aspectRatio": 1.25,
@@ -250,6 +182,38 @@
       "muxPosterUrl": "https://image.mux.com/8c00w9HBZ3CyDFyyijtkC9QRj0102RyJhuUpnYf4Mj5hQ8/thumbnail.jpg?time=0.5"
     },
     {
+      "id": "film-quentin-malriq",
+      "slug": "quentin-malriq",
+      "title": "Quentin Malriq, An Athlete Portrait by DISTANCE",
+      "description": "A film following middle-distance runner Quentin Malriq as he fights for Olympic selection. Made for ASICS, the portrait stays close to the daily grind. The margins are tiny and the stakes are everything.",
+      "year": 2023,
+      "client": "ASICS",
+      "category": "Documentary / Sport",
+      "visible": true,
+      "featured": true,
+      "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/71f5cbe29ada11a67ae78ac4a8979a7b37cd859f-1280x720.jpg",
+      "videoUrl": "https://player.vimeo.com/video/895840721",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction",
+            "name": "Basile Deschamps"
+          }
+        ],
+        "right": [
+          {
+            "role": "Production",
+            "name": "DISTANCE"
+          }
+        ]
+      },
+      "muxPlaybackId": "NwKvkp7WykiOu6DRfIJT3NAJJOuT01klYeL9rl02B9Lyk",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/NwKvkp7WykiOu6DRfIJT3NAJJOuT01klYeL9rl02B9Lyk.m3u8",
+      "muxPosterUrl": "https://image.mux.com/NwKvkp7WykiOu6DRfIJT3NAJJOuT01klYeL9rl02B9Lyk/thumbnail.jpg?time=0.5"
+    },
+    {
       "id": "film-le-cnd-camping-2023",
       "slug": "le-cnd-camping-2023",
       "title": "Le CN D, Camping 2023",
@@ -258,7 +222,7 @@
       "client": "Centre National de la Danse",
       "category": "Documentary",
       "visible": true,
-      "collapsed": false,
+      "featured": true,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/868701940",
       "aspectRatio": 1.78,
@@ -285,7 +249,7 @@
       "client": "On Running",
       "category": "Documentary / Sport",
       "visible": true,
-      "collapsed": false,
+      "featured": true,
       "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/d808bbc7abdd907bd556838c81e38442a50b661a-1280x960.jpg",
       "videoUrl": "https://player.vimeo.com/video/768152390",
       "aspectRatio": 1.33,
@@ -315,13 +279,13 @@
     {
       "id": "film-diversions-ep-teaser",
       "slug": "diversions-ep-teaser",
-      "title": "DIVERSIONS EP by Antoine Bourachot, Teaser",
+      "title": "DIVERSIONS EP by Antoine Bourachot",
       "description": "A Super 8 teaser for composer Antoine Bourachot's EP. Synthesisers, vintage gear, the quiet of a recording studio. Analog and warm.",
       "year": 2023,
       "client": "Antoine Bourachot",
       "category": "Music / Short Film",
       "visible": true,
-      "collapsed": true,
+      "featured": false,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/863910150",
       "aspectRatio": 1.78,
@@ -353,7 +317,7 @@
       "client": "ASSOS of Switzerland",
       "category": "Branded Documentary",
       "visible": true,
-      "collapsed": true,
+      "featured": false,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/647313570",
       "aspectRatio": 1.78,
@@ -372,6 +336,42 @@
       "muxPosterUrl": "https://image.mux.com/RJPpHKntHyBjV014TuKHKJEZ201h02vU02jk4pMrJtzVJoI/thumbnail.jpg?time=0.5"
     },
     {
+      "id": "film-bastille-maison-mara",
+      "slug": "bastille-maison-mara",
+      "title": "Bastille, Maison Mara",
+      "description": "A fashion film for Maison Mara, directed and shot by Basile Deschamps. Styling by Natasha Els, with Loren Humpfreys and Olivier Ntumba. Paris, quiet confidence, nothing overdone.",
+      "year": 2021,
+      "client": "Maison Mara",
+      "category": "Fashion Film",
+      "visible": false,
+      "featured": true,
+      "thumbnail": null,
+      "videoUrl": "https://player.vimeo.com/video/541582370",
+      "aspectRatio": 1.78,
+      "credits": {
+        "left": [
+          {
+            "role": "Direction / DOP",
+            "name": "Basile Deschamps"
+          },
+          {
+            "role": "Styling",
+            "name": "Natasha Els"
+          }
+        ],
+        "right": [
+          {
+            "role": "Cast",
+            "name": "Loren Humpfreys, Olivier Ntumba"
+          }
+        ]
+      },
+      "muxPlaybackId": "YOGoQ01goSKnHiILQ4Qa900mm5eRDAXiJqVgb15nrX4uc",
+      "muxStatus": "ready",
+      "muxStreamUrl": "https://stream.mux.com/YOGoQ01goSKnHiILQ4Qa900mm5eRDAXiJqVgb15nrX4uc.m3u8",
+      "muxPosterUrl": "https://image.mux.com/YOGoQ01goSKnHiILQ4Qa900mm5eRDAXiJqVgb15nrX4uc/thumbnail.jpg?time=0.5"
+    },
+    {
       "id": "film-showreel-2021",
       "slug": "showreel-2021",
       "title": "Showreel 2021",
@@ -379,8 +379,8 @@
       "year": 2021,
       "client": "Personal",
       "category": "Showreel",
-      "visible": true,
-      "collapsed": false,
+      "visible": false,
+      "featured": true,
       "thumbnail": null,
       "videoUrl": "https://vimeo.com/562172132?fl=pl&fe=cm",
       "aspectRatio": 1.78,
@@ -406,8 +406,8 @@
       "year": 2021,
       "client": "Salomon",
       "category": "Spec Commercial",
-      "visible": true,
-      "collapsed": true,
+      "visible": false,
+      "featured": false,
       "thumbnail": "https://cdn.sanity.io/images/e9pgmdfm/production/0af39bdc01276f0d847b369bf554f9880416b3c3-1280x720.jpg",
       "videoUrl": "https://player.vimeo.com/video/551544527",
       "aspectRatio": 1.78,
@@ -443,7 +443,7 @@
       "client": "Kamikwazi",
       "category": "Music Video",
       "visible": true,
-      "collapsed": true,
+      "featured": false,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/513405009",
       "aspectRatio": 1.78,
@@ -469,13 +469,13 @@
     {
       "id": "film-hommage-back-to-1992-2",
       "slug": "hommage-back-to-1992-2",
-      "title": "Hommage Clothing, Back to 1992 (Video No. 2)",
+      "title": "Hommage Clothing, Back to 1992 (No. 2)",
       "description": "Second film in the Back to 1992 campaign. Directed by Basile Deschamps, shot by Yann Macherez, edited by Tristan Deschamps. Nineties streetwear through a modern lens.",
       "year": 2018,
-      "client": "Hommage Clothing",
+      "client": "",
       "category": "Fashion Film",
-      "visible": true,
-      "collapsed": true,
+      "visible": false,
+      "featured": false,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/271458415",
       "aspectRatio": 1.78,
@@ -505,13 +505,13 @@
     {
       "id": "film-hommage-back-to-1992-1",
       "slug": "hommage-back-to-1992-1",
-      "title": "Hommage Clothing, Back to 1992 (Video No. 1)",
+      "title": "Hommage Clothing, Back to 1992 (No. 1)",
       "description": "First film in the Back to 1992 series for Hommage Clothing. Directed by Basile Deschamps. Early work, archive-inspired.",
       "year": 2018,
-      "client": "Hommage Clothing",
+      "client": "",
       "category": "Fashion Film",
-      "visible": true,
-      "collapsed": true,
+      "visible": false,
+      "featured": false,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/269335097",
       "aspectRatio": 1.78,
@@ -537,8 +537,8 @@
       "year": 2016,
       "client": "Hommage Clothing",
       "category": "Fashion Film",
-      "visible": true,
-      "collapsed": true,
+      "visible": false,
+      "featured": false,
       "thumbnail": null,
       "videoUrl": "https://player.vimeo.com/video/187173133",
       "aspectRatio": 1.78,
@@ -565,15 +565,15 @@
   "heroOverlay": {
     "_createdAt": "2026-05-19T16:05:43Z",
     "_id": "heroOverlay",
-    "_rev": "n9md8RGrJQEGd6mdCS4qUT",
+    "_rev": "zp4BnJGF3tCu3385rNsL5V",
     "_system": {
       "base": {
         "id": "heroOverlay",
-        "rev": "n9md8RGrJQEGd6mdCS4jvI"
+        "rev": "tq26EiOjHN2Z9UTAdPNs6a"
       }
     },
     "_type": "heroOverlay",
-    "_updatedAt": "2026-05-20T17:05:30Z",
+    "_updatedAt": "2026-06-06T20:56:07Z",
     "items": [
       {
         "_key": "bio",
@@ -589,8 +589,8 @@
         "size": "body",
         "stackRowGap": 40,
         "stackWithSiblings": true,
-        "text": "Basile Deschamps is a film director and photographer based in Paris.",
-        "textSize": "md"
+        "text": "Basile Deschamps is a French film director and photographer.",
+        "textSize": "xl"
       },
       {
         "_key": "clients",
@@ -605,8 +605,8 @@
         "offsetY": 190,
         "size": "body",
         "stackWithSiblings": true,
-        "text": "Selected clients include Salomon, Parel Studios, Lorette Colé Duprat, On, Asics, Pag, Specialized, Veja.",
-        "textSize": "md"
+        "text": "Selected clients include Adidas, Nike, Salomon, Portal, Lorette Colé Duprat, On, Asics, Specialized.",
+        "textSize": "xl"
       },
       {
         "_key": "phone",
@@ -647,52 +647,16 @@
   "heroPhotos": {
     "_createdAt": "2026-05-19T18:16:08Z",
     "_id": "heroPhotos",
-    "_rev": "xX9YeQzdQC2WYPtGdgVCI4",
+    "_rev": "tq26EiOjHN2Z9UTAdPO2iy",
     "_system": {
       "base": {
         "id": "heroPhotos",
-        "rev": "n9md8RGrJQEGd6mdCSY1hg"
+        "rev": "xX9YeQzdQC2WYPtGdgVCI4"
       }
     },
     "_type": "heroPhotos",
-    "_updatedAt": "2026-05-20T18:22:06Z",
+    "_updatedAt": "2026-06-06T20:58:02Z",
     "photos": [
-      {
-        "_key": "photo-0-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-97b67e28de9828b5627db64b9606ac137b19a9ef-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-1-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-05db3c011c2fe18193f72faa0263c3c6df4990b5-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-3-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-8753ff557e2c5099d604ee48dea7777297bfd954-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-4-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-ce1794a459affb39686ce0de13fdc9e0b5cd27df-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
       {
         "_key": "photo-5-x903-jpg",
         "_type": "image",
@@ -829,87 +793,6 @@
         }
       },
       {
-        "_key": "photo-25-1384-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-d4eb12bc119d2bd6c9168abf8385512d94064f0b-1080x1384-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-26-1384-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-f877499303f13fbcdbf6e06663bbf10965122a02-1080x1384-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-27-1384-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-fd1b8b0845104cf71ce9a503790319d14995b449-1080x1384-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-28-1384-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-72fcc7f0866aa3361c3648ddf600cd3c83910b43-1080x1384-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-29-1384-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-56fd8be0ff97492b7055f579d88a6b0965b15cfc-1080x1384-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-30-1384-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-5f73e23ec0198216fe6f7a2d78f19004afaa3a8d-1080x1384-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-32-1384-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-f849564e7dc25f1f3d782bbaf7a7b34f2f6cca29-1080x1384-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-33-1384-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-2393048cd8d944c60c082f4d9a55c803b192abea-1080x1384-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-34-1384-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-08f12700ac0b4db1e8ffcfbda9c0bbb89f4644e5-1080x1384-jpg",
-          "_type": "reference"
-        }
-      },
-      {
         "_key": "photo-38-1359-jpg",
         "_type": "image",
         "alt": "",
@@ -960,24 +843,6 @@
         "alt": "",
         "asset": {
           "_ref": "image-d2a12f92eb79cf73096a180f434f4d7ac9f16548-1080x1359-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-49-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-56fcfd323c160369968f17a9b17c6894173382f9-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-51-1346-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-6af61c3c349b63eddd2a4aa5f697a63158f351d3-1080x1346-jpg",
           "_type": "reference"
         }
       },
@@ -1063,42 +928,6 @@
         }
       },
       {
-        "_key": "photo-67-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-489d90ba948f5ca8543fd9dccdf4dced6638e1fc-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-68-1344-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-df91788a60b10782115928af26a3a38b074a1b24-1080x1344-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-69-1349-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-59db66f17a2e0381c18316d2924c63a2bd341f95-1080x1349-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-70-1344-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-dfcf826ed9367e18ccb4aed4a182932f09023f62-1080x1344-jpg",
-          "_type": "reference"
-        }
-      },
-      {
         "_key": "photo-71-1350-jpg",
         "_type": "image",
         "alt": "",
@@ -1131,33 +960,6 @@
         "alt": "",
         "asset": {
           "_ref": "image-98d27398ff452489229ccc6972bec4e662487ba1-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-75-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-59da316900db252de90d996cabd90a1bf91c22ff-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-76-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-c2b1943590d02745a47e29bdaf40623f83a0b0ce-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-77-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-3c8871203b79070aea6b368b8f141a749b214958-1080x1350-jpg",
           "_type": "reference"
         }
       },
@@ -1225,24 +1027,6 @@
         }
       },
       {
-        "_key": "photo-85-1080-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-140527c1a7cbf0f221b77ec7d9b0e491b874a45b-1080x1080-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-87-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-ca4d10e1a6c0152f4027f950a25327bc7935c9f7-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
         "_key": "photo-88-1350-jpg",
         "_type": "image",
         "alt": "",
@@ -1302,15 +1086,6 @@
         "alt": "",
         "asset": {
           "_ref": "image-362635a8290dfd6d9fdb741f51cd61a8b7477c2e-1080x1350-jpg",
-          "_type": "reference"
-        }
-      },
-      {
-        "_key": "photo-95-1350-jpg",
-        "_type": "image",
-        "alt": "",
-        "asset": {
-          "_ref": "image-11cddc457d0675e7713ba4ce54f348e685135cd7-1080x1350-jpg",
           "_type": "reference"
         }
       },
@@ -1479,22 +1254,6 @@
     ],
     "photoUrls": [
       {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/97b67e28de9828b5627db64b9606ac137b19a9ef-1080x1350.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/05db3c011c2fe18193f72faa0263c3c6df4990b5-1080x1350.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/8753ff557e2c5099d604ee48dea7777297bfd954-1080x1350.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/ce1794a459affb39686ce0de13fdc9e0b5cd27df-1080x1350.jpg",
-        "alt": ""
-      },
-      {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/ec68356d2975d4fec28e6b13ae0e9ccecedee2d2-1080x903.jpg",
         "alt": ""
       },
@@ -1555,42 +1314,6 @@
         "alt": ""
       },
       {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/d4eb12bc119d2bd6c9168abf8385512d94064f0b-1080x1384.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/f877499303f13fbcdbf6e06663bbf10965122a02-1080x1384.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/fd1b8b0845104cf71ce9a503790319d14995b449-1080x1384.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/72fcc7f0866aa3361c3648ddf600cd3c83910b43-1080x1384.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/56fd8be0ff97492b7055f579d88a6b0965b15cfc-1080x1384.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/5f73e23ec0198216fe6f7a2d78f19004afaa3a8d-1080x1384.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/f849564e7dc25f1f3d782bbaf7a7b34f2f6cca29-1080x1384.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/2393048cd8d944c60c082f4d9a55c803b192abea-1080x1384.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/08f12700ac0b4db1e8ffcfbda9c0bbb89f4644e5-1080x1384.jpg",
-        "alt": ""
-      },
-      {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/f0b597883d15367fdbdbae12bf243e1545fe5add-1080x1359.jpg",
         "alt": ""
       },
@@ -1612,14 +1335,6 @@
       },
       {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/d2a12f92eb79cf73096a180f434f4d7ac9f16548-1080x1359.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/56fcfd323c160369968f17a9b17c6894173382f9-1080x1350.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/6af61c3c349b63eddd2a4aa5f697a63158f351d3-1080x1346.jpg",
         "alt": ""
       },
       {
@@ -1659,22 +1374,6 @@
         "alt": ""
       },
       {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/489d90ba948f5ca8543fd9dccdf4dced6638e1fc-1080x1350.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/df91788a60b10782115928af26a3a38b074a1b24-1080x1344.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/59db66f17a2e0381c18316d2924c63a2bd341f95-1080x1349.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/dfcf826ed9367e18ccb4aed4a182932f09023f62-1080x1344.jpg",
-        "alt": ""
-      },
-      {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/6f21067e64b8f66569a41d9fa10fe762e148fc5f-1080x1350.jpg",
         "alt": ""
       },
@@ -1688,18 +1387,6 @@
       },
       {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/98d27398ff452489229ccc6972bec4e662487ba1-1080x1350.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/59da316900db252de90d996cabd90a1bf91c22ff-1080x1350.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/c2b1943590d02745a47e29bdaf40623f83a0b0ce-1080x1350.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/3c8871203b79070aea6b368b8f141a749b214958-1080x1350.jpg",
         "alt": ""
       },
       {
@@ -1731,14 +1418,6 @@
         "alt": ""
       },
       {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/140527c1a7cbf0f221b77ec7d9b0e491b874a45b-1080x1080.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/ca4d10e1a6c0152f4027f950a25327bc7935c9f7-1080x1350.jpg",
-        "alt": ""
-      },
-      {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/2a2d0f3a9c5befaff5269941751b297c8fd48851-1080x1350.jpg",
         "alt": ""
       },
@@ -1764,10 +1443,6 @@
       },
       {
         "url": "https://cdn.sanity.io/images/e9pgmdfm/production/362635a8290dfd6d9fdb741f51cd61a8b7477c2e-1080x1350.jpg",
-        "alt": ""
-      },
-      {
-        "url": "https://cdn.sanity.io/images/e9pgmdfm/production/11cddc457d0675e7713ba4ce54f348e685135cd7-1080x1350.jpg",
         "alt": ""
       },
       {
@@ -1853,7 +1528,7 @@
       "year": 2024,
       "client": "Asics Running",
       "category": "Editorial",
-      "featured": false,
+      "featured": true,
       "visible": true,
       "photos": [
         {
@@ -1876,51 +1551,6 @@
       }
     },
     {
-      "id": "photoProject-acid-surfing",
-      "slug": "acid-surfing",
-      "title": "Acid Surfing",
-      "description": "Acid Surfing — placeholder description, replace with editorial copy.",
-      "year": 2024,
-      "client": "Acid Surfing",
-      "category": "Editorial",
-      "featured": false,
-      "visible": true,
-      "photos": [
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/97b67e28de9828b5627db64b9606ac137b19a9ef-1080x1350.jpg",
-          "alt": "Acid Surfing — 1",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/05db3c011c2fe18193f72faa0263c3c6df4990b5-1080x1350.jpg",
-          "alt": "Acid Surfing — 2",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/25533151cafbf143ce55cee7fa22017d259e907d-1080x1350.jpg",
-          "alt": "Acid Surfing — 3",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/8753ff557e2c5099d604ee48dea7777297bfd954-1080x1350.jpg",
-          "alt": "Acid Surfing — 4",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ce1794a459affb39686ce0de13fdc9e0b5cd27df-1080x1350.jpg",
-          "alt": "Acid Surfing — 5",
-          "aspectRatio": 0.8
-        }
-      ],
-      "preview": {
-        "pattern": 5,
-        "photos": [
-          0,
-          2
-        ]
-      }
-    },
-    {
       "id": "photoProject-adidas",
       "slug": "adidas",
       "title": "Adidas",
@@ -1928,7 +1558,7 @@
       "year": 2024,
       "client": "Adidas",
       "category": "Editorial",
-      "featured": false,
+      "featured": true,
       "visible": true,
       "photos": [
         {
@@ -1969,6 +1599,118 @@
           3,
           5
         ]
+      }
+    },
+    {
+      "id": "photoProject-lorette-cole-duprat",
+      "slug": "lorette-cole-duprat",
+      "title": "Lorette Colé Duprat",
+      "description": "Lorette Colé Duprat — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Lorette Colé Duprat",
+      "category": "Editorial",
+      "featured": true,
+      "visible": true,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6af61c3c349b63eddd2a4aa5f697a63158f351d3-1080x1346.jpg",
+          "alt": "Lorette Colé Duprat — 1",
+          "aspectRatio": 0.8023774145616642
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/2df9d38c804d64d41876807aeb13387e383f71c0-1080x1350.jpg",
+          "alt": "Lorette Colé Duprat — 2",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/47e105f928e0b80b8b5c2e4b24ec7db577bb31db-1080x1346.jpg",
+          "alt": "Lorette Colé Duprat — 3",
+          "aspectRatio": 0.8023774145616642
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/022694ad27bc4b00c9c357384594e47433c19d6e-1080x1080.jpg",
+          "alt": "Lorette Colé Duprat — 4",
+          "aspectRatio": 1
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/16bf42f6fd68e658acb5d752cbb5e1909a06ecf6-1080x1080.jpg",
+          "alt": "Lorette Colé Duprat — 5",
+          "aspectRatio": 1
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/98434e10c004e38c99316156bd74d82c08364d5a-1080x1350.jpg",
+          "alt": "Lorette Colé Duprat — 6",
+          "aspectRatio": 0.8
+        }
+      ],
+      "preview": {
+        "pattern": 12,
+        "photos": [
+          3,
+          0
+        ],
+        "mobilePattern": 10,
+        "mobilePhotos": [
+          0
+        ],
+        "mobileBreakpoint": 1349,
+        "maxHeight": "60vh"
+      }
+    },
+    {
+      "id": "photoProject-judo",
+      "slug": "judo",
+      "title": "Judo",
+      "description": "Judo — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Judo",
+      "category": "Editorial",
+      "featured": true,
+      "visible": true,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/d2a12f92eb79cf73096a180f434f4d7ac9f16548-1080x1359.jpg",
+          "alt": "Judo — 6",
+          "aspectRatio": 0.7947019867549668
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f0b597883d15367fdbdbae12bf243e1545fe5add-1080x1359.jpg",
+          "alt": "Judo — 1",
+          "aspectRatio": 0.7947019867549668
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/977f4d96de87f220441a49138d43dd747ac74250-1080x1358.jpg",
+          "alt": "Judo — 2",
+          "aspectRatio": 0.7952871870397643
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/4a8d57aacca69cf687274d27f219c04781aba39e-1080x1358.jpg",
+          "alt": "Judo — 3",
+          "aspectRatio": 0.7952871870397643
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/1f3a019be2961bbca7cd643b90e3049bc5c9919c-1080x1359.jpg",
+          "alt": "Judo — 4",
+          "aspectRatio": 0.7947019867549668
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ee5d50195c6c846e174382681ddcb8d212e4bc8c-1080x1358.jpg",
+          "alt": "Judo — 5",
+          "aspectRatio": 0.7952871870397643
+        }
+      ],
+      "preview": {
+        "pattern": 11,
+        "photos": [
+          0,
+          3
+        ],
+        "mobilePattern": 10,
+        "mobilePhotos": [
+          0
+        ],
+        "mobileBreakpoint": 1349,
+        "maxHeight": "60vh"
       }
     },
     {
@@ -2268,110 +2010,54 @@
       }
     },
     {
-      "id": "photoProject-judo",
-      "slug": "judo",
-      "title": "Judo",
-      "description": "Judo — placeholder description, replace with editorial copy.",
+      "id": "photoProject-veja",
+      "slug": "veja",
+      "title": "Veja",
+      "description": "Veja — placeholder description, replace with editorial copy.",
       "year": 2024,
-      "client": "Judo",
-      "category": "Editorial",
-      "featured": true,
-      "visible": true,
-      "photos": [
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/d2a12f92eb79cf73096a180f434f4d7ac9f16548-1080x1359.jpg",
-          "alt": "Judo — 6",
-          "aspectRatio": 0.7947019867549668
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f0b597883d15367fdbdbae12bf243e1545fe5add-1080x1359.jpg",
-          "alt": "Judo — 1",
-          "aspectRatio": 0.7947019867549668
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/977f4d96de87f220441a49138d43dd747ac74250-1080x1358.jpg",
-          "alt": "Judo — 2",
-          "aspectRatio": 0.7952871870397643
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/4a8d57aacca69cf687274d27f219c04781aba39e-1080x1358.jpg",
-          "alt": "Judo — 3",
-          "aspectRatio": 0.7952871870397643
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/1f3a019be2961bbca7cd643b90e3049bc5c9919c-1080x1359.jpg",
-          "alt": "Judo — 4",
-          "aspectRatio": 0.7947019867549668
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ee5d50195c6c846e174382681ddcb8d212e4bc8c-1080x1358.jpg",
-          "alt": "Judo — 5",
-          "aspectRatio": 0.7952871870397643
-        }
-      ],
-      "preview": {
-        "pattern": 11,
-        "photos": [
-          0,
-          3
-        ],
-        "mobilePattern": 10,
-        "mobilePhotos": [
-          0
-        ],
-        "mobileBreakpoint": 1349,
-        "maxHeight": "60vh"
-      }
-    },
-    {
-      "id": "photoProject-les-others",
-      "slug": "les-others",
-      "title": "Les Others",
-      "description": "Les Others — placeholder description, replace with editorial copy.",
-      "year": 2024,
-      "client": "Les Others",
+      "client": "Veja",
       "category": "Editorial",
       "featured": false,
       "visible": true,
       "photos": [
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/836f2d81fe74a4f49fde0510008b433ba2f37efe-1080x1350.jpg",
-          "alt": "Les Others — 1",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/63b98a0d4ba7238b146c6eaba32e6d00c023ae98-1080x1350.jpg",
+          "alt": "Veja — 1",
           "aspectRatio": 0.8
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/72f42d96477b9530bf88e80756cfc9109b829793-1080x1350.jpg",
-          "alt": "Les Others — 2",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ca026d690f5ba64e84d91dce98167b8484565add-1080x1350.jpg",
+          "alt": "Veja — 2",
           "aspectRatio": 0.8
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/43f20a14ce4db16ec87ad36fbaff92b3439c7387-720x900.jpg",
-          "alt": "Les Others — 3",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/0f412700cab6d49fe279fda5cad3bd724d4e7056-1080x1350.jpg",
+          "alt": "Veja — 3",
           "aspectRatio": 0.8
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/c6c155381e4386905a2e9300d9b6e00a109baa8d-1080x1350.jpg",
-          "alt": "Les Others — 4",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6e29d49aed28de03c1612524e0f150f8e73afa41-1080x1349.jpg",
+          "alt": "Veja — 4",
+          "aspectRatio": 0.8005930318754633
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/88dfc4e011c3876137ae3835cbe4caf594d27735-1080x1350.jpg",
+          "alt": "Veja — 5",
           "aspectRatio": 0.8
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/5580eab8140946d20f94d15a742c3ba3c580c007-1080x1350.jpg",
-          "alt": "Les Others — 5",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/4cfb0c62e1503343bf7cedc7b8ba52f6c70e83c9-1080x1350.jpg",
+          "alt": "Veja — 6",
           "aspectRatio": 0.8
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/56fcfd323c160369968f17a9b17c6894173382f9-1080x1350.jpg",
-          "alt": "Les Others — 6",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/5ed0cfc0f0ff661510fafdd55a884e533fd69414-1080x1350.jpg",
+          "alt": "Veja — 7",
           "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/305ff3f20aac84d087b082da90aa28a608f22a9b-1007x813.jpg",
-          "alt": "Les Others — 7",
-          "aspectRatio": 1.2386223862238623
         }
       ],
       "preview": {
-        "pattern": 1,
+        "pattern": 5,
         "photos": [
           0,
           3
@@ -2379,59 +2065,48 @@
       }
     },
     {
-      "id": "photoProject-lorette-cole-duprat",
-      "slug": "lorette-cole-duprat",
-      "title": "Lorette Colé Duprat",
-      "description": "Lorette Colé Duprat — placeholder description, replace with editorial copy.",
+      "id": "photoProject-acid-surfing",
+      "slug": "acid-surfing",
+      "title": "Acid Surfing",
+      "description": "Acid Surfing — placeholder description, replace with editorial copy.",
       "year": 2024,
-      "client": "Lorette Colé Duprat",
+      "client": "Acid Surfing",
       "category": "Editorial",
-      "featured": true,
+      "featured": false,
       "visible": true,
       "photos": [
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6af61c3c349b63eddd2a4aa5f697a63158f351d3-1080x1346.jpg",
-          "alt": "Lorette Colé Duprat — 1",
-          "aspectRatio": 0.8023774145616642
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/2df9d38c804d64d41876807aeb13387e383f71c0-1080x1350.jpg",
-          "alt": "Lorette Colé Duprat — 2",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/97b67e28de9828b5627db64b9606ac137b19a9ef-1080x1350.jpg",
+          "alt": "Acid Surfing — 1",
           "aspectRatio": 0.8
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/47e105f928e0b80b8b5c2e4b24ec7db577bb31db-1080x1346.jpg",
-          "alt": "Lorette Colé Duprat — 3",
-          "aspectRatio": 0.8023774145616642
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/05db3c011c2fe18193f72faa0263c3c6df4990b5-1080x1350.jpg",
+          "alt": "Acid Surfing — 2",
+          "aspectRatio": 0.8
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/022694ad27bc4b00c9c357384594e47433c19d6e-1080x1080.jpg",
-          "alt": "Lorette Colé Duprat — 4",
-          "aspectRatio": 1
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/25533151cafbf143ce55cee7fa22017d259e907d-1080x1350.jpg",
+          "alt": "Acid Surfing — 3",
+          "aspectRatio": 0.8
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/16bf42f6fd68e658acb5d752cbb5e1909a06ecf6-1080x1080.jpg",
-          "alt": "Lorette Colé Duprat — 5",
-          "aspectRatio": 1
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/8753ff557e2c5099d604ee48dea7777297bfd954-1080x1350.jpg",
+          "alt": "Acid Surfing — 4",
+          "aspectRatio": 0.8
         },
         {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/98434e10c004e38c99316156bd74d82c08364d5a-1080x1350.jpg",
-          "alt": "Lorette Colé Duprat — 6",
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ce1794a459affb39686ce0de13fdc9e0b5cd27df-1080x1350.jpg",
+          "alt": "Acid Surfing — 5",
           "aspectRatio": 0.8
         }
       ],
       "preview": {
-        "pattern": 12,
+        "pattern": 5,
         "photos": [
-          3,
-          0
-        ],
-        "mobilePattern": 10,
-        "mobilePhotos": [
-          0
-        ],
-        "mobileBreakpoint": 1349,
-        "maxHeight": "60vh"
+          0,
+          2
+        ]
       }
     },
     {
@@ -2502,72 +2177,6 @@
           0,
           2
         ]
-      }
-    },
-    {
-      "id": "photoProject-nuatelier",
-      "slug": "nuatelier",
-      "title": "Nu Atelier",
-      "description": "Nu Atelier — placeholder description, replace with editorial copy.",
-      "year": 2024,
-      "client": "Nu Atelier",
-      "category": "Editorial",
-      "featured": true,
-      "visible": true,
-      "photos": [
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f877132750d0a959b146768329198fb6a4df2a3b-1080x1346.jpg",
-          "alt": "Nu Atelier — 1",
-          "aspectRatio": 0.8023774145616642
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/abdf4ba860b621ae0a2de65a53d2195bca5c7319-1080x1349.jpg",
-          "alt": "Nu Atelier — 2",
-          "aspectRatio": 0.8005930318754633
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/167f00b4c91303f4d26d10d315940a1b30450c7c-1080x1346.jpg",
-          "alt": "Nu Atelier — 3",
-          "aspectRatio": 0.8023774145616642
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/065ec807a6652103d82953a0a9f2a4ecfa3164af-1080x1344.jpg",
-          "alt": "Nu Atelier — 4",
-          "aspectRatio": 0.8035714285714286
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/489d90ba948f5ca8543fd9dccdf4dced6638e1fc-1080x1350.jpg",
-          "alt": "Nu Atelier — 5",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/df91788a60b10782115928af26a3a38b074a1b24-1080x1344.jpg",
-          "alt": "Nu Atelier — 6",
-          "aspectRatio": 0.8035714285714286
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/59db66f17a2e0381c18316d2924c63a2bd341f95-1080x1349.jpg",
-          "alt": "Nu Atelier — 7",
-          "aspectRatio": 0.8005930318754633
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/dfcf826ed9367e18ccb4aed4a182932f09023f62-1080x1344.jpg",
-          "alt": "Nu Atelier — 8",
-          "aspectRatio": 0.8035714285714286
-        }
-      ],
-      "preview": {
-        "pattern": 13,
-        "photos": [
-          0,
-          4
-        ],
-        "mobilePattern": 10,
-        "mobilePhotos": [
-          0
-        ],
-        "mobileBreakpoint": 1349,
-        "maxHeight": "60vh"
       }
     },
     {
@@ -2713,6 +2322,127 @@
       }
     },
     {
+      "id": "photoProject-les-others",
+      "slug": "les-others",
+      "title": "Les Others",
+      "description": "Les Others — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Les Others",
+      "category": "Editorial",
+      "featured": false,
+      "visible": true,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/836f2d81fe74a4f49fde0510008b433ba2f37efe-1080x1350.jpg",
+          "alt": "Les Others — 1",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/72f42d96477b9530bf88e80756cfc9109b829793-1080x1350.jpg",
+          "alt": "Les Others — 2",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/43f20a14ce4db16ec87ad36fbaff92b3439c7387-720x900.jpg",
+          "alt": "Les Others — 3",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/c6c155381e4386905a2e9300d9b6e00a109baa8d-1080x1350.jpg",
+          "alt": "Les Others — 4",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/5580eab8140946d20f94d15a742c3ba3c580c007-1080x1350.jpg",
+          "alt": "Les Others — 5",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/56fcfd323c160369968f17a9b17c6894173382f9-1080x1350.jpg",
+          "alt": "Les Others — 6",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/305ff3f20aac84d087b082da90aa28a608f22a9b-1007x813.jpg",
+          "alt": "Les Others — 7",
+          "aspectRatio": 1.2386223862238623
+        }
+      ],
+      "preview": {
+        "pattern": 1,
+        "photos": [
+          0,
+          3
+        ]
+      }
+    },
+    {
+      "id": "photoProject-nuatelier",
+      "slug": "nuatelier",
+      "title": "Nu Atelier",
+      "description": "Nu Atelier — placeholder description, replace with editorial copy.",
+      "year": 2024,
+      "client": "Nu Atelier",
+      "category": "Editorial",
+      "featured": true,
+      "visible": true,
+      "photos": [
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/f877132750d0a959b146768329198fb6a4df2a3b-1080x1346.jpg",
+          "alt": "Nu Atelier — 1",
+          "aspectRatio": 0.8023774145616642
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/abdf4ba860b621ae0a2de65a53d2195bca5c7319-1080x1349.jpg",
+          "alt": "Nu Atelier — 2",
+          "aspectRatio": 0.8005930318754633
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/167f00b4c91303f4d26d10d315940a1b30450c7c-1080x1346.jpg",
+          "alt": "Nu Atelier — 3",
+          "aspectRatio": 0.8023774145616642
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/065ec807a6652103d82953a0a9f2a4ecfa3164af-1080x1344.jpg",
+          "alt": "Nu Atelier — 4",
+          "aspectRatio": 0.8035714285714286
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/489d90ba948f5ca8543fd9dccdf4dced6638e1fc-1080x1350.jpg",
+          "alt": "Nu Atelier — 5",
+          "aspectRatio": 0.8
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/df91788a60b10782115928af26a3a38b074a1b24-1080x1344.jpg",
+          "alt": "Nu Atelier — 6",
+          "aspectRatio": 0.8035714285714286
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/59db66f17a2e0381c18316d2924c63a2bd341f95-1080x1349.jpg",
+          "alt": "Nu Atelier — 7",
+          "aspectRatio": 0.8005930318754633
+        },
+        {
+          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/dfcf826ed9367e18ccb4aed4a182932f09023f62-1080x1344.jpg",
+          "alt": "Nu Atelier — 8",
+          "aspectRatio": 0.8035714285714286
+        }
+      ],
+      "preview": {
+        "pattern": 13,
+        "photos": [
+          0,
+          4
+        ],
+        "mobilePattern": 10,
+        "mobilePhotos": [
+          0
+        ],
+        "mobileBreakpoint": 1349,
+        "maxHeight": "60vh"
+      }
+    },
+    {
       "id": "photoProject-saucony",
       "slug": "saucony",
       "title": "Saucony",
@@ -2807,61 +2537,6 @@
         ],
         "mobileBreakpoint": 1349,
         "maxHeight": "60vh"
-      }
-    },
-    {
-      "id": "photoProject-veja",
-      "slug": "veja",
-      "title": "Veja",
-      "description": "Veja — placeholder description, replace with editorial copy.",
-      "year": 2024,
-      "client": "Veja",
-      "category": "Editorial",
-      "featured": false,
-      "visible": true,
-      "photos": [
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/63b98a0d4ba7238b146c6eaba32e6d00c023ae98-1080x1350.jpg",
-          "alt": "Veja — 1",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/ca026d690f5ba64e84d91dce98167b8484565add-1080x1350.jpg",
-          "alt": "Veja — 2",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/0f412700cab6d49fe279fda5cad3bd724d4e7056-1080x1350.jpg",
-          "alt": "Veja — 3",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/6e29d49aed28de03c1612524e0f150f8e73afa41-1080x1349.jpg",
-          "alt": "Veja — 4",
-          "aspectRatio": 0.8005930318754633
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/88dfc4e011c3876137ae3835cbe4caf594d27735-1080x1350.jpg",
-          "alt": "Veja — 5",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/4cfb0c62e1503343bf7cedc7b8ba52f6c70e83c9-1080x1350.jpg",
-          "alt": "Veja — 6",
-          "aspectRatio": 0.8
-        },
-        {
-          "src": "https://cdn.sanity.io/images/e9pgmdfm/production/5ed0cfc0f0ff661510fafdd55a884e533fd69414-1080x1350.jpg",
-          "alt": "Veja — 7",
-          "aspectRatio": 0.8
-        }
-      ],
-      "preview": {
-        "pattern": 5,
-        "photos": [
-          0,
-          3
-        ]
       }
     },
     {
@@ -2976,5 +2651,5 @@
     "socialTwitter": null,
     "socialVimeo": "https://vimeo.com/user37669788"
   },
-  "_fetchedAt": "2026-05-21T06:03:21.097Z"
+  "_fetchedAt": "2026-06-12T14:07:38.527Z"
 }

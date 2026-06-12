@@ -1,4 +1,5 @@
 import { defineType, defineField } from 'sanity';
+import { createElement } from 'react';
 import { orderRankField } from '@sanity/orderable-document-list';
 
 /**
@@ -9,14 +10,20 @@ import { orderRankField } from '@sanity/orderable-document-list';
  *   2. Story            — description, year, client, category
  *   3. Credits          — array of {side, role, name}
  *   4. Video            — Mux preview asset + Vimeo modal URL
- *   5. Display flag     — collapsed
+ *   5. Display flags    — visible, featured
  *   6. Advanced (collapsed by default) — thumbnail override, aspectRatio
  *      override
  *
- * One display flag drives placement:
- *   - collapsed=false → FeaturedFilmCard (video preview, video left/right
- *                       alternates by row index)
- *   - collapsed=true  → CollapsedFilmCard in the "Other Projects" row
+ * One display flag drives placement (same vocabulary as photoProject):
+ *   - featured=true  → FeaturedFilmCard (video preview, video left/right
+ *                      alternates by row index)
+ *   - featured=false → CollapsedFilmCard in the "Other Projects" row
+ *
+ * `featured` replaced the inverted legacy `collapsed` flag (2026-06-12).
+ * Two-phase rename: `collapsed` is kept as a hidden retired field until the
+ * branch is merged + deployed, then `cms:migrate-film-featured -- --prune`
+ * removes it from the documents. The fetcher reads
+ * `coalesce(featured, !collapsed)` in the meantime.
  *
  * Ordering is drag-and-drop via @sanity/orderable-document-list. The plugin
  * manages the hidden `orderRank` field. The fetcher sorts by orderRank asc.
@@ -34,6 +41,20 @@ const CATEGORY_SUGGESTIONS = [
   'Branded Documentary',
   'Showreel',
 ];
+
+// List-preview media fallback: when no override thumbnail is set (the normal
+// case), show the Mux auto-poster so the Films list isn't a column of blank
+// squares. Plain createElement — schema files are .js, not .jsx.
+const muxPosterMedia = (playbackId) => {
+  function MuxPosterPreview() {
+    return createElement('img', {
+      src: `https://image.mux.com/${playbackId}/thumbnail.jpg?width=320&height=320&fit_mode=smartcrop&time=0.5`,
+      alt: '',
+      style: { width: '100%', height: '100%', objectFit: 'cover' },
+    });
+  }
+  return MuxPosterPreview;
+};
 
 export const film = defineType({
   name: 'film',
@@ -63,6 +84,13 @@ export const film = defineType({
       options: { collapsible: true, collapsed: true, columns: 1 },
     },
   ],
+  // A film with no video at all can neither autoplay a preview nor open the
+  // Vimeo modal — warn (not block) so a draft can still be saved early.
+  validation: (Rule) =>
+    Rule.custom((doc) => {
+      if (doc?.videoMux?.asset || doc?.videoUrl) return true;
+      return 'This film has no video yet — add a Mux preview and/or a Vimeo URL before showing it on the site.';
+    }).warning(),
   fields: [
     // ---------- Identity ----------
     defineField({
@@ -192,10 +220,10 @@ export const film = defineType({
       fieldset: 'display',
     }),
     defineField({
-      name: 'collapsed',
-      title: 'Collapsed',
+      name: 'featured',
+      title: 'Featured',
       description:
-        'Move this film to the "Other Projects" row at the bottom (small card, click to expand).',
+        'Show this film as a featured (large) card on the homepage. Non-featured films appear in the "Other Projects" row at the bottom (small card, click to expand).',
       type: 'boolean',
       initialValue: false,
       fieldset: 'display',
@@ -221,6 +249,13 @@ export const film = defineType({
       validation: (Rule) => Rule.positive(),
     }),
     orderRankField({ type: 'film' }),
+
+    // --- Retired fields -----------------------------------------------------
+    // `collapsed` was the inverted predecessor of `featured`. Kept hidden so
+    // pre-migration documents don't show "unknown field" warnings; removed
+    // from the documents by `cms:migrate-film-featured -- --prune` once the
+    // featured-aware build is live on production.
+    defineField({ name: 'collapsed', type: 'boolean', hidden: true }),
   ],
   orderings: [
     {
@@ -238,13 +273,28 @@ export const film = defineType({
     select: {
       title: 'title',
       year: 'year',
+      featured: 'featured',
       collapsed: 'collapsed',
+      visible: 'visible',
       media: 'thumbnail',
+      playbackId: 'videoMux.asset.playbackId',
     },
-    prepare: ({ title, year, collapsed, media }) => ({
-      title: title || 'Untitled film',
-      subtitle: [year, collapsed ? 'collapsed' : null].filter(Boolean).join(' · '),
-      media,
-    }),
+    prepare: ({ title, year, featured, collapsed, visible, media, playbackId }) => {
+      // Transition fallback: while the retired `collapsed` flag is on the doc
+      // it stays the source of truth (docs carry orphaned pre-CMS `featured`
+      // values — see cms:migrate-film-featured). After the prune: `featured`.
+      const isFeatured = collapsed == null ? !!featured : !collapsed;
+      return {
+        title: title || 'Untitled film',
+        subtitle: [
+          visible === false ? '🚫 Hidden' : null,
+          year,
+          isFeatured ? '★ Featured' : null,
+        ]
+          .filter(Boolean)
+          .join(' · '),
+        media: media?.asset ? media : playbackId ? muxPosterMedia(playbackId) : undefined,
+      };
+    },
   },
 });

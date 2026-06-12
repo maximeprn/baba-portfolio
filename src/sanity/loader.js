@@ -165,7 +165,7 @@ export const getProjectBySlug = (slug) => photoProjects.find((p) => p.slug === s
  * Films for the homepage.
  *
  * The CMS fetcher writes `films` already in the legacy shape (id, slug,
- * title, description, year, client, category, visible, collapsed,
+ * title, description, year, client, category, visible, featured,
  * thumbnail, videoUrl, aspectRatio, credits{left,right})
  * plus the Mux fields (muxPlaybackId, muxStatus, muxStreamUrl, muxPosterUrl).
  *
@@ -176,13 +176,20 @@ export const getProjectBySlug = (slug) => photoProjects.find((p) => p.slug === s
 export const films = (() => {
   const fromCms = cmsData?.films;
   const source = Array.isArray(fromCms) && fromCms.length > 0 ? fromCms : LEGACY_FILMS;
-  // Hide films whose "Show on site" toggle is off. Legacy docs without the
-  // field stay visible (visible: undefined → not strictly false).
-  return source.filter((f) => f.visible !== false);
+  return (
+    source
+      // `featured` replaced the inverted `collapsed` flag (2026-06-12).
+      // Derive it for sources that predate the rename: stale cms.json
+      // snapshots and the legacy films.js entries.
+      .map((f) => ({ ...f, featured: f.featured ?? !f.collapsed }))
+      // Hide films whose "Show on site" toggle is off. Legacy docs without
+      // the field stay visible (visible: undefined → not strictly false).
+      .filter((f) => f.visible !== false)
+  );
 })();
 
-export const getCollapsedFilms = () => films.filter((f) => f.collapsed);
-export const getNonCollapsedFilms = () => films.filter((f) => !f.collapsed);
+export const getFeaturedFilms = () => films.filter((f) => f.featured);
+export const getNonFeaturedFilms = () => films.filter((f) => !f.featured);
 export const getFilmBySlug = (slug) => films.find((f) => f.slug === slug);
 
 /**

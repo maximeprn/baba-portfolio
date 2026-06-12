@@ -33,7 +33,8 @@ The **Other Projects** section on the Films page lists secondary film entries as
 
 ```
 Films.jsx
-  └─ renders one independent <CollapsedFilmCard> per collapsed film.
+  └─ renders one independent <CollapsedFilmCard> per non-featured film
+     (CMS flag `featured: false` — renamed from `collapsed`, see doc 10).
      No single-expand orchestrator — no expandedId / closeSignals state.
 
 CollapsedFilmCard.jsx (per-instance, fully self-contained state machine)

@@ -4,14 +4,15 @@ export const showreel = defineType({
   name: 'showreel',
   title: 'Showreel',
   type: 'document',
-  description:
-    'Main hero video. Vimeo URL drives the click-through modal; the Mux upload drives the muted background loop.',
   fields: [
     defineField({
       name: 'vimeoUrl',
       title: 'Vimeo URL',
+      // NOTE: the "Vimeo = modal, Mux = background loop" split is explained
+      // here because document-level descriptions are not rendered by Studio
+      // v4's form view.
       description:
-        'Paste any Vimeo link — the normal share link (https://vimeo.com/<id>) works; the site converts it to the embeddable player automatically.',
+        'Drives the full-screen modal opened from the hero (the Mux upload below drives the muted background loop). Paste any Vimeo link — the normal share link (https://vimeo.com/<id>) works; the site converts it to the embeddable player automatically.',
       type: 'url',
       validation: (Rule) => Rule.required(),
     }),
@@ -22,13 +23,16 @@ export const showreel = defineType({
         'Drag-and-drop the showreel preview here. Mux transcodes to adaptive bitrate HLS and serves it via its own CDN.',
       type: 'mux.video',
     }),
+    // Retired: the hero video is on Mux since 2026-05 (cms.json shows the
+    // asset `ready`). Kept hidden so the stored value doesn't show an
+    // "unknown field" warning; the loader still uses it as last-ditch
+    // fallback when Mux is empty.
     defineField({
       name: 'videoFile',
       title: 'Legacy video file path (Vercel Blob)',
-      description:
-        'Transitional fallback. Used only when the Mux upload above is empty. Will be removed once the hero video is on Mux.',
       type: 'string',
       readOnly: true,
+      hidden: true,
     }),
     defineField({
       name: 'posterImage',

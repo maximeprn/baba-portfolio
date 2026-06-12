@@ -12,6 +12,7 @@ source_files:
   - sanity/schemas/index.js               # modify (register film)
   - sanity/desk/structure.js              # modify (add Films list)
   - scripts/upload-films.mjs              # NEW (migration)
+  - scripts/migrate-film-featured.mjs     # NEW (2026-06-12: collapsed → featured rename)
   - scripts/fetch-cms-content.mjs         # modify (query films)
   - src/sanity/loader.js                  # modify (export films + helpers)
   - src/pages/Films.jsx                   # modify (switch import)
@@ -29,9 +30,11 @@ known_issues:
 
 > **Schema evolved since first writing.** The preview video moved from a
 > Vercel Blob path string to a Mux asset — see [12-cms-video-uploads-mux](12-cms-video-uploads-mux.md).
-> The `featured` and `imagePosition` fields were also removed (the homepage now
-> alternates film cards left/right by row index). The Data Model + Business
-> Rules below reflect the **current** schema.
+> The original `featured` + `imagePosition` *alignment* fields were removed
+> (the homepage alternates film cards left/right by row index). Then on
+> 2026-06-12 the placement flag was renamed: the inverted `collapsed` boolean
+> became `featured` (same vocabulary as photoProject). The Data Model +
+> Business Rules below reflect the **current** schema.
 
 ## Purpose
 
@@ -59,7 +62,7 @@ GROQ:  *[_type == "film"] | order(orderRank asc) {
         ▼
 src/data/cms.json (films array)
         ▼
-src/sanity/loader.js → films + getNonCollapsedFilms + getCollapsedFilms
+src/sanity/loader.js → films + getFeaturedFilms + getNonFeaturedFilms
         ▼
 src/pages/Films.jsx (drop-in replacement, no rendering changes)
 ```
@@ -114,7 +117,7 @@ Single-tab layout (no `groups`), ordered in the natural flow of authoring via
 | Field | Type | Notes |
 |---|---|---|
 | `visible` | boolean (default true) | Toggle off to hide the film from the homepage without unpublishing the document. |
-| `collapsed` | boolean (default false) | Move the film to the "Other Projects" row at the bottom (small `CollapsedFilmCard`, click to expand). |
+| `featured` | boolean (default false) | On → large `FeaturedFilmCard` in the top section. Off → "Other Projects" row at the bottom (small `CollapsedFilmCard`, click to expand). Same vocabulary as photoProject. |
 
 #### Advanced overrides (fieldset, collapsed by default)
 
@@ -128,22 +131,39 @@ Single-tab layout (no `groups`), ordered in the natural flow of authoring via
 | Field | Type | Notes |
 |---|---|---|
 | `orderRank` | string | Managed by `@sanity/orderable-document-list`. NEVER edit by hand. |
+| `collapsed` | boolean (retired) | Inverted predecessor of `featured` (renamed 2026-06-12). Kept hidden until `cms:migrate-film-featured -- --prune` removes it from the documents. |
 
 **Removed fields** (present in earlier drafts of this doc, no longer in the
-schema): `featured` — cards now alternate left/right by row index, there is no
-featured/non-featured distinction; `videoType` / `videoFile` — superseded by
-`videoMux` (doc 12); `imagePosition` — no per-film alignment knob.
+schema): the original `featured` *alignment* flag + `imagePosition` — cards
+alternate left/right by row index, no per-film alignment knob; `videoType` /
+`videoFile` — superseded by `videoMux` (doc 12).
 
 ## Business Rules
 
-1. **One display flag drives placement.** There is no `featured` flag — film
-   cards on the homepage alternate left/right purely by row index.
-   - `collapsed: false` (default) → renders in the top section as a
-     `FeaturedFilmCard` (autoplaying Mux preview, large).
-   - `collapsed: true` → renders in the "Other Projects" row at the bottom as a
-     `CollapsedFilmCard` (small, click to expand).
+1. **One display flag drives placement** (left/right alignment still
+   alternates purely by row index).
+   - `featured: true` → renders in the top section as a `FeaturedFilmCard`
+     (autoplaying Mux preview, large).
+   - `featured: false` (default for new docs since 2026-06-12) → renders in
+     the "Other Projects" row at the bottom as a `CollapsedFilmCard` (small,
+     click to expand).
    - `visible: false` removes the film from the homepage entirely without
      unpublishing the document. The loader filters on `visible !== false`.
+   - **Rename provenance (2026-06-12):** `featured` replaced the inverted
+     `collapsed` flag to match photoProject. **Gotcha discovered during the
+     rename:** film docs still carry *orphaned* `featured` booleans from the
+     pre-CMS schema (the field was dropped from the schema, never unset in
+     the data) — so while `collapsed` exists on a doc it stays the source of
+     truth. The fetcher reads `"featured": coalesce(!collapsed, featured, false)`
+     (collapsed-first; GROQ `!null → null` makes it fall through after the
+     prune). Two-phase migration via `cms:migrate-film-featured`: phase 1
+     sets `featured = !collapsed` — overwriting the orphaned values — and
+     keeps `collapsed` (so a production rebuild from pre-rename `main` still
+     renders correctly); phase 2 (`-- --prune`, run only after the
+     featured-aware build is live) re-asserts and deletes `collapsed`. A
+     Studio "Featured" toggle made between the two phases is overridden by
+     `collapsed` — keep that window short. The loader applies
+     `featured ?? !collapsed` for stale pre-rename snapshots.
 
 2. **LexoRank ordering.** Same constraint as doc 09 — orderRank values MUST be real LexoRank strings. The migration script generates them via `LexoRank.middle().genNext()` chains. If they ever break, run `cms:fix-film-ranks` (`scripts/fix-film-ranks.mjs`, mirrors `cms:fix-photo-project-ranks`).
 
@@ -195,9 +215,10 @@ Total dev time: **~2 h 30**. Plus 5 min of user-side migration steps.
 ## Open questions resolved by inspection
 
 - **Credits structure.** Single array of `{side, role, name}` objects. The fetcher reconstructs `{left: [...], right: [...]}` for back-compat — no component changes needed.
-- **Display placement.** A single `collapsed` boolean plus a `visible` boolean (see Business Rule 1). No `featured` flag — homepage cards alternate left/right by row index.
+- **Display placement.** A single `featured` boolean plus a `visible` boolean (see Business Rule 1). Homepage cards alternate left/right by row index.
 - **Preview video.** Stored in Mux via the `videoMux` field — see [doc 12](12-cms-video-uploads-mux.md). The earlier plan to keep videos on Vercel Blob (path string in the CMS) was superseded.
 
 ## Known issues
 
-- **`src/data/films.js` is legacy fallback only.** It exports `FILM_ENTRIES` (raw) and `films` (mapped). `loader.js` falls back to `films` when `cms.json` has no film data. `scripts/upload-films.mjs` imports `FILM_ENTRIES` for a bulk re-import; it writes only schema fields (no `videoFile`/`videoType`/`featured`/`imagePosition`) — preview videos are attached separately in Studio via `videoMux`.
+- **`src/data/films.js` is legacy fallback only.** It exports `FILM_ENTRIES` (raw) and `films` (mapped, normalises `featured` — absence = featured). `loader.js` falls back to `films` when `cms.json` has no film data. `scripts/upload-films.mjs` imports `FILM_ENTRIES` for a bulk re-import; it writes `featured` plus the transitional inverted `collapsed` (dropped after the prune phase) — preview videos are attached separately in Studio via `videoMux`.
+- **`collapsed` prune pending.** Phase 2 of the rename (`npm run cms:migrate-film-featured -- --prune`) must wait until the featured-aware build is live on production. Until then film docs carry both flags.
